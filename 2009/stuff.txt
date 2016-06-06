@@ -3,6 +3,7 @@ a+i = &a[i]
 
 *a = a[0]
 *(a+i) = a[i]
+*(*(a+i)+j) = a[i][j]
 
 typedef int Length;
 makes the name Length a synonym for int. The type Length can be used in declarations,

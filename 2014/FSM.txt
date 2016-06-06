@@ -1,0 +1,13 @@
+FSM Prekidac za svetlo:
+S = {on, off}
+I = {off}
+A = {press}
+d = {(off, press, on), (on, press, off)}
+
+FSM = ({on, off}, {off}, {pressU, pressD}, {(off, pressU, on), (on, pressD, off)})
+
+delta e obicno f-ja (S x A -> S), no ako e relacija (S x A x S) togas lesno imame model za nondeterminism.
+
+primer: d = {(off, press, on), (off, press, off), (on, press, off)}
+
+(off, press) se brancha randomly

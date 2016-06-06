@@ -1,0 +1,35 @@
+http://cs.stackexchange.com/questions/4905/how-do-i-write-a-proof-using-induction-on-the-length-of-the-input-string
+
+d(A, 0) = A
+d(A, 1) = B
+d(B, 0) = B
+d(B, 1) = C
+d(C, 0) = C
+d(C, 1) = C
+
+Hypothesis:
+1. If w contains no 1s, the automaton is in starting state A.
+2. If w contains one 1s, the automaton is in state B.
+3. If w contains two or more 1s, the automaton is in state C.
+
+Induction on length of w (|w|):
+
+Base case:
+|w| = 0 => w = e
+The automaton is in starting state A, since w does not contain 1s. 2 and 3 hold vacuously (false -> true = true)
+
+Inductive step:
+Assume string w of length k |k|, and assume the hypothesis is true.
+Then it must also follow that string w*a (w with a appended to it) with length |k+1| is true.
+
+There are 3 cases:
+
+a = 0:
+    1. d(A, w*a) = d(d(A, w), a) = d(A, a) = A
+    2. d(A, w*a) = d(d(A, w), a) = single 1 => d(B, a) = B
+    3. d(A, w*a) = d(d(A, w), a) = two or more 1s => d(C, a) = C
+
+a = 1:
+    1. d(A, w*a) = d(d(A, w), a) = d(A, a) = B (vacuously)
+    2. d(A, w*a) = d(d(A, w), a) = single 1 => d(B, a) = C (vacuously)
+    3. d(A, w*a) = d(d(A, w), a) = two or more 1s => d(C, a) = C
