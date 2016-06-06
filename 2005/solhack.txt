@@ -1,0 +1,186 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Tutorial: How to stop the timer on Solitaire
+Author: BoR0
+-----------------------------------------------------------------------------------------
+Dedication: My best friend Error_Vir
+Food: Ruffles and nectarine juice
+Music: Falcon - Cosmic outflow.xm
+Date: 28/06/2005
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+This tutorial I dedicate especially to my old friend Error_Vir.
+
+And as one of the famous quote follows:
+"one time of time on the time at of the time i dont remmber it"
+
+
+For more information on my friend you can find on the following webpage
+http://www.freewebs.com/bor0/error/ that is dedicated to him.
+
+Enough blabla's. Proceed to tutorial.
+-----------------------------------------------------------------------------------------
+
+Ok. The tool that we will to use is OllyDbg. (http://home.t-online.de/~Ollydbg/)
+
+Alright, sol.exe can be found (obviously, if you didn't need to free
+some space up on your HDD by deleting it) in %windir%\system32\sol.exe.
+(on my computer it's C:\WINNT\system32\sol.exe)
+
+So let's debug this tiny little app.
+
+Oh, if you're asking why I chose sol.exe I simply find it the best
+game for the boring days. Try to combine it with some demoscene music
+(www.scenemusic.net, www.ojuice.net).
+Fits perfectly for boring and raining days :-)
+
+BY THE WAY, I won a game in 51 seconds (without any time hacks).
+That's my highest score, I also had scores like 71 seconds, 78, 82, ...
+
+Open ollydbg, File->Open and type "%windir%\system32\sol.exe" there.
+
+Press F9 to run Solitaire.
+
+***TIMER ACTIVATION***
+As you might have(n't) noticed, the timer starts when you click anywhere
+on the game. Example click on a card. Cool, the timer started!
+***TIMER ACTIVATION***
+
+To restart the timer, goto ollydbg Debug->Restart->Yes->Press F9.
+We restarted the game.
+
+uh.
+Sometimes in cracking,
+
+(as my old friend says,
+"in the cracking = idont have time to write all thinges")
+
+I dont have the time to explain all things.
+
+So don't ask me why I picked this way. There are (probably) other ways for
+cracking this application, but I prefer the ninja-style.
+
+HOWEVER, back to work. The ninja-style is the following.
+We must defeat Solitaire in the easiest way. How do we do that?
+Simply. Notice the string "Time: %d" ? :-)
+
+In Ollydbg, View->Memory. Right click anywhere, click Search.
+
+Search for HEX val: 54 00 69 00 6D 00 65 00 3A
+(meaning "Time:" with a zero in between every char)
+
+This is very important. Before setting a breakpoint make sure you activate the
+timer first, because if you don't activate it Olly will break all the time
+and the Timer will be =0 so NO use.
+
+Anyway, we found it. While the text we searched for is highlighted,
+right click on it and set a breakpoint on memory access.
+
+Ollydbg IMMEDIATELY breaks, this is a good sign.
+
+Once ollydbg lands us on the physical memory, press ALT+F9 to get back
+to the user's memory.
+
+We are here:
+
+0100243B  \. C2 0800        RETN 8
+
+Now as we step out from this procedure this is what we see:
+
+01005372  |. 8DB445 48FFFFF>LEA ESI,DWORD PTR SS:[EBP+EAX*2-B8]
+01005379  |. 8B45 08        MOV EAX,DWORD PTR SS:[EBP+8]
+0100537C  |. 8B40 34        MOV EAX,DWORD PTR DS:[EAX+34]
+0100537F  |. C1F8 02        SAR EAX,2
+01005382  |. 50             PUSH EAX                                 ; /Arg2
+01005383  |. 56             PUSH ESI                                 ; |Arg1
+01005384  |. E8 4ECFFFFF    CALL sol.010022D7                        ; \sol.010022D7
+
+As you can notice (by looking at the code a bit), this procedure sets up the string
+like "Text: %d". That means that %d is received in some other procedure (e.g. previous).
+
+You can notice that this works out the text by entering that call at 01005384
+and by scrolling down a bit you can find the next API as well:
+
+010053B9  |. FF15 04110001  CALL DWORD PTR DS:[<&USER32.DrawTextW>]  ; \DrawTextW
+
+This procedure starts at 01005349  /$ 55             PUSH EBP.
+That means that our previous procedure ends on
+01005347  \.^EB E5          JMP SHORT sol.0100532E
+and starts on 010052CF  /$ 56             PUSH ESI
+
+You can notice this easily by looking at Olly's arrows.
+
+Good looking procedure is:
+
+010052CF  /$ 56             PUSH ESI
+010052D0  |. 57             PUSH EDI
+
+.....
+
+010052EF  |. 75 3B          JNZ SHORT sol.0100532C
+010052F1  |. 8B46 34        MOV EAX,DWORD PTR DS:[ESI+34]
+010052F4  |. 68 FE7F0000    PUSH 7FFE
+010052F9  |. 40             INC EAX
+010052FA  |. 50             PUSH EAX
+010052FB  |. E8 CCD0FFFF    CALL sol.010023CC
+
+.....
+
+0100533F  |. E8 770A0000    CALL sol.01005DBB
+01005344  |> 6A 01          PUSH 1
+01005346  |. 58             POP EAX
+01005347  \.^EB E5          JMP SHORT sol.0100532E
+
+Not the whole though, its big enough.
+
+Anyway, about the ninja-style, here we go.
+Instead of looking at the code you simply check every opcode and hunt it.
+Something like a manual brute-force or so. That's just my way.
+
+So, we set a breakpoint on 010052F1 and press F9 to run. Once we landed there,
+in the DUMP Window right click then Goto->Expression and then type ESI+34.
+
+Remove the breakpoint and press F9. Cool, the value in the Dump window changes on every
+second, which means that that is our counter :-)
+
+But how is it getting increased? Well, simple enough.
+
+010052F1  |. 8B46 34        MOV EAX,DWORD PTR DS:[ESI+34]
+010052F4  |. 68 FE7F0000    PUSH 7FFE
+010052F9  |. 40             INC EAX
+
+in EAX, Bill Gates puts the address of the counter and then he increases EAX.
+
+How to stop this? Replace "INC EAX" with "NOP" (40h->90h)
+
+Time hast been stopped! (no, "hast" is not a mistake, its the German way!)
+
+Well, that is all for now my friend, I hope you understood something from this tutorial.
+Or maybe not? Who cares anyway, it's already written ;)
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+And once again, the day is safe with NO thanks to the power puff girls.
+Greetings (in no order):
+
+Detten, bluffer, Zephyrous, |Tanatos| (br0tha), miele, minos,
+parabytes, sort lafarge, junk|e, cektop, pumqara and whoever else I forgot :-)
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+This tutorial (has no) copyright
+written June, 2005
+
+Please ignore the humor (if any) in this tutorial.
+
+------------------------------------------------
+School year ended, woohoo! Happiness and Sun :-)
+------------------------------------------------
+
+Links related to check out:
+
+BoR0: http://www.freewebs.com/bor0/
+Ollydbg: http://home.t-online.de/~Ollydbg/
+BiW: http://biw.rult.at/, http://www.reversing.be/
+Demoscene: http://www.scenemusic.net/, http://www.ojuice.net/
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

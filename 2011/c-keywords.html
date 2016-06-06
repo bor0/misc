@@ -1,0 +1,728 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>C Language Keywords</title>
+<style type="TEXT/CSS">
+<!--
+.IE3-DUMMY { CONT-SIZE: 100%; }
+BODY { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; }
+P { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H1 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H2 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H3 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H4 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H5 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+H6 { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+UL { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; }
+TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #FFFFFF; }
+.NOBORDER { BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.NOBORDER TD { FONT-FAMILY: Verdana,Arial,Helvetica,Sans-Serif; BACKGROUND-COLOR: #E0E0E0; PADDING: 0pt; }
+.CODE { FONT-FAMILY: Courier New; }
+-->
+</style>
+</head>
+<body bgcolor="#E0E0E0" text="#000000">
+<font size="5"><b>C Language Keywords</b></font>
+<hr>
+<p>Standard ANSI C recognizes the following keywords:</p>
+
+<p><b>
+<a href="#auto">auto</a><br>
+<a href="#break">break</a><br>
+<a href="#switch">case</a><br>
+<a href="#int">char</a><br>
+<a href="#const">const</a><br>
+<a href="#continue">continue</a><br>
+<a href="#switch">default</a><br>
+<a href="#do">do</a><br>
+<a href="#float">double</a><br>
+<a href="#if">else</a><br>
+<a href="#enum">enum</a><br>
+<a href="#extern">extern</a><br>
+<a href="#float">float</a><br>
+<a href="#for">for</a><br>
+<a href="#goto">goto</a><br>
+<a href="#if">if</a><br>
+<a href="#int">int</a><br>
+<a href="#short">long</a><br>
+<a href="#register">register</a><br>
+<a href="#return">return</a><br>
+<a href="#short">short</a><br>
+<a href="#short">signed</a><br>
+<a href="#sizeof">sizeof</a><br>
+<a href="#static">static</a><br>
+<a href="#struct">struct</a><br>
+<a href="#switch">switch</a><br>
+<a href="#typedef">typedef</a><br>
+<a href="#union">union</a><br>
+<a href="#short">unsigned</a><br>
+<a href="#void">void</a><br>
+<a href="#volatile">volatile</a><br>
+<a href="#while">while</a>
+</b></p>
+<p>In addition to these standard keywords, TIGCC recognizes some extended keywords
+which do not exist in ANSI C, like <a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC94">asm</a>, <a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC69">typeof</a>,
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC93">inline</a>, etc., which are described in details in the section
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html">GNU C language extensions</a>. This section also describes extensions
+to standard keywords, not only new ones.
+<br><br>
+<b>Note:</b> If square brackets '[...]' are used in syntax descriptions, they mean optional
+arguments (as usual in syntax-describing languages), not square brackets as literals.</p>
+
+<hr>
+<h2><a name="auto"><u>auto</u></a></h2>
+<p><b>Defines a local variable as having a local lifetime.</b></p>
+
+<p>Keyword <code>auto</code> uses the following syntax:</p>
+<pre>[auto] <i>data-definition</i>;
+</pre>
+<p>As the local lifetime is the default for local variables, <code>auto</code> keyword is
+extremely rarely used.
+<br><br>
+<b>Note:</b> GNU C extends <code>auto</code> keyword to allow forward declaration of
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC66">nested functions</a>.</p>
+
+<hr>
+<h2><a name="break"><u>break</u></a></h2>
+<p><b>Passes control out of the compound statement.</b></p>
+
+<p>The break statement causes control to pass to the statement following the
+innermost enclosing <a href="#while">while</a>, <a href="#do">do</a>, <a href="#for">for</a>, or
+<a href="#switch">switch</a> statement. The syntax is simply</p>
+<pre>break;
+</pre>
+
+<hr>
+<h2><a name="const"><u>const</u></a></h2>
+<p><b>Makes variable value or pointer parameter unmodifiable.</b></p>
+
+<p>When <code>const</code> is used with a variable, it uses the following syntax:</p>
+<pre>const <i>variable-name</i> [ = <i>value</i>];
+</pre>
+<p>In this case, the <code>const</code> modifier allows you to assign an initial
+value to a variable that cannot later be changed by the program. For
+example,</p>
+<pre>const my_age = 32;
+</pre>
+<p>Any assignments to <code>'my_age'</code> will result in a compiler error. However,
+such declaration is quite different than using</p>
+<pre>#define my_age 32
+</pre>
+<p>In the first case, the compiler allocates a memory for <code>'my_age'</code> and stores
+the initial value 32 there, but it will not allow any later assignment to this variable.
+But, in the second case, all occurences of <code>'my_age'</code> are simply replaced with 32
+by the <a href="http://tigcc.ticalc.org/doc/cpp.html">preprocessor</a>, and no memory will be allocated for it.
+<br><br>
+Warning: a const variable can be indirectly modified by a pointer, as in the following
+example:</p>
+<pre>*(int*)&amp;my_age = 35;
+</pre>
+<p>When the <code>const</code> modifier is used with a pointer parameter in a function's parameter
+list, it uses the following syntax:</p>
+<pre><i>function-name</i> (const <i>type</i> *<i>var-name</i>)
+</pre>
+<p>Then, the function cannot modify the variable that the pointer points to. For example,</p>
+<pre>int printf (const char *format, ...);
+</pre>
+<p>Here the <code>printf</code> function is prevented from modifying the format string.</p>
+
+<hr>
+<h2><a name="continue"><u>continue</u></a></h2>
+<p><b>Passes control to the begining of the loop.</b></p>
+
+<p><code>continue</code> causes control to pass to the end of the innermost enclosing
+<a href="#while">while</a>, <a href="#do">do</a>, or <a href="#for">for</a> statement, at
+which point the loop continuation condition is re-evaluated. The syntax is simply</p>
+<pre>continue;
+</pre>
+<p>For example,</p>
+<pre>for (i = 0; i &lt; 20; i++)
+  {
+    if (array[i] == 0)
+      continue;
+    array[i] = 1/array[i];
+  }
+</pre>
+<p>This example changes each element in the array with its reciprocal, but skips elements which
+are equal to zero.</p>
+
+<hr>
+<h2><a name="do"><u>do</u></a></h2>
+<p><b>Do-while loop.</b></p>
+
+<p>Keyword <code>do</code> is usually used together with <a href="#while">while</a> to make
+another form of repeating statement. Such form of the loop uses the following syntax:</p>
+<pre>do <i>statement</i> while (<i>expression</i>)</pre>
+<p><i>statement</i>, which is usually a compound statement, is executed repeatedly as long as the value of
+<i>expression</i> remains non-zero.
+The test takes place after each execution of the <i>statement</i>. For example,</p>
+<pre>i = 1; n = 1;
+do
+  {
+    n *= i;
+    i++;
+  } while (i &lt;= factorial);
+</pre>
+
+<hr>
+<h2><a name="enum"><u>enum</u></a></h2>
+<p><b>Defines a set of constants of type int.</b></p>
+
+<p>The syntax for defining constants using <code>enum</code> is</p>
+<pre>enum [<i>tag</i>] {<i>name</i> [=<i>value</i>], ...};
+</pre>
+<p>The set can optionally be given a type tag name with <i>tag</i>. <i>name</i> is the
+name of a constant that can optionally be assigned the (constant) value of <i>value</i>,
+etc. For example,</p>
+<pre>enum Numbers {One = 1, Two = 2, Three = 3, Four = 4, Five = 5};
+</pre>
+<p>If <i>value</i> is missing, then a value is assumed to be the value of the
+previous constant in the list + 1. If this is the first constant in the list,
+the default value is 0.
+<br><br>
+If you give a type tag name, then you can declare variables of enumerated type using</p>
+<pre>enum <i>tag</i> <i>variable-names</i>;
+</pre>
+<p>For example,</p>
+<pre>enum Numbers x, y, z;
+</pre>
+<p>declares three variables <code>x</code>, <code>y</code> and <code>z</code>, all of type
+<i>Numbers</i> (they are, in fact, integer variables). More precise,
+<code>'enum&nbsp;<i>tag</i>'</code> becomes a new type which is equal in rights with any
+built-in type.</p>
+
+<hr>
+<h2><a name="extern"><u>extern</u></a></h2>
+<p><b>Indicates that an identifier is defined elsewhere.</b></p>
+
+<p>Keyword <code>extern</code> indicates that the actual storage and initial value of a variable,
+or body of a function, is defined elsewhere, usually in a separate source code module. So,
+it may be applied to data definitions and function prototypes:</p>
+<pre>extern <i>data-definition</i>;
+extern <i>function-prototype</i>;
+</pre>
+<p>For example,</p>
+<pre>extern int _fmode;
+extern void Factorial (int n);
+</pre>
+<p>The keyword <code>extern</code> is optional (i.e. default) for a function prototype.</p>
+
+<hr>
+<h2><a name="float"><u>float, double</u></a></h2>
+<p><b>Floating point data types.</b></p>
+
+<p>The keyword <code>float</code> usually represents a single precision floating point data type,
+and <code>double</code> represents a double precision floating point data type.
+In TIGCC, both <code>float</code> and <code>double</code> (and even <code>long double</code>)
+are the same. The TI-89 and TI-92 Plus use a non-IEEE floating point format called SMAP II BCD
+for floating point values.
+<br><br>
+These values have a range from 1e-999 to 9.999999999999999e999 in magnitude,
+with a precision of exactly 16 significant digits.
+Principally, the exponent range may be as high as 16383,
+but a lot of math routines do not accept exponents greater than 999.</p>
+
+<hr>
+<h2><a name="for"><u>for</u></a></h2>
+<p><b>For loop.</b></p>
+
+<p>For-loop is yet another kind of loop. It uses <code>for</code> keyword, with the following
+syntax:</p>
+<pre>for ([<i>expr1</i>]; [<i>expr2</i>]; [<i>expr3</i>]) <i>statement</i>
+</pre>
+<p><i>statement</i> is executed repeatedly until the value of <i>expr2</i> is 0.
+Before the first iteration, <i>expr1</i> is evaluated. This is usually used to
+initialize variables for the loop.
+After each iteration of the loop, <i>expr3</i> is evaluated. This is usually used
+to increment a loop counter. In fact, the for-loop is absolutely equivalent to the
+following sequence of statements:</p>
+<pre><i>expr1</i>;
+while (<i>expr2</i>)
+  {
+    <i>statement</i>;
+    <i>expr3</i>;
+  }
+</pre>
+<p>That's why <i>expr1</i> and <i>expr3</i> must contain side effects, else they are
+useless. For example,</p>
+<pre>for (i=0; i&lt;100; i++) sum += x[i];
+
+for (i=0, t=string; i&lt;40 &amp;&amp; *t; i++, t++) putch(*t);
+putch('\n');
+
+for (i=0, sum=0, sumsq=0, i&lt;100; i++)
+  {
+    sum += i; sumsq += i*i;
+  }
+</pre>
+<p>All the expressions are optional. If <i>expr2</i> is left out, it is assumed to
+be 1. <i>statement</i> may be a compound statement as well.</p>
+
+<hr>
+<h2><a name="goto"><u>goto</u></a></h2>
+<p><b>Unconditionally transfer control.</b></p>
+
+<p><code>goto</code> may be used for transfering control from one place to another.
+The syntax is:</p>
+<pre>goto <i>identifier</i>;
+</pre>
+<p>Control is unconditionally transferred to the location of a local label
+specified by <i>identifier</i>. For example,</p>
+<pre>Again:
+  ...
+  goto Again;
+</pre>
+<p>Jumping out of scope (for example out of the body of the <a href="#for">for</a>
+loop) is legal, but jumping into a scope (for example from one function to another)
+is <b>not</b> allowed.
+<br><br>
+<b>Note:</b> The GNU C extends the usage of <code>goto</code> keyword to allow
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC65">computed goto</a>. Also, it supports
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC64">local labels</a>, useful in macro definitions.</p>
+
+<hr>
+<h2><a name="if"><u>if, else</u></a></h2>
+<p><b>Conditional statement.</b></p>
+
+<p>Keyword <code>if</code> is used for conditional execution. The basic form of <code>if</code>
+uses the following syntax:</p>
+<pre>if (<i>expression</i>)
+   <i>statement1</i>
+</pre>
+<p>Alternatively, <code>if</code> may be used together with <code>else</code>, using the
+following syntax:</p>
+<pre>if (<i>expression</i>)
+   <i>statement1</i>
+else
+   <i>statement2</i>
+</pre>
+<p>If <i>expression</i> is nonzero when evaluated, then <i>statement1</i> is executed. In
+the second case, <i>statement2</i> is executed if the expression is 0.
+<br><br>
+An optional <code>else</code> can follow an <code>if</code> statement, but no statements can come
+between an <code>if</code> statement and an <code>else</code>. Of course, both
+<i>statement1</i> and <i>statement2</i> may be compound statements (i.e. a sequence of
+statements enclosed in braces). Here will be given some legal examples:</p>
+<pre>if (count &lt; 50) count++;
+
+if (x &lt; y) z = x;
+else z = y;
+
+if (x &lt; y)
+  {
+    printf ("x is smaller");
+    return x;
+  }
+else
+  {
+    printf ("x is greater")
+    return y;
+  }
+</pre>
+<p>The <a href="http://tigcc.ticalc.org/doc/cpp.html#SEC34">#if</a> and
+<a href="http://tigcc.ticalc.org/doc/cpp.html#SEC35">#else</a> preprocessor statements look similar to the
+<code>if</code> and <code>else</code> statements, but have very different effects.
+They control which source file lines are compiled and which are ignored.</p>
+
+<hr>
+<h2><a name="int"><u>int, char</u></a></h2>
+<p><b>Basic data types (integer and character).</b></p>
+
+<p>Variables of type int are one machine-type word in length. They can be <a href="#short">signed</a> (default)
+or <a href="#short">unsigned</a>, which means that in this configuration of the compiler
+they have by default a range of -32768 to 32767 and 0 to 65535 respectively, but this default
+may be changed if the compiler option <b>'-mnoshort'</b> is given. In this case,
+the range of type int is -2147483648 to 2147483647 for signed case, or 0 to 4294967295 for
+unsigned case. See also <a href="#short">short</a> and <a href="#short">long</a> type modifiers.
+<br><br>
+Variables of type char are 1 byte in length. They can be signed (this is the default,
+unless you use the compiler option <b>'-funsigned-char'</b>) or
+unsigned, which means they have a range of -128 to 127 and 0 to 255,
+respectively.
+<br><br>
+All data types may be used for defining variables, specifying return types of functions, and
+specifying types of function arguments. For example,</p>
+<pre>int a, b, c;                       // <i>'a', 'b', 'c' are integer variables</i>
+int func ();                       // <i>'func' is a function returning int</i>
+char crypt (int key, char value);  // <i>'crypt' is a function returning char with</i>
+                                   // <i>two args: 'key' is int and 'value' is char</i>
+</pre>
+<p>When function return type is omitted, <code>int</code> is assumed.
+<br><br>
+All data type keywords may be used in combination with <a href="http://tigcc.ticalc.org/doc/opers.html#asterisk">asterisks</a>, <a href="http://tigcc.ticalc.org/doc/opers.html#subscr">brackets</a>
+and <a href="http://tigcc.ticalc.org/doc/opers.html#parentheses">parentheses</a>, for making complex data types, like
+pointer types, array types, function types, or combinations of them, which in the C language may
+have an arbitrary level of complexity (see <a href="http://tigcc.ticalc.org/doc/opers.html#asterisk">asterisk</a> for
+more info).</p>
+
+<hr>
+<h2><a name="register"><u>register</u></a></h2>
+<p><b>Tells the compiler to store the variable being declared in a CPU register.</b></p>
+
+<p>In standard C dialects, keyword <code>auto</code> uses the following syntax:</p>
+<pre>register <i>data-definition</i>;
+</pre>
+<p>The <code>register</code> type modifier tells the compiler to store the variable being
+declared in a CPU register (if possible), to optimize access. For example,</p>
+<pre>register int i;
+</pre>
+<p>Note that TIGCC will automatically store often used variables in CPU registers when the
+optimization is turned on, but the keyword <code>register</code> will force storing in
+registers even if the optimization is turned off. However, the request for storing data
+in registers may be denied, if the compiler concludes that there is not enough free
+registers for use at this place.
+<br><br>
+<b>Note:</b> The GNU C extends the usage of <code>register</code> keyword to allow
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC97">explicitely choosing of used registers</a>.</p>
+
+<hr>
+<h2><a name="return"><u>return</u></a></h2>
+<p><b>Exits the function.</b></p>
+
+<p><code>return</code> exits immediately from the currently executing function to the calling
+routine, optionally returning a value. The syntax is:</p>
+<pre>return [<i>expression</i>];
+</pre>
+<p>For example,</p>
+<pre>int sqr (int x)
+{
+  return (x*x);
+}
+</pre>
+
+<hr>
+<h2><a name="short"><u>short, long, signed, unsigned</u></a></h2>
+<p><b>Type modifiers.</b></p>
+
+<p>A type modifier alters the meaning of the base type to yield a new type.
+Each of these type modifiers can be applied to the base type <a href="#int">int</a>.
+The modifiers <code>signed</code> and <code>unsigned</code> can be applied to the base type <a href="#int">char</a>.
+In addition, <code>long</code> can be applied to <a href="#float">double</a>.
+<br><br>
+When the base type is omitted from a declaration, <code>int</code> is assumed.
+For example,</p>
+<pre>long x;                 // <i>'int' is implied</i>
+unsigned char ch;
+signed int i;           // <i>'signed' is default</i>
+unsigned long int l;    // <i>'int' is accepted, but not needed</i>
+</pre>
+<p>In this implementation of the compiler, the valid range of valid data types is as
+listed in the following table:</p>
+<pre>short int              -32768 to 32767
+long int               -2147483648 to 2147483647
+signed char            -128 to 127
+signed int             -32768 to 32767 (signed is default)
+                       [or -2147483648 to 2147483647 if '-mnoshort' is given]
+signed short int       -32768 to 32767
+signed long int        -2147483648 to 2147483647
+unsigned char          0 to 255
+unsigned int           0 to 65535
+                       [or 0 to 4294967295 if '-mnoshort' is given]
+unsigned short int     0 to 65535
+unsigned long int      0 to 4294967295
+</pre>
+<p>
+<b>Note:</b> GNU C extends the <code>long</code> keyword to allow
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC72">double-long integers</a> (64-bit integers in this implementation),
+so they have range from -9223372036854775808 to 9223372036854775807 if signed, or from 0 to
+18446744073709551615 if unsigned.</p>
+
+<hr>
+<h2><a name="sizeof"><u>sizeof</u></a></h2>
+<p><b>Returns the size of the expression or type.</b></p>
+
+<p>Keyword <code>sizeof</code> is, in fact, an <a href="http://tigcc.ticalc.org/doc/opers.html">operator</a>. It returns the
+size, in bytes, of the given expression or type (as type <a href="http://tigcc.ticalc.org/doc/stddef.html#size_t">size_t</a>).
+Its argument may be an expression of a type name:</p>
+<pre>sizeof <i>expression</i>
+sizeof (<i>type</i>)
+</pre>
+<p>For example,</p>
+<pre>workspace = calloc (100, sizeof (int));
+memset(buff, 0, sizeof buff);
+nitems = sizeof (table) / sizeof (table[0]);
+</pre>
+<p>Note that <i>type</i> may be an anonymous type (see <a href="http://tigcc.ticalc.org/doc/opers.html#asterisk">asterisk</a>
+for more info about anonymous types).</p>
+
+<hr>
+<h2><a name="static"><u>static</u></a></h2>
+<p><b>Preserves variable value to survive after its scope ends.</b></p>
+
+<p>Keyword <code>static</code> may be applied to both data and function definitions:</p>
+<pre>static <i>data-definition</i>;
+static <i>function-definition</i>;
+</pre>
+<p>For example,</p>
+<pre>static int i = 10;
+static void PrintCR (void) { putc ('\n'); }
+</pre>
+<p><code>static</code> tells that a function or data element is only known within the scope of the current
+compile. In addition, if you use the <code>static</code> keyword with a variable that is
+local to a function, it allows the last value of the variable to be preserved between
+successive calls to that function.
+<br><br>
+Note that the initialization of automatic and static variables is quite different. Automatic
+variables (local variables are automatic by default, except you explicitely use <code>static</code>
+keyword) are initialized during the run-time, so the initialization will be executed whenever
+it is encountered in the program. Static (and global) variables are initialized during
+the compile-time, so the initial values will simply be embeded in the executable
+file itself. If you change them, they will retain changed in the file. By default, the C language
+proposes that all uninitialized static variables are initialized to zero, but due to some
+limitations in TIGCC linker, you need to initialize explicitely all static and global variables
+if you compile the program in "nostub" mode.
+<br><br>
+The fact that global and static variables are initialized in compile-time and kept in the
+executable file itself has one serious consequence, which is not present on "standard" computers like PC, Mac, etc. Namely,
+these computers always reload the executable on each start from an external memory device (disk),
+but this is not the case on TI. So, if you have the following global (or static) variable</p>
+<pre>int a = 10;
+</pre>
+<p>and if you change its value somewhere in the program to 20 (for example), its initial
+value will be 20 (not 10) on the next program start! Note that this is true only for global
+and static variables. To force reinitializing, you must put explicitely something
+like</p>
+<pre>a = 10;
+</pre>
+<p>at the begining of the main program!
+<br><br>
+Note, however, that if the program is archived,
+the initial values will be restored each time you run the program, because archived
+programs are reloaded from the archive memory to the RAM on each start, similarly
+like the programs are reloaded from disks on "standard" computers each time when you start them.</p>
+
+<hr>
+<h2><a name="struct"><u>struct</u></a></h2>
+<p><b>Groups variables into a single record.</b></p>
+
+<p>The syntax for defining records is:</p>
+<pre>struct [<i>struct-type-name</i>]
+  {
+    [<i>type</i> <i>variable-names</i>] ;
+    ...
+  } [<i>structure-variables</i>] ;
+</pre>
+<p>A struct, like an <a href="#union">union</a>, groups variables into a single record.
+The <i>struct-type-name</i> is an optional tag name that refers to the structure
+type. The <i>structure-variables</i> are the data definitions, and are also optional.
+Though both are optional, one of the two must appear.
+<br><br>
+Elements in the record are defined by naming a <i>type</i>, followed by
+<i>variable-names</i> separated by commas. Different variable types can be
+separated by a semicolon. For example,</p>
+<pre>struct my_struct
+  {
+    char name[80], phone_number[80];
+    int age, height;
+  } my_friend;
+</pre>
+<p>declares a record variable <i>my_friend</i> containing two strings
+(<i>name</i> and <i>phone_number</i>) and two integers (<i>age</i> and <i>height</i>).
+To declare additional variables of the same type, you use the keyword <code>struct</code>
+followed by the <i>struct-type-name</i>, followed by the variable names. For
+example,</p>
+<pre>struct my_struct my_friends[100];
+</pre>
+<p>declares an array named <i>my_friends</i> which components are records.
+In fact, <code>'struct&nbsp;my_struct'</code> becomes a new type which is equal in rights with any
+built-in type.
+<br><br>
+To access elements in a structure, you use a record selector (<code>'.'</code>). For
+example,</p>
+<pre>strcpy (my_friend.name, "Mr. Wizard");
+</pre>
+<p>A bit field is an element of a structure that is defined in terms of bits.
+Using a special type of struct definition, you can declare a structure
+element that can range from 1 to 16 bits in length. For example,</p>
+<pre>struct bit_field
+  {
+    int bit_1 : 1;
+    int bits_2_to_5 : 4;
+    int bit_6 : 1;
+    int bits_7_to_16 : 10;
+  } bit_var;
+</pre>
+
+<hr>
+<h2><a name="switch"><u>switch, case, default</u></a></h2>
+<p><b>Branches control.</b></p>
+
+<p><code>switch</code> causes control to branch to one of a list of possible statements in the
+block of statements. The syntax is</p>
+<pre>switch (<i>expression</i>) <i>statement</i>
+</pre>
+<p>The statement <i>statement</i> is typically a compound statement (i.e. a block of statements
+enclosed in braces). The branched-to statement is determined by evaluating <i>expression</i>,
+which must return an integral type. The list of possible branch points within
+<i>statement</i> is determined by preceding substatements with</p>
+<pre>case <i>constant-expression</i> :
+</pre>
+<p>where <i>constant-expression</i> must be an int and must be unique.
+<br><br>
+Once a value is computed for <i>expression</i>, the list of possible
+<i>constant-expression</i> values determined from all case statements is searched
+for a match. If a match is found, execution continues after the matching case statement
+and continues until a break statement is encountered or the end of
+<i>statement</i> is reached. If a match is not found and this statement prefix is found
+within <i>statement</i>,</p>
+<pre>default :
+</pre>
+<p>execution continues at this point. Otherwise, <i>statement</i> is skipped
+entirely. For example,</p>
+<pre>switch (operand)
+  {
+    case MULTIPLY:
+      x *= y; break;
+    case DIVIDE:
+      x /= y; break;
+    case ADD:
+      x += y; break;
+    case SUBTRACT:
+      x -= y; break;
+    case INCREMENT2:
+      x++;
+    case INCREMENT1:
+      x++; break;
+    case EXPONENT:
+    case ROOT:
+    case MOD:
+      printf ("Not implemented!\n");
+      break;
+    default:
+      printf("Bug!\n");
+      exit(1);
+  }
+</pre>
+<p>See also <a href="#break">break</a>.
+<br><br>
+<b>Note:</b> GNU C extends the <code>case</code> keyword to allow
+<a href="http://tigcc.ticalc.org/doc/gnuexts.html#SEC83">case ranges</a>.</p>
+
+<hr>
+<h2><a name="typedef"><u>typedef</u></a></h2>
+<p><b>Creates a new type.</b></p>
+
+<p>The syntax for defining a new type is</p>
+<pre>typedef <i>type-definition</i> <i>identifier</i>;</pre>
+<p>This statement assigns the symbol name <i>identifier</i> to the data type definition
+<i>type-definition</i>. For example,</p>
+<pre>typedef unsigned char byte;
+typedef char str40[41];
+typedef struct {float re, im;} complex;
+typedef char *byteptr;
+typedef int (*fncptr)(int);
+</pre>
+<p>After these definition, you can declare</p>
+<pre>byte m, n;
+str40 myStr;
+complex z1, z2;
+byteptr p;
+fncptr myFunc;
+</pre>
+<p>with the same meaning as you declare</p>
+<pre>unsigned char m, n;
+char myStr[41];
+struct {float re, im;} z1, z2;
+char *p;
+int (*myFunc)(int);
+</pre>
+<p>User defined types may be used at any place where the built-in types may be used.</p>
+
+<hr>
+<h2><a name="union"><u>union</u></a></h2>
+<p><b>Groups variables which share the same storage space.</b></p>
+
+<p>A union is similar to a <a href="#struct">struct</a>, except it allows you to define variables
+that share storage space. The syntax for defining unions is:</p>
+<pre>union [<i>union-type-name</i>]
+  {
+    <i>type</i> <i>variable-names</i>;
+    ...
+  } [<i>union-variables</i>] ;
+</pre>
+<p>For example,</p>
+<pre>union short_or_long
+  {
+    short i;
+    long l;
+  } a_number;
+</pre>
+<p>The compiler will allocate enough storage in a number to accommodate the
+largest element in the union.
+Elements of a union are accessed in the same manner as a struct.
+<br><br>
+Unlike a struct, the variables <code>'a_number.i'</code> and <code>'a_number.l'</code> occupy the same
+location in memory. Thus, writing into one will overwrite the other.</p>
+
+<hr>
+<h2><a name="void"><u>void</u></a></h2>
+<p><b>Empty data type.</b></p>
+
+<p>When used as a function return type, void means that the function does not
+return a value. For example,</p>
+<pre>void hello (char *name)
+{
+  printf("Hello, %s.", name);
+}
+</pre>
+<p>When found in a function heading, void means the function does not take any
+parameters. For example,</p>
+<pre>int init (void)
+{
+  return 1;
+}
+</pre>
+<p>This is not the same as defining</p>
+<pre>int init ()
+{
+  return 1;
+}
+</pre>
+<p>because in the second case the compiler will not check whether the function is really called
+with no arguments at all; instead, a function call with arbitrary number of arguments
+will be accepted without any warnings (this is implemented only for the compatibility
+with the old-style function definition syntax).
+<br><br>
+Pointers can also be declared as void. They can't be dereferenced without explicit casting.
+This is because the compiler can't determine the size of the object the pointer
+points to. For example,</p>
+<pre>int x;
+float f;
+void *p = &amp;x;    // <i>p points to x</i>
+*(int*)p = 2;
+p = &amp;r;          // <i>p points to r</i>
+*(float*)p = 1.1;
+</pre>
+
+<hr>
+<h2><a name="volatile"><u>volatile</u></a></h2>
+<p><b>Indicates that a variable can be changed by a background routine.</b></p>
+
+<p>Keyword <code>volatile</code> is an extreme opposite of <code>const</code>. It
+indicates that a variable may be changed in a way which is absolutely unpredictable by
+analysing the normal program flow (for example, a variable which may be changed by
+an interrupt handler). This keyword uses the following syntax:</p>
+<pre>volatile <i>data-definition</i>;
+</pre>
+<p>Every reference to the variable will reload the contents from memory rather
+than take advantage of situations where a copy can be in a register.</p>
+
+<hr>
+<h2><a name="while"><u>while</u></a></h2>
+<p><b>Repeats execution while the condition is true.</b></p>
+
+<p>Keyword <code>while</code> is the most general loop statemens. It uses the following syntax:</p>
+<pre>while (<i>expression</i>) <i>statement</i>
+</pre>
+<p><i>statement</i> is executed repeatedly as long as the value of <i>expression</i>
+remains nonzero. The test takes place before each execution of the
+<i>statement</i>. For example,</p>
+<pre>while (*p == ' ') p++;
+</pre>
+<p>Of course, <i>statement</i> may be a compound statement as well.</p>
+
+<hr>
+<h3><a href="http://tigcc.ticalc.org/doc/index.html">Return to the main index</a></h3>
+
+
+</body></html>

@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>Cracking/keygenning chainiev1 crackme</TITLE>
+<META NAME="BoR0 kiyo" CONTENT="Boro kiyo">
+</HEAD>
+<BODY BGCOLOR="#000000" ALIGN="CENTER" TEXT="#FFFFFF" LINK="#FFFFFF" VLINK="#800000" ALINK="#FFFFFF">
+<script language="javascript"><!--
+Mu="u3229.98.spylog.com";Md=document;Mnv=navigator;Mp=1;
+Mn=(Mnv.appName.substring(0,2)=="Mi")?0:1;Mrn=Math.random();
+Mt=(new Date()).getTimezoneOffset();
+Mz="p="+Mp+"&rn="+Mrn+"&tl=0&ls=0&ln=0&t="+Mt;
+My="";
+My+="<img src='http://"+Mu+"/cnt?cid=322998&"+Mz+"&r1="+escape(Md.referrer)+"&r="+escape(parent.document.referrer)+"&pg="+escape(window.location.href)+"' border=0  width=1 height=1  alt='Mytrix'>";
+Md.write(My);//--></script><noscript>
+<img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1" alt='Mytrix' border='0'  width=1 height=1 >
+</noscript>
+<TABLE BGCOLOR=#425964 ALIGN="CENTER" WIDTH=95% BORDER=1 BORDERCOLOR="#FFFFFF" cellspacing=0 cellpadding=0 >
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT COLOR="#FF8000" SIZE="4"><B>
+		Cracking/keygenning chainie v1 crackme
+		</B></FONT>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+		TARGET     = <A HREF="http://biw.rult.at/crackmes/chainiev1.rar">Chainiev1 crackme</A><BR>
+		DIFF       = 3/10       <BR>
+		TOOLS USED = OllyDbg, W32Dasm, HackersVIEW<BR>
+
+        </TD>
+</TR>
+
+<TR BGCOLOR=#17748e>
+        <TD>
+		<FONT SIZE="3"><B>
+		   Greetings!
+                </B></FONT>
+        </TD>
+</TR><tr><td><pre>
+                          Cracking/keygenning chainiev1's crackme
+                                                by BoR0 and kiyo
+
+
+hello all, this time we will crack chainiev1's delphi crackme
+what we will do is fish soome serial then write a keygen for it
+its so easy so we will be done in like 5mins
+
+our MAIN target is to make a key generator, but first we should fish
+a serial, right? lets go for it then ;)
+<TR BGCOLOR=#17748e>
+        <TD>
+		<FONT SIZE="2"><B>
+		   Proceeding... (fishing our serial)
+                </B></FONT>
+        </TD>
+</TR><tr><td><pre>
+ok, lets get going. launch chainie.exe
+name and serial edit boxes appears
+
+enter name "BoR0" and enter serial "123456789"
+press check.
+
+ahh, it says our name is too short, it supports >=6 characters for username.
+
+lets fix that then :P
+launch W32dasm and dissasemble the file chainie.exe
+buh what was the message ? it was "Your name is too short"
+lets search for it. Menu Search->Find Text
+
+--snipp--
+* Possible StringData Ref from Code Obj ->"Your name is too short"
+                                  |
+:00450236 68D0024500              push 004502D0
+:0045023B A1D43B4500              mov eax, dword ptr [00453BD4]
+:00450240 E8EF58FEFF              call 00435B34
+:00450245 50                      push eax
+--snipp--
+
+here we are, hmm, lets see where does it come from? scroll up a few
+lines and you see:
+
+--snipp--
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:0045017C(C)
+|
+:0045022F 6A10                    push 00000010
+
+* Possible StringData Ref from Code Obj ->"Oops.."
+                                  |
+:00450231 68C8024500              push 004502C8
+--snipp--
+
+aha 0045017C(C) is a conditional jump, so it went us here if the name
+is too short ;-P
+
+fire up HIEW.EXE on chainie.exe press F4 and goto Assembly.
+press F5 to goto address and type .0045017C
+okE, we see
+
+.0045017C: 0F8EAD000000                 jle        .00045022F  -----v (1)
+
+lets just change bytes :P press F3 highlight 8E and change it to 84.
+launch chainie.exe and type some name less than 6 chars.
+
+wrong serial! yes, thats what we wanted :-P lets real work now
+
+ok lets enter "BoR0" as name and serial "123456789".
+
+good message, says Incorrect serial, but its still no-good message ;)
+
+ok, lets dissasemble the file, wait a couple of seconds,..
+click on the menu Search and click on Find Text.
+
+hey, what we supposed to search? the message on the messagebox.
+but I dont remember it. (well next time do)
+ok it was "Incorrect Serial try again...." so we search for that
+
+hmm, we landed here:
+
+--snipp--
+* Possible StringData Ref from Code Obj ->"Incorrect Serial try again...."
+                                  |
+:00450218 68A8024500              push 004502A8
+:0045021D A1D43B4500              mov eax, dword ptr [00453BD4]
+:00450222 E80D59FEFF              call 00435B34
+:00450227 50                      push eax
+
+* Reference To: user32.MessageBoxA, Ord:0000h
+                                  |
+:00450228 E87362FBFF              Call 004064A0
+:0045022D EB1C                    jmp 0045024B
+
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:0045017C(C)
+|
+:0045022F 6A10                    push 00000010
+--snipp--
+
+oh yea, thats a start :-P, we see that it uses MessageBoxA API function so 
+we will add breakpoint on MessageBoxA.
+
+oKE, you may close W32dasm now.
+now open the file chainie.exe and wait few secs.
+
+press Alt+E to show which dlls the file you debug is using.
+
+highlight USER32 and press Ctrl+N so it will show the api functions USER32 contains.
+now lets look for MessageBoxA..
+
+aha! there we go, highlight it and press F2 to activate breakpoint.
+
+oKE, you may close those windows with DLLs now.
+
+lets get going. click Debug and click on Run to run teh executable.
+
+oh yeah. now enter name "BoR0" and enter serial "123456789"
+press Check. oh yeah olly breaked on our execution. this is almost start :-P
+
+ok, we are here:
+
+--snipp--
+77E38CAE > 55               PUSH EBP
+77E38CAF   8BEC             MOV EBP,ESP
+77E38CB1   51               PUSH ECX
+77E38CB2   833D 9894E677 00 CMP DWORD PTR DS:[77E69498],0
+77E38CB9   0F85 C4050100    JNZ user32.77E49283
+77E38CBF   6A 00            PUSH 0
+77E38CC1   FF75 14          PUSH DWORD PTR SS:[EBP+14]
+77E38CC4   FF75 10          PUSH DWORD PTR SS:[EBP+10]
+77E38CC7   FF75 0C          PUSH DWORD PTR SS:[EBP+C]
+77E38CCA   FF75 08          PUSH DWORD PTR SS:[EBP+8]
+77E38CCD   E8 04000000      CALL user32.MessageBoxExA
+--snipp--
+
+oops, this is gonna be very easy :-P
+
+in our data code window we see:
+
+--snipp--
+0012F578  |0045022D  RETURN to heh.0045022D from <JMP.&user32.MessageBoxA>
+0012F57C  |000A0132
+0012F580  |004502A8  ASCII "Incorrect Serial try again...."
+0012F584  |0045029C  ASCII "WRONG!!!"
+0012F588  |00000010
+0012F58C  |0012F8EC  Pointer to next SEH record
+0012F590  |0045026E  SE handler
+0012F594  |0012F5BC
+0012F598  |0012F738
+0012F59C  |00428FD0  heh.00428FD0
+0012F5A0  |00CC3670
+0012F5A4  |00CC249C  ASCII "2869882"
+0012F5A8  |00CC24C4  ASCII "123456789"
+0012F5AC  |00CC24B0  ASCII "BoR0"
+0012F5B0  |00CC2488  ASCII "BoR0"
+0012F5B4  |00CC2474  ASCII "BoR0"
+--snipp--
+
+hey 2869882 might be a serial? lets try. close ollydbg.
+
+run chainie.exe and enter "BoR0" as name and "2869882" as serial.
+
+MessageBox say "Good job you did it!!!"
+
+so we fished a serial, now lets do some keygenning stuff
+<TR BGCOLOR=#17748e>
+        <TD>
+		<FONT SIZE="2"><B>
+		   Proceeding... (writing a key generator)
+                </B></FONT>
+        </TD>
+</TR><tr><td><pre>
+bpx hmemcpy -> backtrace with F12 'til you get to 450171 then trace a little bit
+with F10 and you'll soon see:
+
+:00450174 E8573FFBFF              call 004040D0 ;get the length of the entered name
+:00450179 83F805                  cmp eax, 00000005 ;compare it with five
+:0045017C 0F8EAD000000            jle 0045022F ;jump if <= 5
+:00450182 8D55F4                  lea edx, dword ptr [ebp-0C]
+:00450185 8B8708030000            mov eax, dword ptr [edi+00000308]
+:0045018B E8C8F1FDFF              call 0042F358
+
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:00450121(C)
+|
+:00450190 8B45F4                  mov eax, dword ptr [ebp-0C]
+:00450193 E8383FFBFF              call 004040D0 ;get the length of the entered name again
+:00450198 8BF0                    mov esi, eax ;move the result in esi
+:0045019A 85F6                    test esi, esi ; those 2 lines check
+:0045019C 7E2E                    jle 004501CC  ; if esi is null
+:0045019E C745FC01000000          mov [ebp-04], 00000001
+
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:004501CA(C)
+|
+:004501A5 8D55F0                  lea edx, dword ptr [ebp-10]
+:004501A8 8B8708030000            mov eax, dword ptr [edi+00000308]
+:004501AE E8A5F1FDFF              call 0042F358
+:004501B3 8B45F0                  mov eax, dword ptr [ebp-10]      ; eax = name
+:004501B6 8B55FC                  mov edx, dword ptr [ebp-04]      ; edx = i (count variable, at first i=1)
+:004501B9 0FB64410FF              movzx eax, byte ptr [eax+edx-01] ; eax = ascii value of Ith letter of the name
+:004501BE 03D8                    add ebx, eax                     ; add that value to ebx (ebx = 0008C1DB)
+:004501C0 81C3DBC10800            add ebx, 0008C1DB                ; add 0008C1DB to ebx
+:004501C6 FF45FC                  inc [ebp-04]                     ; increase our count variable i
+:004501C9 4E                      dec esi                          ; decrease esi which contained the name's length
+:004501CA 75D9                    jne 004501A5                     ; jump when esi is different from 0
+
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:0045019C(C)
+|
+:004501CC 8D55EC                  lea edx, dword ptr [ebp-14]
+:004501CF 8B8710030000            mov eax, dword ptr [edi+00000310]
+:004501D5 E87EF1FDFF              call 0042F358
+:004501DA 8B45EC                  mov eax, dword ptr [ebp-14]
+:004501DD 50                      push eax
+:004501DE 8D55E8                  lea edx, dword ptr [ebp-18]
+:004501E1 8BC3                    mov eax, ebx
+:004501E3 E86879FBFF              call 00407B50
+:004501E8 8B55E8                  mov edx, dword ptr [ebp-18] ; edx = good serial
+:004501EB 58                      pop eax                     ; eax = entered serial
+:004501EC E82B40FBFF              call 0040421C               ; that call checks if the two serial are equals
+:004501F1 751E                    jne 00450211                ; if not jumps to "incorrect serial"
+:004501F3 6A30                    push 00000030               ; otherwise continue to "good serial"
+
+So I guess you all understood the simple algorithm that was used here, if first it makes ebx
+equals to 8c1dbh, then it creates a variable (ebp-4) that will be incremented at every new
+round of the loop. It uses this variable as an index to get the ascii value of the
+corresponding letter in our name. Then it adds this value to ebx, increase ebp-4 as we saw
+sooner and it also decrease esi which contained the number of letter in our name, and while
+esi isn't null, it performs another round. So here's a keygen in C:
+
+szName is an unsigned buffer that contains our name,szSerial is the output buffer that will
+contain the valid serial, i and k are two "unsigned integers":
+
+k=0x8c1db;
+for (i=0;i&lt;lstrlen(szName);i++) k+=0x8c1db+szName[i];
+wsprintf(szSerial,"%d",k);
+<TR BGCOLOR=#17748e>
+        <TD>
+		<FONT SIZE="2"><B>
+		   Over 'n out!
+                </B></FONT>
+        </TD>
+</TR><tr><td><pre>
+Thanks to all crackers for pointing me into _the things_
+
+kiyo(kuiss for coorporation), chainie, X-Lock, fuss, Zephyrous(you!), 
+Jibz, Detten, icekiller, newt..
+</PRE>
+</tr></td>
+
+</TABLE>
+<DIV ALIGN="CENTER">
+<A HREF="http://biw-reversing.cjb.net"><B>biw-reversing.cjb.net</B></A><BR>
+<script language="javascript"><!--
+Mrn=Math.random();Mz="";
+My="<a href='http://u3229.98.spylog.com/cnt?cid=322998&f=3&rn="+Mrn+"' target='_blank'><img src='http://u3229.98.spylog.com/cnt?cid=322998&";
+My+="p=1&f=4&rn="+Mrn+Mz+"' border=0  width=88 height=31   alt='Mytrix'></a>";Md.write(My);
+//--></script>
+        <noscript> <a href="http://u3229.98.spylog.com/cnt?cid=322998&f=3&p=1" target="_blank">
+        <img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1&f=4" alt='Mytrix' border='0'  width=88 height=31 ></a>
+        </noscript>
+</DIV>
+</BODY>
+</HTML>

@@ -1,0 +1,38 @@
+a = &a[0]
+a+i = &a[i]
+
+*a = a[0]
+*(a+i) = a[i]
+
+typedef int Length;
+makes the name Length a synonym for int. The type Length can be used in declarations,
+casts, etc., in exactly the same ways that the int type can be:
+Length len, maxlen;
+Length *lengths[];
+Similarly, the declaration
+typedef char *String;
+makes String a synonym for char * or character pointer, which may then be used in
+declarations and casts:
+String p, lineptr[MAXLINES], alloc(int);
+int strcmp(String, String);
+p = (String) malloc(100);
+
+typedef struct tnode *Treeptr;
+typedef struct tnode { /* the tree node: */
+char *word; /* points to the text */
+int count; /* number of occurrences */
+struct tnode *left; /* left child */
+struct tnode *right; /* right child */
+} Treenode;typedef struct tnode *Treeptr;
+typedef struct tnode { /* the tree node: */
+char *word; /* points to the text */
+int count; /* number of occurrences */
+struct tnode *left; /* left child */
+struct tnode *right; /* right child */
+} Treenode;
+
+typedef int (*PFI)(char *, char *);
+creates the type PFI, for ``pointer to function (of two char * arguments) returning int,''
+which can be used in contexts like
+PFI strcmp, numcmp;
+int (*ajump[10])(int a, int b);

@@ -1,0 +1,135 @@
+TARGET: Bruteforcing Ancient One crackme by Zephyrous
+
+Well, I have to send some credits to bluffer for trying to solve this bruteforcer
+and giving me some help actually, hello there bud ;)
+
+Zephy: For giving me an idea of how to bruteforce another (faster) way, thank you ;)
+
+Detten: Hello! :-)
+
+
+Ok, lets debug the application and quickly set a breakpoint on GetWindowText()
+type some serial (e.g. "BoR0")
+
+Ollydbg breaks on our first letter.
+
+---snippet---
+0040112E  |. 83F8 08        CMP EAX,8
+00401131  |. 75 3D          JNZ SHORT ch01.00401170
+00401133  |. E8 58FFFFFF    CALL ch01.00401090
+00401138  |. 85C0           TEST EAX,EAX
+0040113A  |. 0F84 08010000  JE ch01.00401248
+00401140  |. E8 7BFFFFFF    CALL ch01.004010C0
+---snippet---
+
+compare length of chars with 8
+if not equal, jump to 00401170 which is NOT where we need to be at.
+
+Ok, let's enter some serial that contains 8 chars (e.g. "BoR0BoR0")
+
+Jump is not taken, COOL! :p
+
+I didn't see anything interesting in the call that is on address 00401133,
+so lets see whats in the call that is on address 00401140.
+
+---snippet---
+004010C0  /$ 68 90124000    PUSH ch01.00401290      ; /Arg1 = 00401290 ASCII "BOR0BOR0"
+004010C5  |. E8 66FFFFFF    CALL ch01.00401030      ; \ch01.00401030
+004010CA  |. 35 5587BAA7    XOR EAX,A7BA8755
+004010CF  |. F7D8           NEG EAX
+004010D1  |. 1BC0           SBB EAX,EAX
+004010D3  |. 40             INC EAX
+004010D4  \. C3             RETN
+---snippet---
+
+Mmm, looks like this is what we needed. Enter this call for more information :-)
+
+---snippet---
+00401030  /$ 55             PUSH EBP
+00401031  |. 8BEC           MOV EBP,ESP
+00401033  |. 56             PUSH ESI
+00401034  |. 8B75 08        MOV ESI,DWORD PTR SS:[EBP+8]
+00401037  |. B8 C59D1C81    MOV EAX,811C9DC5
+0040103C  |. 33C9           XOR ECX,ECX
+0040103E  |> 33D2           /XOR EDX,EDX
+00401040  |. 8A1431         |MOV DL,BYTE PTR DS:[ECX+ESI]
+00401043  |. 33C2           |XOR EAX,EDX
+00401045  |. 41             |INC ECX
+00401046  |. 69C0 93010001  |IMUL EAX,EAX,1000193
+0040104C  |. 83F9 08        |CMP ECX,8
+0040104F  |.^72 ED          \JB SHORT ch01.0040103E
+00401051  |. 5E             POP ESI
+00401052  |. 5D             POP EBP
+00401053  \. C2 0400        RETN 4
+---snippet---
+
+As you can see by the algo, it xors every char into eax and multiplies the same with 0x1000193.
+Don't forget that EAX is initialized as 0x811C9DC5.
+
+We're back to 004010CA. Xors final eax with 0xA7BA8755, NEGs it, substract with borrow
+and then increases eax. Looks pretty tough to be solved by pen & paper huh? ;)
+
+Here's our solution:
+
+---snippet---
+.386
+.model flat, stdcall
+option casemap :none
+
+include masm32/include/windows.inc
+include masm32/include/user32.inc
+include masm32/include/kernel32.inc
+
+includelib masm32/lib/user32.lib
+includelib masm32/lib/kernel32.lib
+
+.DATA
+MYLOOP dd 0 ;you maybe ask why a variable? our registers are not safe :(
+PREFIX db "%8X", 0
+BUFFER db 9 dup(0) ;buffer contained of 8 chars and one terminator
+
+.CODE
+START:
+MOV EAX, 811C9DC5h ;starting code of zephy's algo
+XOR ECX, ECX       ;...
+
+PUSHAD ;save all registers
+INC MYLOOP ;increase loop
+
+;convert our serial into a string
+INVOKE wsprintf, ADDR BUFFER, ADDR PREFIX, MYLOOP
+
+POPAD ;bum!
+
+;Main loop that xors our chars with eax and then multiplies the same
+LOOPHERE:
+XOR EDX, EDX
+MOV DL, BYTE PTR [BUFFER+ECX]
+XOR EAX, EDX
+INC ECX
+IMUL EAX, EAX, 1000193h
+CMP ECX, 8
+JB LOOPHERE
+
+;The final eax modifying
+XOR EAX, 0A7BA8755h
+NEG EAX
+SBB EAX, EAX
+INC EAX
+
+TEST EAX, EAX ; if eax == 0
+JZ START      ; back to start
+
+;if eax != 0, a valid serial has been found
+
+invoke MessageBox, 0, 0, ADDR BUFFER, 0 ;notify the user
+invoke ExitProcess, 0 ;thanks ;-)
+end START
+---snippet---
+
+
+Should take around 20 mins or so (1.6GHz). That'd be all for now. :)
+
+
+(no) copyright (c) BoR0
+April, 2005

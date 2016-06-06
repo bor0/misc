@@ -1,0 +1,164 @@
+This tutorial contains the following conversions:
+DECIMAL  BINARY  HEX
+
+I separate it in 6 parts:
+
+1. DECIMAL ->  BINARY
+2. DECIMAL ->  HEX
+3. HEX     ->  BINARY
+4. BINARY  ->  HEX
+5. BINARY  ->  DECIMAL
+6. HEX     ->  DECIMAL
+
+Doing them by paper, ofcourse.
+
+First you got to learn this table by heart:
+
+0000 | 0 | 0
+0001 | 1 | 1
+0010 | 2 | 2
+0011 | 3 | 3
+0100 | 4 | 4
+0101 | 5 | 5
+0110 | 6 | 6
+0111 | 7 | 7
+1000 | 8 | 8
+1001 | 9 | 9
+1010 | A | 10
+1011 | B | 11
+1100 | C | 12
+1101 | D | 13
+1110 | E | 14
+1111 | F | 15
+
+Now. Let's get started!
+
+1. ***** DECIMAL -> BINARY *****
+Take number 3295 as an example.
+
+3295 | 2 = 1647.5 = remainder 1
+1647 | 2 = 823.5  = remainder 1
+823  | 2 = 411.5  = remainder 1
+411  | 2 = 205.5  = remainder 1
+205  | 2 = 102.5  = remainder 1
+102  | 2 = 51     = remainder 0
+51   | 2 = 25.5   = remainder 1
+25   | 2 = 12.5   = remainder 1
+12   | 2 = 6      = remainder 0
+6    | 2 = 3      = remainder 0
+3    | 2 = 1.5    = remainder 1
+1    | 2 = 0.5    = remainder 1
+
+Listing the remainders DOWN to UP:
+
+3295d == 110011011111b
+
+I first divide the number by 2 and check for remainder, then divide the results
+(without remainder) by 2 again until you reach zero.. and so on.
+
+
+2. ***** DECIMAL -> HEX *****
+Now converting the decimal 3295 to HEX. As we already found it's binary it is easy
+to convert to hex if we know the upper table by heart. Here we go!
+
+110011011111b -> 1100 1101 1111 -> C D F
+
+From here we have:
+
+3295d == 110011011111b == 0CDFh
+
+
+3. ***** HEX -> BINARY *****
+Take number DEAD as an example
+D = 1101
+E = 1110
+A = 1010
+D = 1101
+
+DEADh = 1101 1110 1010 1101b
+
+Using the upper table we simply convert them.
+
+
+4. ***** BINARY -> HEX *****
+Take number 1010 1101 1110 1111b as an example
+
+From the upper table:
+0ADEFh
+
+
+5. ***** BINARY -> DECIMAL *****
+Take number 1101b as an example
+
+1*(2^3) + 1*(2^2) + 0*(2^1) + 1*(2^0) == 13
+
+First number 1
+
+1 * (2^3)
+
+Second number 1
+
+1 * (2^2)
+
+Third number 0
+
+0 * (2^1)
+
+Fourth number 1
+
+1*(2^0)
+
+Equals to 13.
+
+6. ***** HEX -> DECIMAL *****
+To convert hex to decimal, we first need to convert hex to binary and then
+use the binary to decimal technique. Pretty easy huh :) Let's get going
+
+Take number FEEDh as an example. This number converted to binary
+
+1111 1110 1110 1101b
+
+We will use the previous technique to convert binary to decimal.
+
+This is a bigger number so WATCH what you're doing
+
+1*(2^0)
+0*(2^1)
+1*(2^2)
+1*(2^3)
+0*(2^4)
+1*(2^5)
+1*(2^6)
+1*(2^7)
+0*(2^8)
+1*(2^9)
+1*(2^10)
+1*(2^11)
+1*(2^12)
+1*(2^13)
+1*(2^14)
+1*(2^15)
+
+==
+
+1*(2^0)+0*(2^1)+1*(2^2)+1*(2^3)+0*(2^4)+1*(2^5)+1*(2^6)+1*(2^7)+
++0*(2^8)+1*(2^9)+1*(2^10)+1*(2^11)+1*(2^12)+1*(2^13)+1*(2^14)+1*(2^15)=
+= 65261d //
+
+FEEDh = 1111111011101101b = 65261d
+
+
+
+That's all for now. I feel I should credit kw some, he taught me some parts
+of these techniques.
+
+All other thanks goes to:
+
+Detten, Dawai, Tanatos, cektop, bluffer, guyonasm.
+
+I also thank binaryHex for he gave me an inspiration to write this tutorial :-)
+
+The BiW Community at <a href="http://www.reversing.be">http://www.reversing.be</a>
+and the old page at <a href="http://biw.rult.at/">http://biw.rult.at/</a>
+
+(no) copyright (c) July 12th, 2005

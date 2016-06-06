@@ -1,0 +1,5 @@
+Distributivity: x(y+z) = xy + xz
+
+Commutativity: y+z = z+y
+
+Associativity: (5+2)+1 = 5+(2+1); (x*y)*z = x*(y*z)

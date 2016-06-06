@@ -1,0 +1,49 @@
+1/(x+1) < ln((x+1)/x) < 1/x (Multiply by (x+1)x > 0)
+
+x < (x+1)x ln((x+1)/x) < x+1 (Minus x from all sides)
+
+0 < (x+1)x ln((x+1)/x) - x < 1 (Divide by x > 0)
+
+(x+1) ln((x+1)/x) - 1 < 1/x
+
+(x+1) ln((x+1)/x) < (1/x + 1 = (x+1)/x) (Divide by (x+1) > 0)
+
+ln((x+1)/x) < 1/x
+
+ln(1/x + 1) < 1/x
+
+1/x + 1 < e^(1/x) (x > 0 Follows that the reciprocal 1/x > 0. Let t = 1/x.)
+
+We need to prove:
+t + 1 < e^t
+
+
+----------------------------------------------------
+
+By Taylor Series it follows that:
+
+e^t = 1 + t + t^2/2! + t^3/3! + ... for every t
+
+t + 1 < e^t = 1 + t + t^2/2! + ...
+
+Sum(n=2, inf) t^n/n! > 0, for every t
+
+Identity proven.
+
+----------------------------------------------------
+
+f(x) is stricly increasing if for every x it holds f(x+1) > f(x). We only care about x>0
+
+e^x * e - x - 2 > e^x - x - 1
+
+e^x * e - e^x > 1
+
+e^x(e - 1) > 1
+
+e^x > 1/(e - 1) = 0,58196...
+
+It is true for all x>0
+
+Identity proven.
+
+----------------------------------------------------

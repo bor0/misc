@@ -1,0 +1,40 @@
+The point is to isolate x
+
+
+ax^2 + bx + c = 0 divide by a
+
+x^2 + (bx)/a + c/a = 0
+
+x^2 + (bx)/a = -c/a
+
+------------------------------
+Completing the square:
+
+b/a = y
+
+x^2 + yx + C^2 = (x+C)^2
+
+x^2 + yx + C^2 = x^2 + 2xC + C^2
+
+C = y/2
+
+so we have C^2 = y^2/4
+
+C = b/2a
+------------------------------
+
+add C^2 to both sides
+
+x^2 + (bx)/a + C^2 = -c/a + C^2
+
+so we get
+
+ (x+(b/2a))^2 = -c/a + (b/2a)^2
+
+ (x+(b/2a))^2 = (b^2 - 4ac)/4a^2
+
+ x+(b/2a) = +-sqrt((b^2 - 4ac))/2a
+
+ x = - (b/2a) +- sqrt((b^2 - 4ac))/2a
+
+ x = (-b +- sqrt(b^2 - 4ac))/2a

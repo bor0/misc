@@ -1,0 +1,192 @@
+Here's a tutorial dedicated to gamers :)
+
+We will write a trainer for this tiny little game called Soukoban.
+
+Let's get going. Launch ollydbg.exe and open soukoban.exe.
+
+Press F9 to run. The game now runs.
+First, we need to find the main procedure where the program loops.
+
+To do so, we set a breakpoint on USER32.RegisterClassExA.
+
+Why RegisterClassExA? By now you should already know that whenever we
+want to create a window using the CreateWindowA function, we must call
+RegisterClassExA with a pointer to the WNDCLASSEX structure.
+
+The WNDCLASSEX structure looks like this:
+
+typedef struct {
+    UINT cbSize;
+    UINT style;
+    WNDPROC lpfnWndProc;
+    int cbClsExtra;
+    int cbWndExtra;
+    HINSTANCE hInstance;
+    HICON hIcon;
+    HCURSOR hCursor;
+    HBRUSH hbrBackground;
+    LPCTSTR lpszMenuName;
+    LPCTSTR lpszClassName;
+    HICON hIconSm;
+} WNDCLASSEX, *PWNDCLASSEX;
+
+So we see that the third value (or struct+8) is a pointer to WndProc where the
+main loops of the program are.
+
+After we have the breakpoint set, Ollydbg breaks and we see this:
+
+0012FE34   00405B67  /CALL to RegisterClassExA from Soukoban.00405B61
+0012FE38   0012FE6C  \pWndClassEx = 0012FE6C
+
+Now in the data window, press Ctrl+G and type in 0012FE6C (remember it's a structure!).
+
+Aha, something interesting at 0012FE6C + 8. We can see the address of our main program loop.
+
+You should see something like this if you did everything correctly:
+
+0012FE74  70 51 40 00
+
+Now in the code window, press Ctrl+G and type our address 0405170.
+
+Good, we see
+00405170   6A FF            PUSH -1
+which is the start of WndProc.
+
+Note that, whenever we press a key in the game a WM_KEYDOWN is processed.
+WM_KEYDOWN has a value of 0x100. So scroll down few lines and you will see:
+
+004051A6   3D 00010000      CMP EAX,100
+004051AB   57               PUSH EDI
+004051AC   0F87 A6030000    JA Soukoban.00405558 ;If it's not WM_KEYDOWN goto 00405558
+004051B2   0F84 1B030000    JE Soukoban.004054D3 ;If it's a keydown, goto 004054D3
+
+Good, by the code we can see that whenever we press a key a jump to 004054D3 is made.
+
+So press Ctrl+G, type in 004054D3 and press F2 to set a breakpoint.
+
+Now if we press a key in the game Olly breaks for us. That is great!
+
+We now are at:
+
+004054D3   0FBE8424 C401000>MOVSX EAX,BYTE PTR SS:[ESP+1C4]
+004054DB   83C0 DB          ADD EAX,-25
+004054DE   83F8 4B          CMP EAX,4B
+004054E1   77 5D            JA SHORT Soukoban.00405540
+004054E3   0FB688 08594000  MOVZX ECX,BYTE PTR DS:[EAX+405908]
+004054EA   FF248D F0584000  JMP DWORD PTR DS:[ECX*4+4058F0]
+004054F1   6A 00            PUSH 0
+004054F3   E8 88D3FFFF      CALL Soukoban.00402880
+004054F8   83C4 04          ADD ESP,4
+004054FB   EB 43            JMP SHORT Soukoban.00405540
+004054FD   6A 01            PUSH 1
+004054FF   E8 7CD3FFFF      CALL Soukoban.00402880
+00405504   83C4 04          ADD ESP,4
+00405507   EB 37            JMP SHORT Soukoban.00405540
+00405509   6A 02            PUSH 2
+0040550B   E8 70D3FFFF      CALL Soukoban.00402880
+00405510   83C4 04          ADD ESP,4
+00405513   EB 2B            JMP SHORT Soukoban.00405540
+00405515   6A 03            PUSH 3
+00405517   E8 64D3FFFF      CALL Soukoban.00402880
+0040551C   83C4 04          ADD ESP,4
+0040551F   EB 1F            JMP SHORT Soukoban.00405540
+
+Hmm, these pushes are quite fishy. Remove the old breakpoint at 004054D3
+and set a new breakpoint on each push 004054F1, 004054FD, 00405509, and 00405515.
+
+We notice that whenever we press a key, different push is made.
+
+So we have:
+Up Key    = 004054F1 0
+Down Key  = 004054FD 1
+Left Key  = 00405509 2
+Right Key = 00405515 3
+
+This is great information to us. Now we see that with each push the same call to the same
+address is made. We will enter that address now. Set a breakpoint on 00402880.
+
+We see a lot of code but don't worry as it is quite simple.
+
+First we see:
+
+00402880   A0 5EB04200      MOV AL,BYTE PTR DS:[42B05E]
+00402885   84C0             TEST AL,AL
+00402887   0F84 0B050000    JE Soukoban.00402D98
+0040288D   8B4424 04        MOV EAX,DWORD PTR SS:[ESP+4] ;EAX now contains the
+00402891   85C0             TEST EAX,EAX                 ;value we pushed on the stack.
+00402893   53               PUSH EBX
+00402894   56               PUSH ESI
+00402895   57               PUSH EDI
+00402896   8B3D 44504300    MOV EDI,DWORD PTR DS:[435044]
+0040289C   C605 61514300 00 MOV BYTE PTR DS:[435161],0
+004028A3   0F85 37010000    JNZ Soukoban.004029E0        ;IF eax != 0 goto 004029E0
+
+If eax does not equal 0 (or does not equal the Up Key) then goto 004029E0.
+
+At this address 004029E0 we see:
+
+004029E0   83F8 01          CMP EAX,1 ;IF eax != 1
+004029E3   0F85 27010000    JNZ Soukoban.00402B10 ;goto 00402B10
+
+If eax does not equal 1 (or the Down Key) then goto 00402B10
+
+At this address we have:
+
+00402B10   83F8 02          CMP EAX,2 ;IF eax != 2
+00402B13   0F85 2E010000    JNZ Soukoban.00402C47 ;goto 00402C47
+
+If eax does not equal 2 (or the Left Key) then goto 00402C47.
+
+We can see that 00402C47 equals the right key.
+
+So we have:
+004028A3 == Up Key
+004029E3 == Down Key
+00402B13 == Left Key
+00402C47 == Right Key
+
+The code for each key pressed processes only if the jump is not made,
+so we want to step to the next instruction.
+
+004028A9   A1 48504300      MOV EAX,DWORD PTR DS:[435048] ; Up Key Code
+004029E9   A1 48504300      MOV EAX,DWORD PTR DS:[435048] ; Down Key Code
+00402B19   A1 48504300      MOV EAX,DWORD PTR DS:[435048] ; Left Key Code
+00402C50   A1 48504300      MOV EAX,DWORD PTR DS:[435048] ; Right Key Code
+
+On each of the key codes we can notice the same code routine, so we will work on
+the Up Key as an example.
+
+004028A9   A1 48504300      MOV EAX,DWORD PTR DS:[435048]
+004028AE   8B0D 4C504300    MOV ECX,DWORD PTR DS:[43504C]
+004028B4   8D1480           LEA EDX,DWORD PTR DS:[EAX+EAX*4]
+004028B7   8A9491 0C4C4300  MOV DL,BYTE PTR DS:[ECX+EDX*4+434C0C] ;This is the matrix of the map.
+004028BE   80FA 01          CMP DL,1
+004028C1   0F84 BA040000    JE Soukoban.00402D81                  ;If there is a wall (or any kind of block)
+004028C7   B3 04            MOV BL,4                              ;on the place where we want to go, jump to
+004028C9   3AD3             CMP DL,BL                             ;00402D81 (which will not move our soko at all).
+004028CB   75 6D            JNZ SHORT Soukoban.0040293A
+004028CD   8D5480 F6        LEA EDX,DWORD PTR DS:[EAX+EAX*4-A]
+004028D1   8A9491 204C4300  MOV DL,BYTE PTR DS:[ECX+EDX*4+434C20]
+004028D8   80FA 03          CMP DL,3
+004028DB   75 2C            JNZ SHORT Soukoban.00402909
+004028DD   E8 CEEAFFFF      CALL Soukoban.004013B0
+
+By the code we notice that whenever we go to a place where our Soko can not be (example move towards a wall)
+a jump to 00402D81 is made which will not process any modifications to the matrix.
+
+So we only care for the code on 004028C7. After few "Stepping Over"'s, we arrive to this instruction:
+
+004029D5   FF0D 48504300    DEC DWORD PTR DS:[435048]
+
+Which decreases the value for our soko (y-axis).
+
+We can see that the y-axis value is at 435048 (this is a constant address).
+And next to it you can instantly notice it's the x-value at 43504C (constant address).
+
+Now we have everything we need to know to write a trainer.
+
+The code is very simple so I decided not to comment it.
+
+That is all for now, I hope you had fun while reading this tutorial!
+
+Written on 29.05.2007 by BoR0

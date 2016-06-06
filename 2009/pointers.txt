@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+struct b {
+int d;
+};
+
+struct a {
+struct b *c;
+};
+
+int main() {
+
+struct b A1; struct a A2;
+
+A2.c = &A1;
+A1.d = 3;
+
+printf("%d\n", A1.d);
+
+printf("%d\n", A2.c->d); // OK!
+//printf("%d\n", A2.(*c).d); // why is this invalid?
+return 0;
+
+}
+
+[16:40:55] <Depressed> why is A2.(*c).d wrong?
+[16:41:03] <li_bai> if you are receiving a chunked encoded packet, how do you receive all of the packet without ever receiving 0 (making the server close the connection)
+[16:41:41] <Zhivago> depressed: The syntax is wrong.
+[16:42:01] <Depressed> is there a way to access the variable without using '->'
+[16:42:06] <tp76> Depressed: you want to refer to c first then dereference.
+[16:42:12] <Zao> li_bai: Last time I checked, C didn't have receiving functionality.
+[16:42:18] * Mehz (n=Mehz@cpe-24-58-159-223.twcny.res.rr.com) Quit ("Leaving")
+[16:42:22] <Zhivago> depressed: c is a label, A2.c is an object.
+[16:42:22] <tp76> As in (A2.c) and you fill in the rest.
+[16:42:48] <tp76> Anyway, why do you not want to use ->?
+[16:42:51] <Zhivago> depressed: What is the type of A2.c?
+[16:42:57] * rajbir (n=feynman@122.167.78.84) has joined ##c
+[16:43:00] <Depressed> a pointer to a struct
+[16:43:08] <li_bai> Zao: however you want to call recv()
+[16:43:13] <Zhivago> depressed: So, derereference A2.c
+[16:44:26] <Depressed> I see, thanks!  it isn't that I don't want to use ->, I just want to know its equivalent
+[16:44:35] <Zhivago> Good.
+[16:44:35] * skppo_ (i=uname@unaffiliated/skppo) Quit ("leaving")
+[16:46:39] <tp76> Depressed: the equivalent of s->m is (*s).m
+[16:46:50] * rafaelmartins (n=rafael@unaffiliated/rafaelmartins/x-162351) Quit (Read error: 110 (Connection timed out))
+[16:46:52] * coi (n=asd@rrcs-71-42-216-165.sw.biz.rr.com) Quit (Remote closed the connection)
+[16:47:15] * Manny_ (n=chris@p5496CAF8.dip.t-dialin.net) Quit (Read error: 110 (Connection timed out))
+[16:47:19] <Depressed> thanks again;)
+[16:47:52] <Depressed> (*A2.c).(*A1.d).b is also valid if I had a pointer to another struct in A1?
+[16:48:32] <Zhivago> depressed: No. (*A1.d) is not a member name.
+[16:48:33] * mathslinux (n=mathslin@110.84.24.230) Quit (Client Quit)
+[16:48:44] * NeoBrain (n=BigBrain@p57AFFC36.dip.t-dialin.net) has joined ##c
+[16:49:13] <Depressed> what would I have to do in this case?
+[16:49:38] <Zhivago> Depressed: Think about which object is the pointer that you want to dereference ...
+[16:50:03] <Depressed> d is a pointer
+[16:50:12] <Zhivago> No.
+[16:50:17] <Zhivago> d is a syntax error.
+[16:50:20] <Zhivago> Think harder.
+[16:50:33] <Zhivago> How do you get to the member named d?
+[16:50:45] * SlashLife_ (n=quassel@unaffiliated/slashlife) Quit (Read error: 110 (Connection timed out))
+[16:50:50] <Depressed> (*(*A2.c).d).b ?
+[16:51:01] <pozic> How do I print a wide string? I use wprintf(L"%s",something_of_type_wchar_t *), but it doesn't work.
+[16:51:17] <Zhivago> depressed: That looks more plausible.
+[16:51:23] <Depressed> great :)

@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>Cracking Application Mover</TITLE>
+<META NAME="BoR0" CONTENT="Boro">
+</HEAD>
+<BODY BGCOLOR="#000000" ALIGN="CENTER" TEXT="#FFFFFF" LINK="#FFFFFF" VLINK="#800000" ALINK="#FFFFFF">
+<script language="javascript">
+Mu="u3229.98.spylog.com";Md=document;Mnv=navigator;Mp=1;
+Mn=(Mnv.appName.substring(0,2)=="Mi")?0:1;Mrn=Math.random();
+Mt=(new Date()).getTimezoneOffset();
+Mz="p="+Mp+"&rn="+Mrn+"&tl=0&ls=0&ln=0&t="+Mt;
+My="";
+My+="<img src='http://"+Mu+"/cnt?cid=322998&"+Mz+"&r1="+escape(Md.referrer)+"&r="+escape(parent.document.referrer)+"&pg="+escape(window.location.href)+"' border=0  width=1 height=1  alt='Mytrix'>";
+Md.write(My);//--></script><noscript>
+<img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1" alt='Mytrix' border='0'  width=1 height=1 >
+</noscript>
+<TABLE BGCOLOR=#425964 ALIGN="CENTER" WIDTH=95% BORDER=1 BORDERCOLOR="#FFFFFF" cellspacing=0 cellpadding=0 >
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT COLOR="#FF8000" SIZE="4"><B>
+		Cracking Application Mover
+		</B></FONT>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+		TARGET     = http://www.funduc.com<BR>
+		DIFF       = 2/10       <BR>
+		TOOLS USED = Hiew, W32Dasm<BR>
+
+        </TD>
+</TR>
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT SIZE="3"><B>
+		   Greetings!
+		</B></FONT>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+<pre>
+                         Cracking App Mover by http://www.funduc.com
+
+greetz to you all out there ;)
+..lets get going!
+
+<TR BGCOLOR=#17748e>
+        <TD>
+                <FONT SIZE="2"><B>
+                   Proceeding... (removing Expiration)
+                </B></FONT>
+        </TD>
+</TR>
+<tr><td><pre>
+ok, lets disassemble the AppMove.exe,..
+you must know the message after 10 runs!
+lets search now for "Expired"
+
+ah.. it brought us on the right station.
+
+-- snipp here --
+* Possible Reference to String Resource ID=02504: "The evaluation period expired.
+Would you like to see Orderin"
+                                  |
+:004347EB 68C8090000              push 000009C8
+:004347F0 E87D5C0200              call 0045A472
+:004347F5 83F806                  cmp eax, 00000006
+:004347F8 7515                    jne 0043480F
+:004347FA 8B8E8C000000            mov ecx, dword ptr [esi+0000008C]
+:00434800 686A000200              push 0002006A
+:00434805 6A01                    push 00000001
+:00434807 51                      push ecx
+:00434808 53                      push ebx
+-- snipp here --
+
+something MUST let us down here. lets scroll up a bit up and we see
+
+-- snipp here --
+* Referenced by a (U)nconditional or (C)onditional Jump at Address:
+|:0043350E(C)
+|
+:004347E8 57                      push edi
+:004347E9 6A04                    push 00000004
+-- snipp here --
+
+aha!! that shitty 0043350E brought us down here!
+
+lets right click twice on it, so it will get us on that address
+
+-- snipp here --
+* Possible Reference to String Resource ID=02139: "Funduc Software Inc."
+                                  |
+:004334CD 685B080000              push 0000085B
+:004334D2 8BCE                    mov ecx, esi
+:004334D4 E8E8A70200              call 0045DCC1
+:004334D9 33DB                    xor ebx, ebx
+:004334DB 8D8C2460070000          lea ecx, dword ptr [esp+00000760]
+:004334E2 53                      push ebx
+:004334E3 E808DDFCFF              call 004011F0
+:004334E8 8D8C2460070000          lea ecx, dword ptr [esp+00000760]
+:004334EF 899C24DC080000          mov dword ptr [esp+000008DC], ebx
+:004334F6 E8E20F0200              call 004544DD
+:004334FB 83CFFF                  or edi, FFFFFFFF
+:004334FE 53                      push ebx
+:004334FF 8D4C2434                lea ecx, dword ptr [esp+34]
+:00433503 897C2434                mov dword ptr [esp+34], edi
+:00433507 E864160000              call 00434B70                 ; call RunCheck
+:0043350C 85C0                    test eax, eax                 ; test if 10 times runned
+:0043350E 0F85D4120000            jne 004347E8                  ; if yes go down there
+-- snipp here --
+
+ok open up hiew. press F4 and goto CODE.
+now press F5 to launch the "goto address" thingie ;)
+now type .0043350E so we go at that address.
+
+press F3 to change bytes.
+ok, we have 0F85D4120000 right.
+it has 6 bytes, (2 hexnumbers create 1 byte) so we add 90 also 6 bytes.
+type this 909090909090 to nop this jump, so it wont jump there anymore.
+
+<TR BGCOLOR=#17748e>
+        <TD>
+                <FONT SIZE="2"><B>
+                   Proceeding... (nag removal)
+                </B></FONT>
+        </TD>
+</TR><tr><td><pre>
+The time has come for that shitty nag..
+open up hiew press F4 go in HexMode and search for string (F7):
+
+A (00) b (00) o (00) u (00) t
+
+(we use 00 as hex instead of ordinary space, because the application's
+resource is unicode)
+
+** we search for About because the nag caption is "About Application Mover".
+
+.00499270:  C0 00 C8 80-00 00 00 00-0E 00 22 00-16 00 E5 00  A EÊ    . " . a
+.00499280:  9D 00 00 00-00 00 41 00-62 00 6F 00-75 00 74 00  ?     A b o u t
+
+hrm hrm, something is going down here..
+the nag is starting on 0E, so if we change it to 88 we will disable it.
+0E is push for the register that holds a pointer to the code segment
+
+(if you want to see all other registers/opcodes get <a
+href="http://alliance4.us/~myrce/opcodes.zip">opcodes.zip</a>.
+
+** 88 = mov (if we change to mov no more pointer in the memory of the res
+nag screen. thats why its skipped the nag screen procedure)
+
+lets go to 00499270 and highlight 0E so we ready to change it.
+press F3 to start changing
+and change the hex 0E to 88 ..
+
+lets run the application now ;-)
+
+
+hrmm,, no nag, no expire! COOL, what a great cracker you were. :)
+
+<TR BGCOLOR=#17748e>
+        <TD>
+                <FONT SIZE="2"><B>
+                   Over and out
+                </B></FONT>
+        </TD>
+</TR>
+<tr><td><pre>
+(from a friend)nopping is old skool already, but i was lazy to look over the calls,
+and there are lotsa ways to stop the nag/expiration. nop is one of them, but not
+everyone uses it today, so you take look at the code deeper and try to understand.
+
+-- copyright (c) BoR0 2003
+
+Thanks to: Detten (for showing my tuts up!), Jibz(very thanks),
+Zephyrous(for fixing the tut ;), X-Lock, kiyo, newt, Anshar and all the forgotten..
+</pre>
+
+	</TD>
+</TR>
+
+
+</TABLE>
+<DIV ALIGN="CENTER">
+<A HREF="http://biw-reversing.cjb.net"><B>biw-reversing.cjb.net</B></A><BR>
+<script language="javascript"><!--
+Mrn=Math.random();Mz="";
+My="<a href='http://u3229.98.spylog.com/cnt?cid=322998&f=3&rn="+Mrn+"' target='_blank'><img src='http://u3229.98.spylog.com/cnt?cid=322998&";
+My+="p=1&f=4&rn="+Mrn+Mz+"' border=0  width=88 height=31   alt='Mytrix'></a>";Md.write(My);
+//--></script>
+        <noscript> <a href="http://u3229.98.spylog.com/cnt?cid=322998&f=3&p=1" target="_blank">
+        <img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1&f=4" alt='Mytrix' border='0'  width=88 height=31 ></a>
+        </noscript>
+</DIV>
+</BODY>
+</HTML>

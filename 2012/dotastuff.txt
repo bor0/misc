@@ -1,0 +1,97 @@
+Orb Effects
+-----------
+There are certain skills that add bonuses or effects to the damage that they deal on an attack.
+Some of those place certain indicators or "buffs" on the target (sometimes to deal damage per second or other timed effects).
+Note that buffs are not always visible under the status bar.
+
+Blizzard imposed certain restrictions regarding the behaviour of these "Buff Placers" probably for balance reasons.
+
+Maim
+----
+Maim fully stacks with every other attack modifier, with only two exceptions:
+1. Manually casting arrow effects will never trigger a Maim.
+2. Multiple sources of Maim will not stack with each other. 
+
+Two famous rules
+----------------
+1. Orb Effects do not stack (you will only get the effect of one "orb" skill).
+2. You can only place one buff per attack.
+
+Ranged
+------
+1. Critical Strike stacks with lifesteal (and quelling blade) only, other orb effects are overriden (with Critical Strike).
+2. Bash stacks with lifesteal (and quelling blade), other orb effects are ovveriden (with Bash).
+
+Melee
+-----
+1. Critical Strike stacks with all orb effects.
+2. Bash stacks with all orb effects.
+
+True Strike
+-----------
+It's important to know that both Bash and Critical Strike are basically the same skill using different settings.
+Critical Strikes with a factor lower than 1.0x will not interfere with other Critical Strikes, and all Bashes have a factor of 0x by default.
+The ability True Strike from MKB is a good example of this, it uses the setting "Never miss" which makes it disregard evasion, blind etc.
+It uses a 0x damage factor so it has no stacking issues with other Critical Strikes. True Strike follows the "Bash" setting.
+
+Bash and Crit Stacking
+----------------------
+1. Melee Unit: A melee unit has no problem having a crit and a bash in the same attack.
+2. Ranged Unit: When a Critical Strike triggers in a ranged unit it will override all the previously acquired bashes and crits.
+
+HP Regeneration
+---------------
+HP regenerated per second = Base Hitpoint Regeneration + (Strength * .03) + (Bonus HP Regen from Items and Skills), where:
+Base Hitpoint Regeneration: It's a value set by the mapmaker in the WC3 Editor, for most heroes in DotA it's 0.25
+(Exceptions: Nerubian Assassin has 2.5, Axe has 2, Gondar, Faceless Void, Juggernaut, Krobelus, Naga Siren,
+Spiritbreaker, Stealth Assassin, Venomancer, Pandaren Brewmaster and Phantom Lancer have 0.75, Shadow Fiend and
+Lone Druid have 0.5, Alchemist while using Chemical Rage has 15/30/60)
+
+Mana Regeneration
+-----------------
+Mana regenerated per second = [Base Mana Regen + (Intelligence* .04)] * [1 + (% Total Percentage Increase)] + Regeneration From Brilliance Aura, where:
+Base Mana Regen: Is a value set by the mapmaker in the WC3 Editor, for all heroes in DotA it's 0.01
+(Except Techies who has 0.02 and Alchemist in Chemical Rage, who has 3/7.5/12 depending on the level)
+Intelligence: It's your amount of INT including the amount in green numbers
+Total Percentage Increase: Is the sum of all bonus percentages, in the example of one Sobi Mask (50%) and one Refresher Orb (200%) we display the result as 2.5
+Regeneration From Brilliance Aura: The fixed amount granted by Brilliance Aura, note that it comes after every other increase so it doesn't affect the percentages at all.
+
+Reliable/Unreliable Gold
+------------------------
+Gold is divided between two categories:
+"Reliable gold" - Any bounty you get from hero kills is added to your reliable gold pool.
+"Unreliable gold" - Everything else (creep kills, neutrals, etc).
+Your current total gold is displayed normally on the top of your screen, while your current reliable gold is displayed in yellow in the title of your scoreboard.
+
+Dying can only take away gold from your unreliable gold pool and not from your Reliable Gold.
+Buying items uses up your unreliable gold first before using your Reliable Gold.
+Buyback uses reliable gold first.
+
+Trivia
+------
+25% cliff miss
+1200 range creep exp (with hero(es) nearby, XP is distributed evenly)
+
+When attacking enemy hero on their tower, if their creeps are near you they will attack you. If the tower has range it will attack you as well.
+One form of harassing is using arrow skills, such as those on Drow, Viper or Clinkz.
+The creeps react to these skills like they do normal spells, that is they do not draw aggression (must be manually cast, however).
+
+Rune spawns every 2 minutes, starting at 0:00
+
+Every 0.8 seconds each player is given 1 unreliable gold (2 in easy mode) this results in 5 gold each 4 seconds.
+
+The clock starts at 6:00, which is where daytime starts. It is considered to be day between 6:00 to 18:00, and night from 18:00 to 6:00.
+Each complete cycle takes 12 minutes (6 minutes day and 6 minutes night).
+
+All trees (except those summoned by Furion's Sprout) will respawn every 5 minutes, starting when the first lane creeps spawn.
+Trees will not spawn where there is a hero nearby, this so heroes aren't as easily trapped.
+
+Neutral creeps spawn for the first time at 0:30, and then at the beginning of each consecutive minute (1:00, 2:00, etc).
+
+It should be noted that the mana and HP regeneration provided by the fountains is percentage based, (4% per second)
+and as such they don’t take longer to heal a hero with higher maximum life than others.
+
+Good Guides
+-----------
+http://www.playdota.com/guides/improving-yourself-in-dota
+http://www.youtube.com/watch?v=eTZxmNx_rDw

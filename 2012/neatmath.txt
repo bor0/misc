@@ -1,0 +1,23 @@
+foreach a > 0 exists M > 0 s.t. if n > M then n! > a^n
+(So drugi zborovi n! faktoriel e pogolema od a^n eksponencijalna funkcija)
+
+[14:37] <AnonDiss> The sum of logarithms is greater than the, um, lower riemann integral
+[14:38] <AnonDiss> Or actually, int_1^n log x dx <= sum.
+[14:38] <AnonDiss> nlog(n/e) <= sum.
+[14:38] <AnonDiss> nlog(n/e) >= n log a for sufficiently large n.
+[14:38] <AnonDiss> sum dominates n log a.
+[14:39] <AnonDiss> n! dominates a^n
+[14:41] <Bor0> why is it that integral {1...n} (log x dx) <= log(2) + log(3) + ... + log(n)
+[15:10] <Bor0> can you help me grasp this?  I really cannot understand how a function like http://www.wolframalpha.com/input/?i=Logx+from+2+to+5 has it's sum of finite set of integer points {1, 2, ... n} larger than the sum of inifnite set of points {1, ... 1.0001, 1.0002, ..., n}, it's strictly monotone increasing
+[15:10] <Bor0> what's the explanation?
+[15:11] <AnonDiss> The explanation is of course that we're not summing infinite sets.
+[15:11] <Bor0> but isn't that what the integral does?
+[15:11] <AnonDiss> The area under the curve is not the sum of an infinite number of points.
+[15:11] <Bor0> it's the area under [1, n]
+[15:12] <Bor0> how is it not?
+[15:12] <AnonDiss> If it's an infinite sum, it's a sum of infinitely thin rectangular strips.
+[15:13] <Bor0> is it wrong to say that the integral of f(x) = Sum (1...p) f(x) (with dx step, instead of 1)
+[15:13] <AnonDiss> It's wrong in that infinitesimal numbers do not exist. But it's true insofar as one is the limit of the other.
+[15:14] <AnonDiss> So the finite sum we discussed was the area of rectangles with width 1.
+[15:15] <Bor0> ah
+[15:16] <Bor0> so, we get larger than integral because of those pieces above the curve

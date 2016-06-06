@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<TITLE>Content advisor</TITLE>
+<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<META content=Boro name=BoR0>
+<META content="MSHTML 5.00.3813.800" name=GENERATOR></HEAD>
+<BODY aLink=#ffffff bgColor=#000000 link=#ffffff text=#ffffff vLink=#800000 
+ALIGN="CENTER">
+<SCRIPT language=javascript>
+Mu="u3229.98.spylog.com";Md=document;Mnv=navigator;Mp=1;
+Mn=(Mnv.appName.substring(0,2)=="Mi")?0:1;Mrn=Math.random();
+Mt=(new Date()).getTimezoneOffset();
+Mz="p="+Mp+"&rn="+Mrn+"&tl=0&ls=0&ln=0&t="+Mt;
+My="";
+My+="<img src='http://"+Mu+"/cnt?cid=322998&"+Mz+"&r1="+escape(Md.referrer)+"&r="+escape(parent.document.referrer)+"&pg="+escape(window.location.href)+"' border=0  width=1 height=1  alt='Mytrix'>";
+Md.write(My);//--></SCRIPT>
+<NOSCRIPT><IMG alt=Mytrix border=0 height=1 src="" width=1> </NOSCRIPT>
+<TABLE align=center bgColor=#425964 border=1 borderColor=#ffffff cellPadding=0 
+cellSpacing=0 width="95%">
+  <TBODY>
+  <TR bgColor=#17748e>
+    <TD><FONT color=#ff8000 size=4><B>Cracking Internet Explorer's Content 
+      advisor </B></FONT></TD></TR>
+  <TR>
+    <TD>TARGET = Internet Explorer<BR>DIFF = 2/10 <BR>TOOLS USED = 
+    SoftICE<BR></TD></TR>
+  <TR bgColor=#17748e>
+    <TD><FONT size=4><B>Proceeding </B></FONT></TD></TR>
+  <TR>
+    <TD><PRE>     Cracking Internet Explorer version 6.0.2600.0000's Content Advisor
+                                         by BoR0
+
+
+Many people lost their password on iexplore's content advisor (I did, 
+too!). 
+Prolly for every program there is a solution, so for this one there's a 
+solution too ;)
+
+Lets get going! Ok, fire up iexplore.exe. Click on Tools, Internet 
+Explorer and then click on Content.
+
+Press Ctrl-D to fire soft-ice up. Once its fired, set a breakpoint on 
+GetDlgItemTextA (bpx getdlgitemtexta).
+
+(The GetDlgItemTextA is used for most programs, its checking what you 
+typed in the Editbox)
+
+Ok, press Ctrl-D to exit softice, and press on Settings now.
+
+Internet Explorer asks for password. Just type any password and press 
+OK.
+
+Softice fires up, now do this:
+
+Press F11 to get the caller, to see where this comes from.
+Type: "A 7040B9CA" press enter and type "JZ 7040B9D3".
+(This changes the JNZ 7040B9D3 to JZ 7040B9D3 at address 7040B9CA.)
+
+Press ENTER and then ESCAPE.
+
+After that type bd * to disable our breakpoints
+(bc will clear them, bd will disable them, you can enable them by 
+typing be * and if you want to list them you type bl)
+
+You have entered the hive ;)
+Whats next? 
+
+
+Click on General tab, and press on Change Password button. OK, a screen 
+appears which asks for:
+
+- Old password
+- New password
+- Confirm new password
+
+Fire up softice, and type "be *" to enable our breakpoint. After that, 
+close softice again. Now on Old Password editbox type some non-sense 
+password, on new password editbox type the password you want to use and 
+on second's editbox password type it again. Press OK and softice fires 
+itselfs up. Press F5 to quit softice (because it breaks on our first 
+editbox, we dont want to change our jump on our first editbox, we want to 
+do it on our second), F11 to get the caller and now type this:
+
+"A 70405953" press enter and type "JZ 7040595F"
+(you can scroll up and see what A means)
+
+After doing that, press ENTER then ESCAPE, and type "bc *" to clear our 
+breakpoint. OK, we have cleared our breakpoints, now we will exit 
+softice by pressing Ctrl+D.
+
+Internet Explorer says: "Password changed successfully."
+
+Great! We have cracked Internet Explorer ;)
+
+
+(c) 2003
+</PRE></TD></TR></TBODY></TABLE>
+<DIV align=center><A 
+href="http://biw-reversing.cjb.net/"><B>biw-reversing.cjb.net</B></A><BR>
+<SCRIPT language=javascript>
+Mrn=Math.random();Mz="";
+My="<a href='http://u3229.98.spylog.com/cnt?cid=322998&f=3&rn="+Mrn+"' target='_blank'><img src='http://u3229.98.spylog.com/cnt?cid=322998&";
+My+="p=1&f=4&rn="+Mrn+Mz+"' border=0  width=88 height=31   alt='Mytrix'></a>";Md.write(My);
+//--></SCRIPT>
+<NOSCRIPT><A href="http://u3229.98.spylog.com/cnt?cid=322998&amp;f=3&amp;p=1" 
+target=_blank><IMG alt=Mytrix border=0 height=31 src="" width=88></A> 
+</NOSCRIPT></DIV></BODY></HTML>

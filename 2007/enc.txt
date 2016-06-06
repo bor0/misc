@@ -1,0 +1,126 @@
+A  B  C  D  E  F  G  H  I  J  K  L  M
+01 14 02 15 03 16 04 17 05 18 06 19 07
+
+N  O  P  Q  R  S  T  U  V  W  X  Y  Z
+20 08 21 09 22 10 23 11 24 12 25 13 26
+
+0  1  00 01 10 11
+B  o  R  0  1  2
+
+
+To encrypt:
+
+Let "HELLO" be the string that we want to encrypt.
+
+First convert all letters to their numbers.
+
+H = 17
+E = 03
+L = 19
+L = 19
+O = 08
+
+convert all the numbers to binary with 5 digits padding
+
+H = 10001
+E = 00011
+L = 10011
+L = 10011
+O = 01000
+
+invert all bits
+
+H = 01110
+E = 11100
+L = 01100
+L = 01100
+O = 10111
+
+H is on first place of the text
+E is on second place of the text
+L is on third place of the text
+L is on fourth place of the text
+O is on fifth place of the text
+
+do "ror place%5"
+
+H = 01110 ror 1
+E = 11100 ror 2
+L = 01100 ror 3
+L = 01100 ror 4
+O = 10111 ror 5
+
+=>
+
+H = 00111
+E = 00111
+L = 10001
+L = 11000
+O = 10111
+
+ENC(HELLO) = 0011100111100011100010111
+
+Group all the codes in 2
+
+ENC(HELLO) = 00 11 10 01 11 10 00 11 10 00 10 11 1
+
+Now convert that using the table to get
+
+ENC(HELLO) = R21021R21R12o
+
+
+To decrypt:
+
+Convert this to binary using the table:
+
+R21021R21R12o =
+00 11 10 01 11 10 00 11 10 00 10 11 1 =
+00111 00111 10001 11000 10111
+
+x1 = 00111
+x2 = 00111
+x3 = 10001
+x4 = 11000
+x5 = 10111
+
+do "rol place%5" to all chars
+
+x1 = 00111 rol 1
+x2 = 00111 rol 2
+x3 = 10001 rol 3
+x4 = 11000 rol 4
+x5 = 10111 rol 5
+
+=>
+
+x1 = 01110
+x2 = 11100
+x3 = 01100
+x4 = 01100
+x5 = 10111
+
+inverse all the bits
+
+x1 = 10001
+x2 = 00011
+x3 = 10011
+x4 = 10011
+x5 = 01000
+
+convert them back to decimal
+
+x1 = 10001 = 17
+x2 = 00011 = 03
+x3 = 10011 = 19 
+x4 = 10011 = 19
+x5 = 01000 = 08
+
+use the table now
+
+17 = H
+03 = E
+19 = L
+19 = L
+08 = O
+
+DEC(..---..----...---...-.---) = HELLO

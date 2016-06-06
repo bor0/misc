@@ -1,0 +1,165 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+crackme: Pulsar Crackme (Level 0)
+ author: BoR0
+  level: pretty easy
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+ok, let's begin immediately. launch olly debugger and debug the crackme.
+
+this crackme is a bit tricky in the first place, because if you set a breakpoint at GetWindowText
+without looking at the code, it won't break. it checks length of our name with 0Bh value (GetWindowTextLengthA),
+and if your name length doesnt equal to 0Bh, it won't tell you.
+
+0040129B  |. E8 0E010000    CALL <JMP.&user32.GetWindowTextLengthA>  ; \GetWindowTextLengthA
+004012A0  |. 83F8 0B        CMP EAX,0B                               ; is my name length equal to 11 chars?
+004012A3  |. 0F85 93000000  JNZ crackme.0040133C                     ; goto hell if no.
+
+thats why you couldn't set a breakpoint at GetWindowText in the first place.
+(hope you haven't got this problem though)
+
+ok, lets try this name: cracktest++
+
+nice, we can now set a breakpoint at GetWindowText and ollydbg pops up immediately.
+
+004012B9  |. E8 F6000000    CALL <JMP.&user32.GetWindowTextA>        ; \GetWindowTextA
+004012BE  |. 803D 4B234000 >CMP BYTE PTR DS:[40234B],2D              ; compare 4th char with '-' sign
+004012C5  |. 75 75          JNZ SHORT crackme.0040133C               ; goto hell if no.
+004012C7  |. C605 4B234000 >MOV BYTE PTR DS:[40234B],41              ; if there is a match, mov 4th char to 'A'
+004012CE  |. 803D 4F234000 >CMP BYTE PTR DS:[40234F],2D              ; compare 8th char with '-' sign
+004012D5  |. 75 65          JNZ SHORT crackme.0040133C               ; goto hell if no.
+004012D7  |. C605 4F234000 >MOV BYTE PTR DS:[40234F],42              ; if there is a match, mov 8th char to 'B'
+004012DE  |. B9 0A000000    MOV ECX,0A
+004012E3  |> FE81 48234000  /INC BYTE PTR DS:[ECX+402348]            ; increase every char by 1 (except 1st)
+004012E9  |.^E2 F8          \LOOPD SHORT crackme.004012E3            ; loopback
+
+                                                                     ; compare these strings:
+004012EB  |. BE 48234000    MOV ESI,crackme.00402348                 ;  ASCII "csbBlufCu,,"
+004012F0  |. BF F3204000    MOV EDI,crackme.004020F3                 ;  ASCII "PvMBtBsC112"
+004012F5  |. B9 0B000000    MOV ECX,0B
+004012FA  |. FC             CLD
+004012FB  |. F3:A6          REPE CMPS BYTE PTR ES:[EDI],BYTE PTR DS:>
+004012FD  |. 75 3D          JNZ SHORT crackme.0040133C               ; goto hell if no match.
+
+ok, what we can see from here is that we need to match our name with the string "PvMBtBsC112",
+but using Pulsar's algo of increasing every char by 1 except first char.
+
+I can give you a small table of characters list that might help you in solving this crackme.
+
+Decimal  Octal  Hex   Binary        Value
+-------  -----  ---   ------        -----
+033      041    021   00100001        !    (exclamation mark)
+034      042    022   00100010        "    (double quote)
+035      043    023   00100011        #    (number sign)
+036      044    024   00100100        $    (dollar sign)
+037      045    025   00100101        %    (percent)
+038      046    026   00100110        &    (ampersand)
+039      047    027   00100111        '    (single quote)
+040      050    028   00101000        (    (left/opening parenthesis)
+041      051    029   00101001        )    (right/closing parenthesis)
+042      052    02A   00101010        *    (asterisk)
+043      053    02B   00101011        +    (plus)
+044      054    02C   00101100        ,    (comma)
+045      055    02D   00101101        -    (minus or dash)
+046      056    02E   00101110        .    (dot)
+047      057    02F   00101111        /    (forward slash)
+048      060    030   00110000        0
+049      061    031   00110001        1
+050      062    032   00110010        2
+051      063    033   00110011        3
+052      064    034   00110100        4
+053      065    035   00110101        5
+054      066    036   00110110        6
+055      067    037   00110111        7
+056      070    038   00111000        8
+057      071    039   00111001        9
+058      072    03A   00111010        :    (colon)
+059      073    03B   00111011        ;    (semi-colon)
+060      074    03C   00111100        <    (less than)
+061      075    03D   00111101        =    (equal sign)
+062      076    03E   00111110        >    (greater than)
+063      077    03F   00111111        ?    (question mark)
+064      100    040   01000000        @    (AT symbol)
+065      101    041   01000001        A
+066      102    042   01000010        B
+067      103    043   01000011        C
+068      104    044   01000100        D
+069      105    045   01000101        E
+070      106    046   01000110        F
+071      107    047   01000111        G
+072      110    048   01001000        H
+073      111    049   01001001        I
+074      112    04A   01001010        J
+075      113    04B   01001011        K
+076      114    04C   01001100        L
+077      115    04D   01001101        M
+078      116    04E   01001110        N
+079      117    04F   01001111        O
+080      120    050   01010000        P
+081      121    051   01010001        Q
+082      122    052   01010010        R
+083      123    053   01010011        S
+084      124    054   01010100        T
+085      125    055   01010101        U
+086      126    056   01010110        V
+087      127    057   01010111        W
+088      130    058   01011000        X
+089      131    059   01011001        Y
+090      132    05A   01011010        Z
+091      133    05B   01011011        [    (left/opening bracket)
+092      134    05C   01011100        \    (back slash)
+093      135    05D   01011101        ]    (right/closing bracket)
+094      136    05E   01011110        ^    (caret/cirumflex)
+095      137    05F   01011111        _    (underscore)
+096      140    060   01100000        `
+097      141    061   01100001        a
+098      142    062   01100010        b
+099      143    063   01100011        c
+100      144    064   01100100        d
+101      145    065   01100101        e
+102      146    066   01100110        f
+103      147    067   01100111        g
+104      150    068   01101000        h
+105      151    069   01101001        i
+106      152    06A   01101010        j
+107      153    06B   01101011        k
+108      154    06C   01101100        l
+109      155    06D   01101101        m
+110      156    06E   01101110        n
+111      157    06F   01101111        o
+112      160    070   01110000        p
+113      161    071   01110001        q
+114      162    072   01110010        r
+115      163    073   01110011        s
+116      164    074   01110100        t
+117      165    075   01110101        u
+118      166    076   01110110        v
+119      167    077   01110111        w
+120      170    078   01111000        x
+121      171    079   01111001        y
+122      172    07A   01111010        z
+
+now, for example if we increase char 'y', we will get 'z' as a result.
+
+from here, we want to get the string "PvMBtBsC112", which means our first character must be 'P',
+and all decrease all other characters by 1.
+
+from there, we get PuLAsArB001. remember, our 4th and 8th chars must have '-' sign.
+
+our static key is: PuL-sAr-001
+
+I hope you had fun reading this tut, I explained the most things I know of.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Greetings flies out to:
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Detten, zephyrous, chainie, L_Anshar
+coder, b4d_s3ct0r, Mr_geek, CopyMasta
+
+the BiW team, YOU
+
+and the ones I forgot (sorry).
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+copyright (c) BoR0
+
+August, 2004

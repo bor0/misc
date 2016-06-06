@@ -1,0 +1,63 @@
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+crackme: DaXXoR's First (Level 1)
+ author: BoR0
+  level: pretty easy
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Open ollydbg and debug DaXXoR.exe. Set a breakpoint on the line:
+
+00401261  |. 68 24124000    PUSH DaXXoR.00401224                     ;  ASCII "Enter Serial Key:"
+
+..and trace until the second call. Olly stops here. Now goto daxxor's screen and type in anything
+
+(I'd suggest typing "1234567890" for easier tracking)
+
+now press ENTER, and ollydbg's window flashes. lets pay it a visit :-P
+
+0040129B  |. 803D 00604300 >CMP BYTE PTR DS:[436000],61   ; compare first byte (61h)
+004012A2  |. 75 44          JNZ SHORT DaXXoR.004012E8
+004012A4  |. 803D 01604300 >CMP BYTE PTR DS:[436001],35   ; compare second byte (35h)
+004012AB  |. 75 3B          JNZ SHORT DaXXoR.004012E8
+004012AD  |. 803D 05604300 >CMP BYTE PTR DS:[436005],71   ; compare sixth byte (71h)
+004012B4  |. 75 32          JNZ SHORT DaXXoR.004012E8
+004012B6  |. 803D 06604300 >CMP BYTE PTR DS:[436006],31   ; compare seventh byte (31h)
+004012BD  |. 75 29          JNZ SHORT DaXXoR.004012E8
+004012BF  |. 803D 02604300 >CMP BYTE PTR DS:[436002],74   ; compare third byte (74h)
+004012C6  |. 75 20          JNZ SHORT DaXXoR.004012E8
+004012C8  |. 803D 04604300 >CMP BYTE PTR DS:[436004],37   ; compare fifth byte (37h)
+004012CF  |. 75 17          JNZ SHORT DaXXoR.004012E8
+004012D1  |. 803D 03604300 >CMP BYTE PTR DS:[436003],7A   ; compare fourth byte (7Ah)
+004012D8  |. 75 0E          JNZ SHORT DaXXoR.004012E8
+
+From here, we can see that:
+
+1 = 61h
+2 = 35h
+3 = 74h
+4 = 7Ah
+5 = 37h
+6 = 71h
+7 = 31h
+
+Our serial consists of 7 bytes. Lets take a closer look:
+
+61 35 74 7A 37 71 31 -> a5tz7q1
+
+Let's try that as a serial. It works, "Good Cracker!" :-D
+
+That'd be all for now.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Greetings flies out to:
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Detten, b4d_s3ct0r, Mr_geek,
+CopyMasta, Jibz, Muad'Dib
+
+the BiW team, YOU
+
+and the ones I forgot (sorry).
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+copyright (c) BoR0
+
+November, 2004

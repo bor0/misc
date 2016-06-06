@@ -1,0 +1,30 @@
+Is the hypotenuse smaller than the sum of the other 2 sides?
+
+We will start with Pythagorean.
+
+c^2 = a^2 + b^2 => c = sqrt(a^2 + b^2)
+
+I will mark the equations -
+
+1) Meaning that the hypotenuse is larger than the sum of the other 2 sides;
+2) Meaning that the hypotenuse is smaller than the sum of the other 2 sides.
+
+c > a + b (1)
+OR
+c < a + b (2)
+
+c^2 > a^2 + 2ab + b^2 (1)
+OR
+c^2 < a^2 + 2ab + b^2 (2)
+
+a^2 + b^2 > a^2 + 2ab + b^2 (1)
+OR
+a^2 + b^2 < a^2 + 2ab + b^2 (2)
+
+0 > 2ab (1)
+OR
+0 < 2ab (2)
+
+For every a,b>0 it follows that the correct expression is 0 < 2ab or (2).
+
+Which follows that the hypotenuse is smaller than the sum of the other 2 sides.

@@ -1,0 +1,405 @@
+tools: brain, hiew, ollydbg, masm32, calc,
+music: stakka & skynet
+editor: Notepad
+
+I assume that the reader already knows basic assembler.
+
+ example going to esp-4 to see where we come from (it is because the calls are stored in the stack)
+and such stuff will not be explained in this tutorial. if you want to learn more about it read some
+assembly tutorial instead. I am recommending madwizard's tutorial (google) which really helped me.
+
+ lets go!
+
+open ollydbg and run the proggy type "1" in the programs editbox.
+
+whoa olly catches a privileged instruction :) in the data window press ctrl+g and type
+in esp-4 (to see where we jumped from)
+
+You should see this in your data window
+
+0012F970  B4 5D 46 00
+
+that means 00465DB4 is our address and this is what we have there
+
+00465DB4   . A3 309C4600    MOV DWORD PTR DS:[469C30],EAX
+00465DB9   .-FF25 309C4600  JMP DWORD PTR DS:[469C30]
+
+Whoa, now lets trace back to see what is the algo that works out the number we enter
+
+heres a couple of examples:
+
+f(0) = 0x0014D528
+f(1) = 0x0014D58C
+f(2) = 0x0014D5F0
+f(3) = 0x0014D654
+
+but we need this little boy to jump to a valid address that contains a messagebox;
+to find this address is the main goal :)
+our algo with f(n) calculation starts at 00465CC4
+We will take serial 12345678 as an example.
+
+Phase 1 starts at:
+
+------------------------
+00465D0F   > 8BC6           MOV EAX,ESI
+00465D11   . E8 3AEAF9FF    CALL crack1.00404750
+00465D16   . 8B16           MOV EDX,DWORD PTR DS:[ESI]
+00465D18   . 8A541A FF      MOV DL,BYTE PTR DS:[EDX+EBX-1]
+00465D1C   . 80E2 3F        AND DL,3F
+00465D1F   . 80CA 30        OR DL,30
+00465D22   . 885418 FF      MOV BYTE PTR DS:[EAX+EBX-1],DL
+00465D26   . 8BC6           MOV EAX,ESI
+00465D28   . BA AC614600    MOV EDX,crack1.004661AC
+00465D2D   . E8 D6E7F9FF    CALL crack1.00404508
+00465D32   . 43             INC EBX
+00465D33   . 83FB 08        CMP EBX,8
+00465D36   .^75 D7          JNZ SHORT crack1.00465D0F
+------------------------
+
+where our humanoid programmer adds 7 zeroes to our string :)
+so if we had entered "12345678" it would now turn to "1234567890000000" (good to know, useless though later)
+
+Phase 2:
+------------------------
+00465D48   . E8 0BEAF9FF    CALL crack1.00404758
+00465D4D   . 8B45 F8        MOV EAX,DWORD PTR SS:[EBP-8]
+------------------------
+
+In our data window, we can see
+
+Stack SS:[0012F994]=009751F4, (ASCII "123")
+EAX=0012F994
+
+On the next line, we see a call
+00465D50   . E8 C326FAFF    CALL crack1.00408418
+
+this call stores 123 in eax (now 0x7B). what next comes, is
+
+------------------------
+00465D55   . 03C0           ADD EAX,EAX
+00465D57   . 05 40020000    ADD EAX,240
+00465D5C   . D1F8           SAR EAX,1
+00465D5E   . 79 03          JNS SHORT crack1.00465D63
+00465D60   . 83D0 00        ADC EAX,0
+------------------------
+
+one sec, please. I have some kind of flying bug on my keyboard. *waits*
+ok, long dead. now lets continue
+
+we had EAX = 0x7B
+
+EAX = EAX + EAX (0xF6)
+EAX = EAX + 240 (0x336)
+shift to the right
+EAX = 0x19B
+
+next phase is
+
+------------------------
+00465D66   . E8 4926FAFF    CALL crack1.004083B4
+00465D6B   . 8B45 FC        MOV EAX,DWORD PTR SS:[EBP-4]
+------------------------
+
+in our data window we have
+
+Stack SS:[0012F998]=00975204, (ASCII "411")
+EAX=0012F998
+
+where our coder has converted the value of EAX (0x19B) to decimal string (good to know)
+
+next, comes:
+
+------------------------
+00465D7F   . E8 D4E9F9FF    CALL crack1.00404758
+00465D84   . 8B45 F0        MOV EAX,DWORD PTR SS:[EBP-10]
+------------------------
+
+data window
+Stack SS:[0012F98C]=009733EC, (ASCII "4567")
+EAX=0012F98C
+
+so now we get the next 4 digits of our entered number
+
+------------------------
+00465D87   . E8 8C26FAFF    CALL crack1.00408418
+00465D8C   . 03C0           ADD EAX,EAX
+00465D8E   . 05 AA0A0000    ADD EAX,0AAA
+00465D93   . D1F8           SAR EAX,1
+00465D95   . 79 03          JNS SHORT crack1.00465D9A
+00465D97   . 83D0 00        ADC EAX,0
+------------------------
+
+converts to hex and all that stuff as before, we end with
+
+00465D9D   . E8 1226FAFF    CALL crack1.004083B4
+00465DA2   . 8B55 F4        MOV EDX,DWORD PTR SS:[EBP-C]
+
+Stack SS:[0012F990]=00975214, (ASCII "5932")
+EDX=00000000
+
+again he converted to decimal.
+
+next comes
+00465DA8   . E8 9FE7F9FF    CALL crack1.0040454C
+
+and in the data window we can note 
+DS:[00469C2C]=009721B0, (ASCII "5932411")
+EAX=00000003
+
+where our coder has bound the 2 of the converted strings we had.
+
+5932411
+
+and the last call
+00465DAF   . E8 6426FAFF    CALL crack1.00408418
+
+converts our decimal string ("5932411") into hex and puts it in eax
+at last, we jump in memory of eax (jmp dword ptr [5932411])
+now that we know how our algo works, we need to find the address where goodboy is stored.
+the author gave us this hint:
+
+"geeko
+Author
+21. Sep, 09:26 hint
+look in 'changemouseup'"
+
+which leads to
+
+-- snippet --
+00465C3A   . 63 68 61 6E 67>ASCII "changeMouseUp"
+00465C47     12             DB 12
+00465C48     00             DB 00
+00465C49   . B0614600       DD crack1.004661B0
+00465C4D   . 0B             DB 0B
+00465C4E   . 73 74 75 66 66>ASCII "stuffChange"
+-- snippet --
+
+at crack1.004661B0 we have something suspicious going on. :)
+
+lets go at address 4661B0
+
+by scrolling a bit up we see
+-- snippet --
+00466107     85             DB 85
+00466108     C0             DB C0
+00466109     3E             DB 3E
+0046610A     8B             DB 8B
+0046610B     08             DB 08
+0046610C     B2             DB B2
+0046610D     51             DB 51
+0046610E     50             DB 50
+0046610F     8B             DB 8B
+00466110   . 8B9F F4020000  MOV EBX,DWORD PTR DS:[EDI+2F4]
+00466116   . B2 01          MOV DL,1
+-- snippet --
+
+where we have instructions without starting with PUSH EBP (means it is not a normal procedure),
+so this is fishy :) and, there goes our goodboy, at address 0466110h
+
+now lets write a little program that will be a bruteforcer simulating f(n)
+
+-- snippet --
+.486
+.model flat, stdcall
+option casemap :none
+  
+include \masm32\include\windows.inc
+include \masm32\include\user32.inc
+include \masm32\include\kernel32.inc
+
+includelib \masm32\lib\user32.lib
+includelib \masm32\lib\kernel32.lib
+
+.data?
+bufferfinal db 32 dup(?)
+.data
+prefixfinal db "%d", 0
+
+.code
+a2dw proc String:DWORD
+;by Tim Roberts and Alexander Yackubtchik
+push esi
+push edi
+xor eax, eax
+mov esi, [String]
+xor ecx, ecx
+xor edx, edx
+mov al, [esi]
+inc esi
+cmp al, 2D
+jne proceed
+mov al, byte ptr [esi]
+not edx
+inc esi
+jmp proceed
+@@: sub al, 30h
+lea ecx, dword ptr [ecx+4*ecx]
+lea ecx, dword ptr [eax+2*ecx]
+mov al, byte ptr [esi]
+inc esi
+proceed:
+or al, al
+jne @B
+lea eax, dword ptr [edx+ecx]
+xor eax, edx
+pop edi
+pop esi
+ret
+
+a2dw endp
+
+
+GeekoFunction PROC a:DWORD
+.data?
+buffer db 32 dup(?)
+.data
+prefix db "%.8d", 0
+prefi2 db "%d%d", 0
+zeroes db "0000000", 0
+.code
+mov eax, a
+
+invoke wsprintf, ADDR buffer, ADDR prefix, eax
+invoke lstrcat, ADDR buffer, ADDR zeroes
+
+mov dl, byte ptr [buffer+3]
+mov byte ptr [buffer+3], 0
+push edx
+invoke a2dw, ADDR buffer
+pop edx
+mov byte ptr [buffer+3], dl
+push eax
+
+mov dl, byte ptr [buffer+7]
+mov byte ptr [buffer+7], 0
+push edx
+invoke a2dw, ADDR [buffer+3]
+pop edx
+mov byte ptr [buffer+7], dl
+
+mov edx, eax
+pop eax
+
+add eax, eax
+add eax, 240h
+sar eax, 1
+jns @F
+adc eax, 0
+@@:
+add edx, edx
+add edx, 0AAAh
+sar edx, 1
+jns @F
+adc edx, 0
+@@:
+
+invoke wsprintf, ADDR buffer, ADDR prefi2, edx, eax
+
+invoke a2dw, ADDR buffer
+
+ret
+GeekoFunction ENDP
+
+start:
+
+xor eax, eax
+dec eax
+@@:
+inc eax
+cmp eax, 9999999+1 ;0FFFFFFFFh
+je @done
+push eax
+invoke GeekoFunction, eax
+cmp eax, 00466110h
+pop eax
+jne @B
+
+invoke wsprintf, ADDR bufferfinal, ADDR prefixfinal, eax
+@end:
+invoke MessageBox, 0, ADDR bufferfinal, 0, 0
+invoke ExitProcess, 0  
+@done:
+pop eax
+jmp @end
+end start
+-- snippet --
+
+remember that we had f(n) = 00466110h
+so we need to bruteforce here, such that eax equals 00466110h. :)
+the bruteforcing can maximum last 60 minutes (roughly estimated) when tested on my 2.0GHz processor.
+it took about 1.5 minutes on my box to find the serial we needed.
+and our code is '0803247'.
+
+you will, I hope, understand the bruteforcer as it is real simple.
+
+GeekoFunction takes one param, and is our function that will convert a number to
+an address where the crackme should jump.
+
+and let's try to solve it without bruteforcing (as geeko requested :P)
+take the reverse way (e.g. add eax, eax would be divide eax by 2);
+
+so we have 466110h, convert it to decimal
+
+4612368d
+
+the first part of the number (first 4 numbers are EDX, second 3 are EAX)
+
+EDX = 4612d
+EAX = 368d
+
+first lets do EDX. from geekos algo, we have
+
+add edx, edx
+add edx, 0AAAh
+sar edx, 1
+jns @F
+adc edx, 0
+@@:
+
+
+the SAR instruction shifts the last byte out, so we have 4612d in binary:
+
+1001000000100
+
+add another byte '0' at the last, and convert that number to decimal
+
+10010000001000 -> 9224
+9224d -> 2408h
+
+next, we have to sub 0AAAh from 2408h = 195Eh
+
+divide this number by 2 = 0CAFh which equals 3247d (note)
+
+now, lets do the same for EAX.
+
+we had EAX = 368d
+
+add eax, eax
+add eax, 240h
+sar eax, 1
+jns @F
+adc eax, 0
+@@:
+
+in binary it is 101110000b, add another byte at the end because of SAR 1011100000b
+converting this number in decimal, we end up with 736d
+
+736d -> 2E0h
+sub 240h -> A0h
+divide by 2 -> 50h which equals 80d
+
+so we have 80d from eax and 3247d from edx, binding them together we end with:
+
+803247
+
+as you can see it has no zero at the beginning because Windows calculator
+(and any other normal calculator) deletes any zeroes from the beginning of a number.
+
+out of interest, here's a code that will do an EBFE (infinite loop) 2253246
+just change the "cmp eax, 00466110h" to "cmp eax, 00465DB9" (takes about a minute to bruteforce).
+remember, we had our jump at 00465DB9 so it'll jump at 00465DB9 causing an endless loop
+
+that would be all for now. greetings to geeko and crackmes.de.
+
+
+written September, 2006 by BoR0

@@ -1,0 +1,123 @@
+How to use interrupts directly instead of using the windows API.
+
+Well, first what we need to do is to find out how the API works.
+
+In my tutorial, we will take SetCursorPos() as an example.
+First, you need to write a program that calls SetCursorPos().
+
+---snippet---
+ .code
+ start:
+ invoke SetCursorPos, 100, 100 ;voila!
+ invoke ExitProcess, 0
+ end start
+---snippet---
+
+Now, let us debug our program. Run Ollydbg and start debugging your newly created program. Should look something like this, more or less:
+
+---snippet---
+00401000 6A 64          PUSH 64                                  ; /Y = 64 (100.)
+00401002 6A 64          PUSH 64                                  ; |X = 64 (100.)
+00401004 E8 07000000    CALL xxxx      ; SetCursorPos
+00401009 6A 00          PUSH 0                                   ; /ExitCode = 0
+0040100B E8 06000000    CALL xxxx      ; ExitProcess
+00401010 FF25 08204000  JMP xxxx       ; user32.SetCursorPos
+00401016 FF25 00204000  JMP xxxx       ; KERNEL32.ExitProcess
+---snippet---
+
+Ok, trace until SetCursorPos, when you reach it trace into it. 
+
+---snippet---
+77E3577A > 6A 5F            PUSH 5F
+77E3577C   FF7424 0C        PUSH DWORD PTR SS:[ESP+C]
+77E35780   FF7424 0C        PUSH DWORD PTR SS:[ESP+C]
+77E35784   E8 A3EBFDFF      CALL user32.77E1432C
+---snippet---
+
+We see that 2 dwords are pushed. But what is that PUSH 5F? I can only thank _death for reminding me on this one :)
+
+(Hey minos! ;-)
+5F is our ID for SetCursorPos. I don't think you can find a list of valid IDs somewhere on the net though.
+
+We enter the call to see what's going on :) 
+
+---snippet---
+77E1432C   B8 3A110000      MOV EAX,113A
+77E14331   8D5424 04        LEA EDX,DWORD PTR SS:[ESP+4]
+77E14335   CD 2E            INT 2E
+77E14337   C2 0C00          RETN 0C
+---snippet---
+
+That's it? In your dump window, follow ESP+4 (press ctrl+g then type ESP+4). This is how it looks on my machine: 
+
+---snippet---
+0012FFAC  64 00 00 00 64 00 00 00  d...d...
+0012FFB4  5F 00 00 00              _...
+---snippet---
+
+That means 3 dwords. One dword for the x value, another one for the y value, and the third one for 5F000000. 
+
+An example of calling a native system call (SetCursorPos()): 
+
+---snippet---
+
+ thePos STRUCT
+ x dd 0
+ y dd 0
+ z dd 5Fh
+ thePos ENDS
+
+ .data
+ myApp db "BoR0's Native Syscaller",0
+ succ  db "Successfully set cursor!", 0
+ erro  db "Error while setting cursor!", 0
+
+ mystr thePos <>
+
+ .code
+ start:
+ mov mystr.y, 300
+ mov mystr.x, 300
+
+ mov eax, 113Ah
+ mov edx, offset mystr
+ int 2Eh
+
+ .IF eax == 1
+ invoke MessageBox, 0, ADDR succ, ADDR myApp, MB_OK+MB_ICONINFORMATION
+ .ELSE
+ invoke MessageBox, 0, ADDR erro, ADDR myApp, MB_OK+MB_ICONERROR
+ .ENDIF
+
+ invoke ExitProcess,0
+
+ end start
+---snippet---
+
+From here we notice how SetCursorPos works.
+
+EAX==113Ah;
+EDX==POINTER TO 2 DWORDS FOR COORDINATES, AND ANOTHER ONE FOR ID (X,Y,5F000000h);
+INT==2Eh;
+RET. VALUE: 1 IF OK, 0 IF ERROR.
+
+The thing I've noticed about this is that you must have at LEAST one pointer to a function that is found in user32.dll for the interrupt to work (doesn't matter which function).
+
+Q: Why is that?
+A: I don't really know, there are some connections with the interrupts and the OS perhaps.
+Anyway, for our code it will work because MessageBox() is found in user32.dll.
+
+Q: But why user32.dll?
+A: Because SetCursorPos() is found there :-)
+
+Q: What are the advantages/disadvantages of using this instead simply calling SetCursorPos()?
+A: A debugger wont break if you set a breakpoint on SetCursorPos()
+And as well, disadvantages. The interrupt ID might change in other incoming Windows versions.
+So, this one is tested on 2K only and I've also heard rumours that the ID is not same within XP.
+
+Good luck playing with your functions and native calls! ;)
+
+My thanks goes to: MiNoS, _death, Detten, Zephyrous, cektop, stingduk, CopyMasta (been a while mate!)
+
+(no) copyright (c) BoR0
+April, 2005 

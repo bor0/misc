@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>Writing your first keygen bruteforcer by BoR0</TITLE>
+<META NAME="BoR0" CONTENT="bor zero">
+</HEAD>
+<BODY BGCOLOR="#000000" ALIGN="CENTER" TEXT="#FFFFFF" LINK="#FFFFFF" VLINK="#800000" ALINK="#FFFFFF">
+<script language="javascript">
+Mu="u3229.98.spylog.com";Md=document;Mnv=navigator;Mp=1;
+Mn=(Mnv.appName.substring(0,2)=="Mi")?0:1;Mrn=Math.random();
+Mt=(new Date()).getTimezoneOffset();
+Mz="p="+Mp+"&rn="+Mrn+"&tl=0&ls=0&ln=0&t="+Mt;
+My="";
+My+="<img src='http://"+Mu+"/cnt?cid=322998&"+Mz+"&r1="+escape(Md.referrer)+"&r="+escape(parent.document.referrer)+"&pg="+escape(window.location.href)+"' border=0  width=1 height=1  alt='Mytrix'>";
+Md.write(My);//--></script><noscript>
+<img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1" alt='Mytrix' border='0'  width=1 height=1 >
+</noscript>
+
+<TABLE BGCOLOR=#425964 ALIGN="CENTER" WIDTH=95% BORDER=1 BORDERCOLOR="#FFFFFF" cellspacing=0 cellpadding=0 >
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT COLOR="#FF8000" SIZE="4"><B>
+		Writing your first keygen bruteforcer
+		</B></FONT>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+		TARGET     = <A HREF="http://66.98.132.48/theanalyst/K4N/k4n.zip">keygenning4newbies 1st</A><BR>
+		DIFF       = 2/10       <BR>
+		TOOLS USED = MASM32, Ollydbg, ResHacker<BR>
+                AUTHOR     = BoR0<BR>
+
+        </TD>
+</TR>
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT SIZE="3"><B>
+		   Intro
+		</B></FONT>
+	</TD>
+</TR>
+<TR>
+	<TD>
+<PRE>Hello,
+in this tutorial I am going to teach you how to simply bruteforce a keygenme.
+We all know that all the fun is in fishing the serial/algo, but why not try another way that works? :-)
+
+I will try to explain you most of the things, so be brief and keep reading further :)
+</PRE>
+	</TD>
+</TR>
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT SIZE="4"><B>
+		   main()
+		</B></FONT>
+	</TD>
+</TR>
+<TR>
+	<TD>
+<PRE>The first thing we need to do is to fish a serial and see the serial syntax.
+So lets do it. Launch ollydbg and debug the program. Set a breakpoint on lstrcmp.
+Enter username "BoR0" and some serial like "31337". Ollydbg breaks. What we see is:
+
+---------------------------------------------------------------------
+
+00401146  |. 50             PUSH EAX                                 ; /String2 = "9BB8"
+00401147  |. 8D95 E4FEFFFF  LEA EDX,DWORD PTR SS:[EBP-11C]           ; |
+0040114D  |. 52             PUSH EDX                                 ; |String1 = "31337"
+0040114E  |. E8 339C0000    CALL JMP.&KERNEL32.lstrcmpA              ; \lstrcmpA
+
+---------------------------------------------------------------------
+
+So we see its syntax is hexadecimal. By scrolling down a bit in olly we see:
+
+---------------------------------------------------------------------
+
+00401157  |. 68 3CB44000    PUSH k4n.0040B43C                        ; /Text = "Congratulations!
+IF this number comes *FROM YOUR* keygen, Write a tutorial dude ;)."
+0040115C  |. 56             PUSH ESI                                 ; |hWnd
+0040115D  |. E8 289B0000    CALL JMP.&USER32.SetWindowTextA          ; \SetWindowTextA
+
+---------------------------------------------------------------------
+
+Mmh, that must be the good message that is set in the textbar with SetWindowText.
+That's all we needed to use Olly for. You may close it now.
+Launch ResHacker now and open the executable.
+
+What we see is some few controls, but only some of them is a use to us. Like:
+
+---------------------------------------------------------------------
+
+CONTROL "", 104, EDIT, ES_LEFT | ES_MULTILINE | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+CONTROL "", 103, EDIT, ES_LEFT | ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_CHILD | WS_VISIBLE | WS_BORDER
+ | WS_TABSTOP
+CONTROL "Check the serial", 105, BUTTON, BS_PUSHBUTTON | BS_LEFTTEXT | WS_CHILD | WS_VISIBLE | WS_TABSTOP
+
+---------------------------------------------------------------------
+
+The ID 104 is the editbox for serial input. We will use it to put the bruteforced serial in it.
+The ID 103 is the textbar we need to compare with the Good Message so we will know when to stop bruteforcing
+and inform the user that a valid serial has been found.
+
+And the last ID that is 105 is our BUTTON, which we will need to send a message to press it.
+
+If you are still curious about the algo, set a breakpoint on GetWindowText and scroll down a bit.
+
+---------------------------------------------------------------------
+
+0040110C  |> 0FBE840D 48FFF>/MOVSX EAX,BYTE PTR SS:[EBP+ECX-B8]
+00401114  |. 41             |INC ECX
+00401115  |. 33C1           |XOR EAX,ECX
+00401117  |. 03D8           |ADD EBX,EAX
+00401119  |. 3B4D D8        |CMP ECX,DWORD PTR SS:[EBP-28]
+0040111C  |.^75 EE          \JNZ SHORT k4n.0040110C
+0040111E  |. 6BC0 06        IMUL EAX,EAX,6
+00401121  |. C1E3 07        SHL EBX,7
+00401124  |. 03C3           ADD EAX,EBX
+
+---------------------------------------------------------------------
+
+It moves the byte in eax, xors it with ecx (current loop) and adds the value in ebx.
+After it finishes it multiplies eax by 6, shifts ebx by 7 and then add the whole value into eax.
+
+eax holds our serial.
+
+The following section is the source code and will be explained how things works.
+I assume that the reader already knows basic asm.
+</PRE>
+	</TD>
+</TR>
+
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT SIZE="4"><B>
+		   Source code
+		</B></FONT>
+	</TD>
+</TR>
+
+<TR>
+	<TD>
+<PRE>
+; Bruteforcer for analyst's first keygenme.
+; http://www.keygenning4newbies.cjb.net/
+
+; Source code fully written by BoR0 (none of the parts were stolen :-)
+; If you're willing to use it in your piece just send some credits.
+
+; Instructions to use:
+; Launch the keygen, type in some username (e.g "BoR0")
+; then launch the bruteforcer and watch how the numbers
+; change :-p
+
+; --------------------------------------------------------------------
+
+.486
+.model flat, stdcall
+option casemap :none
+
+include \masm32\include\windows.inc
+include \masm32\include\user32.inc
+include \masm32\include\kernel32.inc
+
+includelib \masm32\lib\user32.lib
+includelib \masm32\lib\kernel32.lib
+
+.data
+; Window name (need it to get the handles)
+winname        db "Keygenning4newbies CrackMe 1 coded by tHE ANALYST [UCF/ID]", 0
+
+; Good message (used to compare)
+goodmsg        db "Congratulations! IF this number comes *FROM YOUR* keygen, Write a tutorial dude ;).", 0
+
+; Inform message title
+serfound       db "Serial found!", 0
+
+; Prefix we are going to use
+prefix         db "%X", 0
+
+; The loop counter
+loopcounter    dd 0
+
+; A buffer we will have the serial stored in
+buffer         db 128 dup(0)
+
+; Another buffer to check the textbar
+textbarcheck   db 128 dup(0)
+
+.data?
+; Special handles
+editboxhandle  dd ?
+buttonhandle   dd ?
+textbarhandle  dd ?
+
+.code
+start:
+invoke FindWindow, 0, ADDR winname
+
+cmp eax, 0 ; if window does not exist
+je @end    ; goto end
+
+push eax
+push eax
+
+invoke GetDlgItem, eax, 105 ; Store our button we're going to press
+mov buttonhandle, eax       ; in this variable
+
+pop eax
+
+invoke GetDlgItem, eax, 104 ; Store the editbox handle we're going to use
+mov editboxhandle, eax      ; to check serials in this variable
+
+pop eax
+
+invoke GetDlgItem, eax, 103 ; The textbar we're going to compare
+mov textbarhandle, eax      ; if a valid serial has been found
+
+; Main bruteforce loop
+
+@@:
+cmp loopcounter, 0FFFFFFFFh
+je @end
+
+invoke wsprintf, ADDR buffer, ADDR prefix, loopcounter         ; Convert our counter to a hex
+invoke SendMessage, editboxhandle, WM_SETTEXT, 0, ADDR buffer  ; Set the converted to the editbox
+invoke SendMessage, buttonhandle, BM_CLICK, 0, 0               ; Click the button
+
+; Check if a serial has been found
+invoke SendMessage, textbarhandle, WM_GETTEXT, SIZEOF goodmsg, ADDR textbarcheck
+
+; Comparing current textbar with good message
+invoke lstrcmp, ADDR textbarcheck, ADDR goodmsg
+
+cmp eax, 0
+je @found
+
+inc loopcounter
+
+jmp @B
+
+@end:
+
+; ----------------------------
+
+invoke ExitProcess, 0
+
+@found:
+
+invoke MessageBox, 0, ADDR buffer, ADDR serfound, 0 ; Inform user.
+jmp @end
+
+end start
+
+; End of bruteforcer.
+</PRE>
+
+	</TD>
+</TR>
+
+<TR BGCOLOR=#17748e>
+	<TD>
+		<FONT SIZE="3"><B>
+		   Outro
+		</B></FONT>
+	</TD>
+</TR>
+<TR>
+	<TD>
+<PRE>That would be all for now.
+
+All comments, bugs, suggestions are welcomed.
+You can contact me on the IRC channel #biw on EFnet (irc.efnet.net).
+
+I wish to thank some few special people:
+
+Detten (thanks for posting my tuts), aerosmith (giving me this idea maybe? :-)
+CopyMasta, b4d_s3ct0r (poz mate ;-), Mr_geek;
+
+The Win32asm community, BiW team, and all the others that have been helping me.
+
+
+copyright (c) BoR0
+December, 2004
+</PRE>
+	</TD>
+</TR>
+
+</TABLE>
+<DIV ALIGN="CENTER">
+<A HREF="http://biw-reversing.cjb.net"><B>biw-reversing.cjb.net</B></A><BR>
+<script language="javascript">
+Mrn=Math.random();Mz="";
+My="<a href='http://u3229.98.spylog.com/cnt?cid=322998&f=3&rn="+Mrn+"' target='_blank'><img src='http://u3229.98.spylog.com/cnt?cid=322998&";
+My+="p=1&f=4&rn="+Mrn+Mz+"' border=0  width=88 height=31   alt='Mytrix'></a>";Md.write(My);
+//--></script>
+        <noscript> <a href="http://u3229.98.spylog.com/cnt?cid=322998&f=3&p=1" target="_blank">
+        <img src="http://u3229.98.spylog.com/cnt?cid=322998&p=1&f=4" alt='Mytrix' border='0'  width=88 height=31 ></a>
+        </noscript>
+</DIV>
+</BODY>
+</HTML>
+

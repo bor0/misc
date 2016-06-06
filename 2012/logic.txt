@@ -1,0 +1,41 @@
+1. statement is a sentence that is either true or false
+2. argument is a series of sentences, and a conclusion
+
+The general structure of an argument in a natural language is that of premises (typically in the form of propositions, statements or sentences) in support of a claim: the conclusion.
+
+Premise: "Apples are a type of fruit."
+Premise: "All types of fruit are food."
+Conclusion: "Therefore, apples are food."
+
+If the conclusion is false then either one or more of the premises is false or the process of combining the premises is logically invalid.
+If the premises are true and the process is logically valid, then the conclusion must be true.
+
+
+
+3. Tabelata so critical rows vo Discrete Mathematics knigata:
+
+Vo site redici kade sto premises imaat TRUE vrednost, mora i conclusion da ima TRUE. Ako vo barem edna redica site premises se TRUE a conclusion e FALSE, togas argumentot ne e validen.
+
+4. statement that is either true or false is called a proposition:
+
+Sky is blue.
+
+predicate is a proposition whose truth depends on the value of one or more variables.
+
+x is blue.
+
+5. While both sets and sequences perform a gathering role, there are several differences.
+ The elements of a set are required to be distinct, but terms in a sequence can
+be the same. Thus, .a; b; a/ is a valid sequence of length three, but fa; b; ag
+is a set with two elements—not three.
+ The terms in a sequence have a specified order, but the elements of a set do
+not. For example, .a; b; c/ and .a; c; b/ are different sequences, but fa; b; cg
+and fa; c; bg are the same set.
+ Texts differ on notation for the empty sequence; we use  for the empty
+sequence.
+The product operation is one link between sets and sequences. A Cartesian
+product of sets, S1S2  Sn, is a new set consisting of all sequences where the
+first component is drawn from S1, the second from S2, and so forth. For example,
+N  fa; bg is the set of all pairs whose first element is a nonnegative integer and
+whose second element is an a or a b:
+N  fa; bg D f.0; a/; .0; b/; .1; a/; .1; b/; .2; a/; .2; b/; : : :g

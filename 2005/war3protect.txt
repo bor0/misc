@@ -1,0 +1,72 @@
+Warcraft 3 seems to use the SetSecurityInfo() api to prevent us to obtain its process handle.
+
+Okay, I debugged and I played around Warcraft 3 for some time.
+
+Trying myself to understand this protection scheme, I bring
+the proof here how to defeat this protection.
+
+SetSecurityInfo() blocks us from accessing it's memory.
+Let me explain SetSecurityInfo() to you:
+
+------------------------------------------
+The SetSecurityInfo function sets specified security information
+in the security descriptor of a specified object.
+The caller identifies the object by a handle.
+
+DWORD SetSecurityInfo(
+
+HANDLE handle, // handle to the object
+SE_OBJECT_TYPE ObjectType, // type of object
+SECURITY_INFORMATION SecurityInfo, // type of security information to set
+PSID psidOwner, // pointer to the new owner SID
+PSID psidGroup, // pointer to the new primary group SID
+PACL pDacl, // pointer to the new DACL
+PACL pSacl // pointer to the new SACL
+); 
+------------------------------------------ 
+
+Warcraft3 passes params to this function to block us from getting a valid process handle, or from altering its memory.
+We want this if we want to fiddle with it ;)
+
+But where is Warcraft doing this? Simply, debug it and set a breakpoint on SetSecurityInfo.
+
+After debugging as results we get:
+
+------------ game.dll snippet ------------
+.6F009962: 53 push ebx ;0
+.6F009963: 8D95E0FDFFFF lea edx,[ebp][-00000220]
+.6F009969: 52 push edx ; 0012FB4Ch
+.6F00996A: 53 push ebx ; 0
+.6F00996B: 53 push ebx ; 0
+.6F00996C: 6804000080 push 080000004 ; DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION
+.6F009971: 6A06 push 006 ; 6
+.6F009973: 50 push eax ; FFFFFFFFh
+.6F009974: FF55EC call d,[ebp][-14] ; SetSecurityInfo()
+------------ game.dll snippet ------------
+
+From here, we have the SetSecurityInfo() API call with params:
+SetSecurityInfo(0xFFFFFFFF, 6, DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION, 0, 0, 0x0012FB4C, 0);
+
+We just have to pass NULL as a third parameter.
+
+Passing NULL as SecurityInfo param, makes sure the api doesn't do anything that can block us. To be exact by making the param NULL, the api doesn't set the specified security information in the discretionary access control list (DACL) of the specified objects security descriptor.
+
+We patch 6804000080 at address 6F00996C to 6800000000.
+
+Just edit game.dll with ANY hex editor and patch it.
+I accessed Warcraft 3 memory without any problems :-)
+
+Good luck working on your map hacks, namespoof hacks, etc.
+
+;---------------------------------
+Thanks to BiW Reversing Community!
+Our site can be reached at:
+
+http://biw.rult.at/
+http://www.reversing.be/
+;---------------------------------
+
+Thanks: Detten, zeph, CopyMasta,[Wizzer] ; ...
+
+copyright (c) BoR0
+March, 2005
