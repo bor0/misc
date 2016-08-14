@@ -33,7 +33,7 @@ Notes on the readings (books):
 4. Introduces the reader to set theory, and proving properties for it. Found to be useful to prove correctness of functional programming languages programs. For example, using induction to prove the correctness of `length`.
 5. Introduces the reader to common programming patterns, such as DRY, keeping up to date with tools, etc.
 6. **Work in progress**.
-7. **Work in progress** Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
+7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
 
 Notes on the readings (tutorials):
 
