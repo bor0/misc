@@ -23,7 +23,6 @@ In addition, here are some good tutorials:
 | 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
 | 5. Mathematics for CS   | https://www.cs.princeton.edu/courses/archive/fall06/cos341/handouts/mathcs.pdf |
-| 6. Hoare logic          | http://www.cl.cam.ac.uk/~mjcg/Teaching/2011/Hoare/Notes/Notes.pdf |
 
 Notes on the readings (books):
 
@@ -42,6 +41,5 @@ Notes on the readings (tutorials):
 3. An interesting way to declare integers (and other objects) in terms of f(x), f(f(x)), etc.
 4. Prolog was fun for me because it's a different non-mainstream paradigm and also introduces some interesting concepts.
 5. **Work in progress**.
-6. **Work in progress**.
 
 Boro Sitnikovski
