@@ -1,0 +1,223 @@
+[20:30] == BoR0 [1f0b5ea8@gateway/web/freenode/ip.31.11.94.168] has joined ##categorytheory
+[20:45] == heath [quassel@2600:3c02::f03c:91ff:feae:6e5b] has joined ##categorytheory
+[20:45] == heath [quassel@2600:3c02::f03c:91ff:feae:6e5b] has quit [Changing host]
+[20:45] == heath [quassel@unaffiliated/ybit] has joined ##categorytheory
+[20:51] <ReinH> BoR0: hi :)
+[20:51] <ReinH> BoR0: so let's start by restating your question: in f : 1 -> M, what is `1'?
+[20:51] <ReinH> BoR0: so before answering, I need to ask: what is M?
+[20:52] <BoR0> ReinH: basically the other day I asked here why do we need identity at all? augur gave some example, I don't remember it right now but it was something about sending x to e*x
+[20:52] <ReinH> because `1' is probably an identity, but which one it is depends on context
+[20:52] <augur> BoR0: monoids
+[20:52] <BoR0> and he mentioned  e: 1 -> M and then composed it with some other function (it was an example to show how identity is useful in that case)
+[20:52] <ReinH> augur: oh hi :)
+[20:52] <augur> BoR0: 1 in 1 -> M is the initial object in the category in question
+[20:53] <BoR0> yes, that's what I read. initial/terminal object. I don't understand that at all
+[20:53] <augur> er sorry its terminal
+[20:53] <augur> 0 is initial
+[20:53] <BoR0> what is an initial object and what is a terminal one?
+[20:54] <augur> an object X is an initial object if, for all other objects Y, there exists a unique arrow from X to Y
+[20:54] <BoR0> a one-to-many like relationship?
+[20:54] <augur> no
+[20:54] <augur> an object X is initial if...
+[20:54] <augur> BoR0: do you know any functional programming?
+[20:55] <augur> or at least some mathy stuff with sets?
+[20:55] <BoR0> a bit of both
+[20:55] <augur> ok, so ill use a mix of both :p
+[20:55] <augur> the set {} is empty, right?
+[20:55] <BoR0> yes
+[20:55] <augur> so given any set Y, how many functions are there with the type {} -> Y
+[20:55] <augur> ??
+[20:56] <BoR0> none? because there are no objects in {}
+[20:56] <augur> false!
+[20:56] <augur> there is exactly one function
+[20:57] <augur> a function maps all objects in its dom to some object in its codom
+[20:57] <BoR0> but the dom is empty isn't it
+[20:57] <augur> sure
+[20:57] <augur> so there is only one way to map all 0 objects
+[20:57] <augur> the empty function!
+[20:57] <BoR0> haha, all 0 objects
+[20:57] <BoR0> ok ok, now I assume the empty function exists. what is its purpose
+[20:58] <augur> well
+[20:58] <augur> so there's only one such thing, right
+[20:58] <augur> so forall Y, there exists exactly one f : {} -> Y
+[20:59] == tpsinnem [~tpsinnem@a91-156-149-49.elisa-laajakaista.fi] has quit [Ping timeout: 252 seconds]
+[20:59] <BoR0> ok, we have f that accepts nothing and returns some object in Y. this confuses me a bit
+[21:00] <augur> ahh but
+[21:00] <augur> look, if {} is empty, then what will you ever apply f to?
+[21:00] <ReinH> augur: maybe we can use (platonic) Hask?
+[21:01] == mjs2600 [~mjs2600`@192.58.147.218] has quit [Remote host closed the connection]
+[21:01] <augur> ReinH: no :P
+[21:01] <augur> BoR0: another way to look at this is
+[21:01] <augur> functions are special relations, right?
+[21:01] <ReinH> augur: :p fine
+[21:01] <augur> a function X -> Y is just a fancy subset of X*Y
+[21:01] <BoR0> augur: ok, yes and that's what confuses me. we have f = { (nil, y_1), (nil, y_2), ... } where y_x is in Y
+[21:01] <augur> f : X -> Y   is just a way of saying   f ? X*Y and f is left-unique
+[21:01] <augur> BoR0: whats nil?
+[21:02] <augur> aint no nil
+[21:02] <BoR0> an element from the empty set, so nothing I guess
+[21:02] <augur> BoR0: no such thing
+[21:02] <augur> the empty set is empty! it has no elements!
+[21:02] <BoR0> how can we make a function that accepts elements from it (or the set itself) then?
+[21:03] <augur> BoR0: the function is the empty function!
+[21:03] <augur> BoR0: in haskell theres no way to define it
+[21:03] <augur> in agda you'd write something like
+[21:03] <augur> f : Empty -> Y
+[21:03] <augur> f ()
+[21:03] <augur> where the () is agda's way of letting you say "there is no such argument, so i dont have to define anything"
+[21:03] <BoR0> I don't know agda sorry. maybe we can pick some particular category s.t. I can get a sense of it? e.g. Hask or Set
+[21:03] <augur> BoR0: we're talking about Set currently
+[21:04] <BoR0> ok, so we have the empty function e : 1 -> M. how can I use it? what can I apply to it? what does it serve for?
+[21:04] <augur> BoR0: if you think of functions as special kinds of relations, then f ? ? ? Y
+[21:04] <augur> so firstly, what is ? ? Y
+[21:04] <ReinH> augur: f a = case a of {} :p
+[21:04] <augur> BoR0: no no no
+[21:04] <augur> 1 -> M is not the empty function
+[21:05] <augur> BoR0: we're talking about initial objects, 1 is terminal. let me lead :P
+[21:05] <BoR0> ? ? Y = {(???, y_1), (???, y_2), ... } no?
+[21:05] <augur> BoR0: nop
+[21:05] <augur> ? ? Y = ?
+[21:05] <BoR0> ah, right!
+[21:06] <augur> so if f ? ?
+[21:06] <augur> what is f?
+[21:06] <BoR0> the empty set itself
+[21:06] <augur> right
+[21:06] <augur> so f = ?
+[21:06] <augur> which is correct
+[21:06] <ReinH> > [ (x,y) | x <- [], y <- [1..]]
+[21:06] <lambdabot>  []
+[21:06] <augur> remember, a function is a bunch of pairs of input-output
+[21:06] <BoR0> good haskell example
+[21:06] <augur> so: no pairs is still a bunch of pairs!
+[21:06] <augur> so thats the empty function
+[21:07] <ReinH> > [ (x,y) | x <- [1], y <- [1..4]] -- now do terminal!
+[21:07] <lambdabot>  [(1,1),(1,2),(1,3),(1,4)]
+[21:07] <augur> so ? is the initial object in Set
+[21:07] <BoR0> what is its the type of tthe empty function? is it f : ? -> ? or just f : ? or something else
+[21:07] <augur> similarly, {*} is the terminal object in set
+[21:07] <augur> no
+[21:07] <ReinH> oops wrong way
+[21:07] <augur> there are many empty functions
+[21:07] <ReinH> > [ (x,y) | x <- [1..4], y <- [1]] -- now do terminal!
+[21:07] <lambdabot>  [(1,1),(2,1),(3,1),(4,1)]
+[21:07] <augur> f : ? -> Y   for some Y
+[21:08] <augur> now: an object Y is terminal if for all X, there exists a unique f : X -> Y
+[21:08] <BoR0> but if ? -> Y = ? x Y = ? and ? -> G = ? x G = ? how are they not equal?
+[21:08] <augur> BoR0: because in CT, arrows arent just functions
+[21:09] <augur> arrows come equipped with types
+[21:09] <augur> at some level yes, they're "the same"
+[21:09] <BoR0> got it!
+[21:09] <augur> if you ignore the types
+[21:09] <BoR0> what do we gain from them having types then?
+[21:09] <augur> now, why should we need e : 1 -> M?
+[21:09] <augur> oh, btw, first notation:
+[21:09] <augur> 0 = the initial obj
+[21:09] <augur> 1 = terminal
+[21:09] <BoR0> 0 is empty set?
+[21:10] <augur> no
+[21:10] <augur> a zero
+[21:10] <BoR0> how is e : 1 -> M different from e : ? -> M?
+[21:10] <augur> well ? is a set, 1 is (some) terminal object
+[21:10] <ReinH> augur: I'm going to have to write an irssi plugin that translates (some useful subset of) latex math notation to unicode
+[21:10] <tac> 1 -> M in Set would just be a point of M.
+[21:10] <augur> ? isnt terminal, it's initial
+[21:10] <tac> There are lots of choices for 1 -> M, usually
+[21:10] <tac> One choice for each point in M
+[21:10] <BoR0> so 1 in Set says "one pair" ?
+[21:11] <augur> BoR0: no
+[21:11] <augur> well
+[21:11] <augur> no
+[21:11] <augur> 1 in Set is "some one-element set"
+[21:11] <augur> it doesnt matter what the element is
+[21:11] <augur> so we usually say _the_ one element set
+[21:11] <augur> 0 is _the_ zero element set
+[21:11] <augur> 2 is _the_ two element set, etc.
+[21:11] <BoR0> sorry, but before stepping into 1 -> M, can you tell me why is the empty function there? what is its purpose? ? -> M? how can I use it
+[21:12] <augur> aint no purposes
+[21:12] <augur> this is math!
+[21:12] <BoR0> :D
+[21:12] <augur> the definition of the category Set is that the objects are sets
+[21:12] <augur> and the arrows are total functions
+[21:12] <augur> thats it
+[21:12] <augur> so by necessity there is a set ? and a bunch of empty functions
+[21:12] <BoR0> ok, we have a completely useless function, the empty function. so it does nothing
+[21:12] <augur> its just a consequence of the definition of Set
+[21:13] <augur> well its not completely useless
+[21:13] <augur> i mean, you can put it to use if you're using Set to model propositional logic, for instance
+[21:14] <BoR0> so, f : ? -> M; g : M -> N, we can do (g . f), what do we get with that? it starts from nowhere and gets to N ?
+[21:15] <augur> yes, g.f : ? -> N
+[21:15] == joneshf-laptop [~joneshf@128.120.117.73] has joined ##categorytheory
+[21:15] <augur> if we think about Set as being a model for propositional logic
+[21:16] <augur> then   f : ? > C   corresponds to the principle of explosion
+[21:16] <augur> that is, falsity entails everything
+[21:17] <augur> False ? C
+[21:17] <BoR0> ok, so we have a strange empty function that's not completely useless. now why would we need such a function e : 1 -> M? you used this one to show me that example with identity
+[21:17] <augur> well so first lets be clear about what 1 -> M is in Set
+[21:17] <augur> as tac said, functions 1 -> M are "points"
+[21:18] <augur> that is to say, since 1 in Set is the singleton set, g : 1 -> Y sets its one object to some element of Y
+[21:18] <BoR0> what elements does 1 contain? 1xM? or is it a special case (extension of set theory just like with the empty function)
+[21:18] <augur> no
+[21:18] <augur> 1 is a set, right?
+[21:18] <augur> 1 is a one element set
+[21:18] <augur> it contains one element
+[21:18] <BoR0> what is a singleton set?
+[21:19] <tac> BoR0: {0}
+[21:19] <augur> a one element set
+[21:19] <BoR0> ok
+[21:19] <augur> tac: no no dont do that
+[21:19] <tac> or {pi}
+[21:19] <tac> or {{}}
+[21:19] <augur> eugh dont use sets in sets in category theory
+[21:19] <tac> Doesn't matter what's in it because you only care about what an object is up to isomorphism usually
+[21:19] <augur> thats awful, tac
+[21:19] <augur> :|
+[21:19] <tac> augur: You're being obnoxious about it.
+[21:20] <tac> Sets of sets are just fine. But the point is not what's inside
+[21:20] <augur> BoR0: yes, so, as tac says, in category theory, we dont care about the "insides" of objects -- if there even are insides
+[21:20] == mjs2600 [~mjs2600`@192.58.147.218] has joined ##categorytheory
+[21:20] <augur> what we care about is how objects relate to other objects via arrows
+[21:20] <augur> thats it
+[21:20] <BoR0> I noted that a while ago, the abstract/practice ratio is totally different for CT
+[21:20] <augur> so when we say _the_ one element set, its because we cant see inside the sets, so we dont know whats in them
+[21:21] <BoR0> so we focus on the types and chaining them?
+[21:21] <augur> yes
+[21:21] <tac> Technically, Sets doesn't have a single terminal object 1.... it has many many many
+[21:21] <augur> well, chaining arrows
+[21:21] <tac> but they are all "canonically isomorphic"
+[21:21] <augur> ok so BoR0, if g : 1 -> Y in Set, then g is a function that basically just picks out some element of Y
+[21:21] <augur> so basically, g is kiiiinda just that element
+[21:22] <augur> not actually, mind you, but kinda
+[21:22] <augur> think of haskell
+[21:22] <augur> if you have a function () -> Int
+[21:22] <augur> its just a delayed int, its always the same int, and there are as many such functions as there are Ints
+[21:23] <BoR0> so for each element in Y we have g : 1 -> Y, so we try to "represent" each element in Y as a function?
+[21:23] <BoR0> s/element/object/
+[21:23] <augur> but, this is really only true of Set, its not really true of other categories
+[21:23] <tac> Using maps 1 -> M to represent "points" is a very special property of Sets
+[21:23] <augur> eh. there's just a function, g, that maps from 1 to Y picking out that element
+[21:23] <tac> Using 1 -> M isn't going to work in many other kinds of categories
+[21:23] <augur> for any object y in Y, there's a function g such that g(*) = y
+[21:24] <augur> where * is the element of 1
+[21:24] <BoR0> if you answer "yes" to my last question I think I'll get the identity example as well :)
+[21:24] <augur> BoR0: well dont be so quick!
+[21:24] <augur> BoR0: yes, thats the intuition behind the e : 1 -> M example
+[21:24] <BoR0> great
+[21:24] <augur> _IF_ we're in the category Set
+[21:24] <augur> but! who says we have to be in Set?
+[21:24] <augur> all we need is that e : 1 -> M in the category in question
+[21:24] <augur> where 1 is the terminal object of the category
+[21:26] <augur> ok im going to afk for a while
+[21:26] <augur> BoR0: i think you should watch Catsters
+[21:26] <ReinH> augur: ooh can we talk about exponentials now? :D
+[21:26] <augur> no :P
+[21:26] <augur> watch catsters
+[21:26] <BoR0> I think I got a general sense out of it. I'll save the log and re-read again. I will be back in a bit
+[21:26] <BoR0> thanks augur ReinH and tac
+[21:26] <ReinH> :(
+[21:26] == tac [~tac-tics@c-71-239-99-94.hsd1.il.comcast.net]
+[21:26] ==  realname : realname
+[21:26] ==  channels : ##categorytheory
+[21:26] ==  server   : morgan.freenode.net [Chicago, IL, USA]
+[21:26] ==  account  : tac-tics
+[21:26] == End of WHOIS
+[21:26] <ReinH> Well I'm going to anyway

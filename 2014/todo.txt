@@ -1,0 +1,29 @@
+1. Read on Applicatives
+    -- 1st way
+    -- result <- maybe (return "[]")
+        -- (\x -> maybe (return "[]")
+            -- (\y -> maybe (return "[]")
+                -- (\z -> getStatus' x y z)
+                -- param3)
+            -- param2)
+        -- param1
+
+    -- 2nd way
+    result <- fromMaybe (return "[]") (pure getStatus' <*> param1 <*> param2 <*> param3)
+
+    -- 3rd way
+    --result <- fromMaybe (return "[]") (getStatus' <$> param1 <*> param2 <*> param3)
+
+    -- 4th way
+    result <- fromMaybe (return "[]") (liftA3 getStatus' param1 param2 param3)
+
+    -- *FDB Control.Applicative> let add x y = x + y
+    -- *FDB Control.Applicative> add <$> (Just 3) <*> (Just 5)
+    -- Just 8
+    -- *FDB Control.Applicative> add <$> (Just 3) <*> Nothing
+    -- Nothing
+
+2. Read on Monad Transformers
+3. Read the logs
+4. UTF8 app issues
+5. ODBC connection string persistence

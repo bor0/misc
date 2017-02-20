@@ -1,0 +1,996 @@
+[18:53] == [aviraldg] [aviraldg@unaffiliated/aviraldg] has joined #haskell
+[18:54] == mmachenry [~Adium@208.78.140.246] has quit [Ping timeout: 245 seconds]
+[18:54] == merijn [~merijn@inconsistent.nl] has joined #haskell
+[18:54] <albeit> Okay, thanks. Is there a reason why Data.Array is used in a lot of dynamic programming examples for memoization instead of other stuctures?
+[18:54] == steamboat [~sehrlich@c-76-17-123-250.hsd1.ga.comcast.net] has joined #haskell
+[18:54] <quchen> I sometimes combine Ix and Vector manually if I need multidimensional data.
+[18:54] == [aviraldg] [aviraldg@unaffiliated/aviraldg] has quit [Max SendQ exceeded]
+[18:54] <quchen> albeit: Maybe they're old. I think Array predates Vector.
+[18:54] == tazjin [~tazjin@80.239.169.194] has joined #haskell
+[18:54] == [aviraldg] [aviraldg@unaffiliated/aviraldg] has joined #haskell
+[18:54] == Caztiel [~me@unaffiliated/caztiel] has quit [Remote host closed the connection]
+[18:55] == [1]Endy [~Endy@5.251.134.163] has quit [Ping timeout: 258 seconds]
+[18:55] == JakeE [~JakeE@ip-18-10.net.ksu.edu] has joined #haskell
+[18:55] == kotopies [~kotopies@unaffiliated/kotopies] has joined #haskell
+[18:55] <albeit> Ah, the Data.Array I'm trying to filter is 3D, and I only want the values where the third dimension is equal to some value
+[18:55] <quchen> For everything I've done so far, Array is like Vector with the Ix typeclass baked in, but a much worse API in general.
+[18:55] <geekosaur> yes, Vector is actually fairly young and a lot of the memoization stuff was written before it existed
+[18:55] <Walther> Is there a way to check if an ioref exists? Like, "if positionLog doesn't exist, let templog = newIORef [] else foo"
+[18:55] <JakeE> Is there a complete combinator basis for system F? what about system F-omega?
+[18:55] == yrjolam [~quassel@95.85.15.236] has joined #haskell
+[18:55] <flebron> The concepts of DP should translate transparently between Array and Vector.
+[18:55] == aviraldg [aviraldg@unaffiliated/aviraldg] has quit [Ping timeout: 252 seconds]
+[18:56] == tibbe [tibbe@nat/google/x-ggoqchdgsgsiprgz] has quit [Client Quit]
+[18:56] == ArneL [~ArneL@p4FE84A42.dip0.t-ipconnect.de] has joined #haskell
+[18:56] <geekosaur> Walther, how could it not exist? remember that you can't make a mutable reference (except by using newIORef)...
+[18:56] == vkbsh [~vkbsh@207-38-151-173.c3-0.avec-ubr2.nyr-avec.ny.cable.rcn.com] has joined #haskell
+[18:56] <geekosaur> maybe what you want is to create it with a Maybe type, initialized to Nothing
+[18:56] <quchen> Walther: You can't reference something that doesn't exist. In order to call a function "exists ioRef :: IORef a -> Bool" you have to specify an existing IORef.
+[18:56] <quchen> In other words, "exists ioRef = True" :-?
+[18:56] <shergill> to anyone in montreal: if you're interested in typed edsl's i'll be presenting oleg and ken shan's paper on final tagless interpreters at the montreal haskell meetup next month
+[18:56] == AmroPlay [~AmroPlay@kssl-4d0840a9.pool.mediaWays.net] has quit [Ping timeout: 245 seconds]
+[18:57] <albeit> Okay, I'll check out Vector. Some quick googling showed some people recommended repa for multi-dimensional arrays. Anybody have experience with it / recommend it?
+[18:57] <merijn> quchen: "exists undefined" :p
+[18:57] <prophile> ahem
+[18:57] <monochrom> it is interesting how the container intuition is tautological and therefore informationless. you look at Maybe, [] being containers. you may even argue that R->A is a container of A, and I would even agree. then you extrapolate that every Monad is a container. ah, but you're only referring to examples of the form "newtype MyMonad a = Ctor (some container type here)". container types are containers, of course.
+[18:57] <prophile> ARGH, CABAL
+[18:57] <prophile> that is all
+[18:57] <quchen> merijn: That's True, because 'undefiend' is defined.
+[18:57] <Walther> quchen: geekosaur: I'm getting "not in scope" if I define it earlier in main loop and try tro read or write to the ioref within another function. However, if I create the ioref within the function, it would reset every single time >_>
+[18:57] <Walther> I just want a mutable list that I can append and read from
+[18:57] <merijn> Walther: Well, is it in scope?
+[18:58] <quchen> Walther: Pass the IORef as a parameter to the "another function"
+[18:58] <merijn> Walther: IORef's are not magically global, they obey scoping rules like everything else
+[18:58] <geekosaur> no, what you want is a global variable, which means you're not thinking in Haskell
+[18:58] <srhb> Readear monad + IORef = global scope (ish)!
+[18:58] <flebron> albeit: Repa will be useful if you're doing parallel stuff.
+[18:58] <geekosaur> if you need it in multiple places, you need to pass it around, either explicitly or via a monad that carries it for you (e.g. State)
+[18:58] <geekosaur> or StateT IO in this case
+[18:59] <srhb> Why would you want StateT for an IORef?
+[18:59] <merijn> srhb: Naah, unsafePerformIO + NOINLINE abuse = global scope (ish) :p
+[18:59] <srhb> merijn: :|
+[18:59] == kludge` [~comet@unaffiliated/espiral] has quit [Ping timeout: 240 seconds]
+[18:59] == banister [~textual@5ED29234.cm-7-3c.dynamic.ziggo.nl] has quit [Quit: My MacBook has gone to sleep. ZZZzzz…]
+[18:59] <merijn> srhb: I'm a vile person :)
+[18:59] <quchen> merijn: ish?
+[18:59] <flebron> For example, in bottom-up DP you could traverse an entire row in parallel, updating that row at once.
+[18:59] <geekosaur> well, ReaderT IO
+[18:59] == marr [~ccc@78.9.128.139] has joined #haskell
+[18:59] == innertracks [~Thunderbi@174-21-201-217.tukw.qwest.net] has joined #haskell
+[18:59] <Walther> geekosaur: thing is, i'm getting messages from a server, and I need to log those. Then I need to send response messages based on last message, or last n messages, or whatever. So essentially, I need to be able to read and write to a global mutable list
+[18:59] == edsko_ [~edsko@80.111.60.101] has joined #haskell
+[19:00] <merijn> geekosaur: Why bother with "ReaderT IO"? Just do "Reader r (IO a)"
+[19:00] <srhb> Walther: But it sounds like you might not even want an IORef
+[19:00] <srhb> Walther: No, you don't need that.
+[19:00] == meoblast001 [~meoblast@port-92-196-62-70.dynamic.qsc.de] has joined #haskell
+[19:00] <Walther> So far I've been pointed to State and Writer, and both have seemed awfully complicated
+[19:00] <merijn> Walther: You can just pass IORef as an argument to your server and client?
+[19:00] <srhb> Walther: They're not and they're probably the right solution.
+[19:00] <srhb> Walther: If you try to shoehorn the idea of global mutable variables into Haskell, you're going to have a bad time. :)
+[19:01] == vkbsh [~vkbsh@207-38-151-173.c3-0.avec-ubr2.nyr-avec.ny.cable.rcn.com] has quit [Ping timeout: 252 seconds]
+[19:01] <srhb> You should try to do it right instead, even if that takes some relearning.
+[19:01] <geekosaur> they're "complicated" if you want to force Haskell to be a strict langiuage with global mutable variables
+[19:01] == alphonse23 [~sean@98.158.206.110] has joined #haskell
+[19:01] <geekosaur> because it isn't
+[19:01] == sgeisenh [~sgeisenh@128.237.201.55] has joined #haskell
+[19:01] <albeit> felbron: Not that advanced yet, but when using repa for doing an entire row in parallel, does it do it "automatically" or do you specify that it should be performed parallel?
+[19:01] <Walther> I'm trying to log messages that I get in, and respond based on earlier messages that i can read from the log, not shoehorn mutables to haskell :|
+[19:01] <merijn> Sounds like wants "StateT [a] IO" anyway
+[19:01] <srhb> Walther: You can do that with State
+[19:01] <srhb> Or well, yes, StateT foo IO
+[19:02] == MrGwen [~Thunderbi@hem62-1-82-238-50-252.fbx.proxad.net] has quit [Ping timeout: 265 seconds]
+[19:02] == [2]Endy [~Endy@5.251.134.163] has quit [Quit:  Want to be different? Try HydraIRC -> http://www.hydrairc.com <-]
+[19:02] <geekosaur> except that every way you are tring to do it involves a mutable global variable. You;re thinking about it wrong and calling the right way too complicated
+[19:02] == innertracks [~Thunderbi@174-21-201-217.tukw.qwest.net] has quit [Remote host closed the connection]
+[19:02] == mmachenry [~Adium@208.78.140.246] has joined #haskell
+[19:02] <srhb> Walther: But if you want to follow through on your IORef (don't) all you need is main = do { a <- newIORef ...; foo a }; foo ref = do ... ref ...
+[19:02] == urbanslug [~urbanslug@unaffiliated/zipper] has joined #haskell
+[19:02] == Ralith [~ralith@c-24-56-252-127.customer.broadstripe.net] has quit [Ping timeout: 245 seconds]
+[19:02] == igro [~igro@h-89-49.a176.priv.bahnhof.se] has joined #haskell
+[19:03] <savanni> albeit: I'm starting in with Repa and it seems pretty nice
+[19:03] <srhb> Walther: You should really learn to ues StateT. :)
+[19:03] <Walther> geekosaur: Feel free to try and explain me how to achieve the end result i need in the more "correct" way
+[19:03] <geekosaur> have you been reading what others have been telling you?
+[19:03] <savanni> albeit: I'm working with imaging data, and that's inherently multidimensional, and I like how Repa seems to manage that.
+[19:03] <srhb> Walther: Well, you fill your state with the stuff you get from the server
+[19:03] <srhb> Walther: Then all your functions operate on that state
+[19:03] == PaulVisschers [~PaulV@195-241-202-181.ip.telfort.nl] has joined #haskell
+[19:03] <srhb> Walther: By using "get".
+[19:03] == mmachenry1 [~Adium@208.78.140.246] has joined #haskell
+[19:04] <albeit> Okay great I'll check it out.
+[19:04] == tharper [~tomh@c83-250-222-76.bredband.comhem.se] has joined #haskell
+[19:04] == mmachenry [~Adium@208.78.140.246] has quit [Read error: Connection reset by peer]
+[19:04] == tharper [~tomh@c83-250-222-76.bredband.comhem.se] has quit [Changing host]
+[19:04] == tharper [~tomh@unaffiliated/sioraiocht] has joined #haskell
+[19:04] == pheaver [~pweaver@67.139.70.154] has joined #haskell
+[19:05] == sea-gull [sea-gull@gateway/shell/panicbnc/x-mctnjvtwwwufnjip] has joined #haskell
+[19:05] == kludge` [~comet@unaffiliated/espiral] has joined #haskell
+[19:05] == sgeisenh [~sgeisenh@128.237.201.55] has quit [Ping timeout: 250 seconds]
+[19:06] == sea-gull_ [~sea-gull@37.110.213.14] has joined #haskell
+[19:06] == Nikotiini [~niko@cable-roi-50ddfa-96.dhcp.inet.fi] has joined #haskell
+[19:06] == Geir_ [~Geir@li184-224.members.linode.com] has joined #haskell
+[19:06] == recycle [~recycle@198-24-198-253.static-ip.telepacific.net] has joined #haskell
+[19:06] == jefimenko [~jordanl@unaffiliated/jordanl] has joined #haskell
+[19:06] == pi3r [~pi3r@130.205-240-81.adsl-dyn.isp.belgacom.be] has joined #haskell
+[19:06] == sea-gull_ [~sea-gull@37.110.213.14] has quit [Client Quit]
+[19:07] == yogurt_truck [~yogurt_tr@190.191.241.164] has joined #haskell
+[19:07] == phischu [~pschuster@dslb-084-063-117-012.pools.arcor-ip.net] has quit [Ping timeout: 252 seconds]
+[19:07] == nt [~antiq@a89-152-9-45.cpe.netcabo.pt] has quit [Ping timeout: 258 seconds]
+[19:07] <savanni> Although, does Repa have an ST or some other destructive update interface?  I'm not sure that I will need it, but...
+[19:07] == m1stermag1c [~m1stermag@eg0159.uvt.nl] has quit [Quit: leaving]
+[19:08] == jfischoff [~jfischoff@corp.imvu.com] has joined #haskell
+[19:08] == gnuvince [~vince@unaffiliated/gnuvince] has quit [Ping timeout: 276 seconds]
+[19:08] == gamegoblin [~grant@130.184.253.72] has quit [Quit: gamegoblin]
+[19:08] <Walther> srhb: I'm confused; that's very abstract
+[19:08] == Geir_ [~Geir@li184-224.members.linode.com] has left #haskell []
+[19:09] == hiroakip [~hiroaki@77-20-77-215-dynip.superkabel.de] has joined #haskell
+[19:09] <srhb> Walther: I've written you an example
+[19:09] == paullik [~paullik@unaffiliated/paullik] has joined #haskell
+[19:09] == S_T_A_N [~S_T_A_N@ip099-239.wlan-zone1.WKU.EDU] has quit [Quit: ?????]
+[19:09] == ndrei [~avo@ESSEC.edge5.Paris1.Level3.net] has quit [Ping timeout: 250 seconds]
+[19:09] == madariaga [~mariano@190.178.140.228] has joined #haskell
+[19:09] == mada [~mariano@190.178.140.228] has quit [Quit: mada]
+[19:09] <srhb> Walther: http://lpaste.net/102786
+[19:09] == laar [~lars@ip60-210-173-82.adsl2.static.versatel.nl] has joined #haskell
+[19:09] == madariaga has changed nick to mada
+[19:10] <srhb> Walther: Try to see if you get the gist of it, then ask about it.
+[19:10] == David__ [~David@unaffiliated/david] has joined #haskell
+[19:10] == David__ has changed nick to David
+[19:10] == tfng [~tfng@180.183.158.155] has quit [Ping timeout: 276 seconds]
+[19:10] <alpounet> savanni: nope, not AFAIK
+[19:11] == zeroknowledge [~zeroknowl@host247-155-dynamic.20-87-r.retail.telecomitalia.it] has quit [Ping timeout: 265 seconds]
+[19:11] == bos [~bos@facebook/mercurial/bos] has quit [Remote host closed the connection]
+[19:11] == yogurt_truck [~yogurt_tr@190.191.241.164] has quit [Ping timeout: 258 seconds]
+[19:11] == jbest1 [~jbest@209.220.65.228.ptr.us.xo.net] has joined #haskell
+[19:12] <njsg> srhb: so evalStateT needs to be used for the whole thing to work?
+[19:12] <Walther> srhb: I'm sorry for being a bit slow, but I really have a hard time comprehending any of this.
+[19:12] == dancek [dancek@2604:180::6ea9:1c0] has left #haskell []
+[19:12] == JakeE [~JakeE@ip-18-10.net.ksu.edu] has quit [Quit: Leaving]
+[19:12] <srhb> njsg: evalStateT or execStateT or runStateT -- depending on what you need
+[19:12] == triliyn [~lioneyes@71-9-91-116.dhcp.rvsd.ca.charter.com] has joined #haskell
+[19:12] == ormaaj [~ormaaj@67-4-210-155.mpls.qwest.net] has quit [Ping timeout: 250 seconds]
+[19:12] == yogurt_truck [~yogurt_tr@190.191.241.164] has joined #haskell
+[19:13] == tonbo [~tonbo@8afbda7c.st-andrews.ac.uk] has joined #haskell
+[19:13] == silasm [~silas@130.65.0.3] has joined #haskell
+[19:13] <srhb> Walther: Take it line by line. in foo, we read a line from stdin. If that line is equal to "q", we quit. Otherwise, we append the line to the state and run foo again
+[19:13] <srhb> Walther: In bar, we get the state (the list of Strings collected in foo), then print that we're quitting and then print all the collected strings
+[19:13] <savanni> alpounet: then I'll ask here or on Stack Overflow if I run into a real case in which that gets in my way.  I'm hard pressed to think of one right now, though.
+[19:13] <srhb> Walther: I think that's pretty close to your logging example, no?
+[19:14] == srenatus [~srenatus@185.27.180.24] has quit [Excess Flood]
+[19:14] == srenatus [~srenatus@185.27.180.24] has joined #haskell
+[19:14] <srhb> njsg: Consider foo and bar actions in the StateT monad, we need to execute them somehow, and evalStateT dos that.
+[19:14] <srhb> does*
+[19:15] == derek_c_ [~derek@nat-128-84-124-0-397.cit.cornell.edu] has joined #haskell
+[19:15] <Wizek__> Good morning!
+[19:15] == tremon [~aschuring@d594e6a3.dsl.concepts.nl] has joined #haskell
+[19:15] == Wizek__ has changed nick to Wizek
+[19:16] == klaut [~klaut@88.151.154.86] has quit [Remote host closed the connection]
+[19:16] == derek_c [~derek@nat-128-84-124-0-397.cit.cornell.edu] has joined #haskell
+[19:16] <srhb> Wizek: o/
+[19:17] <alpounet> savanni: what's your use case? repa can be really really fast, so hopefully you won't need to drop down to ST
+[19:17] <Wizek> Is there a Function typeclass? And why isn't there?
+[19:18] <srhb> Wizek: What would it do?
+[19:18] == edwardk [~edwardk@pdpc/supporter/professional/edwardk] has joined #haskell
+[19:18] == jutaro [~jutaro@p20030045EE435889DDCE76390BF96A7B.dip0.t-ipconnect.de] has joined #haskell
+[19:18] <Wizek> srhb: It could implement the isFunction function as a start :)
+[19:18] <ion> Category? :-P
+[19:19] <ion> isFunction :: (a -> b) -> Bool; isFunction = const True
+[19:19] <srhb> Wizek: But that's already in the types.
+[19:19] <savanni> alpounet: before I discovered repa I was parsing images into an unboxed vector.  I wasn't able to figure out how to express that as a generator, so I needed in-place destructive updates to get up to a good speed.
+[19:19] <srhb> Wizek: There's no reason to overload since there's only one constructor for function types
+[19:19] <srhb> Wizek: Namely (->_
+[19:19] <srhb> er
+[19:19] <savanni> For that particular use case, though, repa-devil is already going to have it solved, so I can read that code.
+[19:19] <srhb> (->)
+[19:19] <njsg> srhb: ok, sorry for the stupid question, but I'm so new to this that I'm having trouble with the declarations. does it mean that foo returns something of the type StateT (which in turn deals with strings) and does I/O?
+[19:19] <savanni> (in fact, I already know I'm going to have to add to that code, but I don't have to worry about it now)
+[19:20] <srhb> njsg: Not stupid at all. :)
+[19:20] <Wizek> srhb: So if I give you a variable a, you can return a bool based on wheter it was a function or not?
+[19:20] <srhb> Wizek: Yes, see ions answer
+[19:20] <alpounet> savanni: have you seen JuicyPixels? maybe that will be enough
+[19:20] == pi3r [~pi3r@130.205-240-81.adsl-dyn.isp.belgacom.be] has quit [Quit: Nettalk6 - www.ntalk.de]
+[19:20] <savanni> Didn't discover JuicyPixels until after I'd started to retool to Repa.
+[19:20] <alpounet> it performs decently
+[19:20] <srhb> njsg: I think of values of the type StateT a IO () as recipes for stateful, IO-y actions
+[19:20] <savanni> I'll know before the day is over, though, how fast repa loads files.
+[19:20] <alpounet> savanni: i think there even is a JuicyPixels-repa package or something
+[19:21] <njsg> srhb: so the [String] actually means "list of strings"?
+[19:21] <alpounet> savanni: http://hackage.haskell.org/package/JuicyPixels-repa
+[19:21] <srhb> njsg: Yes, and it's the type of the "internal state"
+[19:21] <Wizek> ion: Can that be made to return False otherwise? :)
+[19:21] <srhb> njsg: Which we can manipulate with get, put and modify
+[19:21] <njsg> srhb: would it be mandatory to specify the "a" or could I just go with StateT IO?
+[19:21] <alpounet> savanni: i don't think you will have a lot of these stuffs to rewrite, or maybe even nothing at all. worst case, just patches if you need more functions or smth
+[19:22] <srhb> njsg: That would be an incomplete type, StateT takes three type arguments
+[19:22] == edwardk [~edwardk@pdpc/supporter/professional/edwardk] has quit [Client Quit]
+[19:22] <alpounet> savanni: i even added mmap'ing in JuicyPixels at some point
+[19:22] <srhb> njsg: You could conceivably leave the type of the state polymorphic for some applications, but I think that will be pretty rare
+[19:22] <srhb> njsg: (That is, how would you know how to operate on your state if you don't know its type?)
+[19:22] == MoALTz [~no@user-109-243-247-192.play-internet.pl] has joined #haskell
+[19:22] <njsg> srhb: ah, () is haskell for nil, then?
+[19:22] <srhb> njsg: Or irrelevant type.
+[19:22] <srhb> njsg: nil is [] in Haskell parlance
+[19:22] == madjestic [~madjestic@95.98.255.70] has quit [Ping timeout: 255 seconds]
+[19:23] <alpounet> savanni: https://github.com/Twinside/Juicy.Pixels/blob/master/JuicyPixels.cabal#L32 <- when enabled, it really provides a smoking fast loading
+[19:23] == tfng [~tfng@180.183.158.155] has joined #haskell
+[19:23] == yhager [~yuval@d207-216-222-232.bchsia.telus.net] has joined #haskell
+[19:23] == maxcan [~textual@c-76-21-8-212.hsd1.ca.comcast.net] has quit [Quit: My MacBook Pro has gone to sleep. ZZZzzz…]
+[19:23] <srhb> njsg: Do you have the example open still?
+[19:23] == MrGwen [~Thunderbi@hem62-1-82-238-50-252.fbx.proxad.net] has joined #haskell
+[19:23] <njsg> srhb: being also synonymous with empty list?
+[19:23] <srhb> njsg: No, not at all
+[19:23] <njsg> srhb: yes, still open
+[19:24] == fragamus [~textual@adsl-71-142-55-82.dsl.scrm01.pacbell.net] has quit [Quit: Computer has gone to sleep.]
+[19:24] <srhb> njsg: If you add a last line in bar, return . length $ st -- the type of bar would be StateT [String] IO Int
+[19:24] <srhb> njsg: Because now evaluating the entire stateful computation returns an IO Int
+[19:24] <srhb> That is, an int we produced from our stateful computations and from IO (the length depends on how many lines we read)
+[19:24] == pi3r [~pi3r@130.205-240-81.adsl-dyn.isp.belgacom.be] has joined #haskell
+[19:25] <savanni> alpounet: Load time is no longer a problem, but I'll look into JuicyPixels for blitting data to a GTK.  Looks like you've already done some of that with OpenGL.
+[19:25] == Chaze [~Chase@P6106.pallas.wh.tu-darmstadt.de] has quit [Ping timeout: 265 seconds]
+[19:25] == tarruda [~tarruda@186.220.191.27] has quit [Ping timeout: 265 seconds]
+[19:25] == Vince_Juicy [~Vince@mon69-2-81-56-94-99.fbx.proxad.net] has joined #haskell
+[19:25] <alpounet> savanni: i've done something that lets one load JuicyPixels 'Picture's  in gloss
+[19:25] == edwardk [~edwardk@pdpc/supporter/professional/edwardk] has joined #haskell
+[19:25] <njsg> srhb: but wait, the example has no bar
+[19:25] <alpounet> it's just converting to the 'bmp' package's format, used by gloss
+[19:25] <njsg> srhb: just foo and quit
+[19:25] <srhb> njsg: Sorry, I meant quit
+[19:26] <srhb> That's what I get from being pedagogical where I wouldn't normally be. :-)
+[19:26] == OlegYch [~OlegYch@212.98.173.87] has quit [Ping timeout: 276 seconds]
+[19:26] <njsg> srhb: ah, your previous comment about foo and bar in the monad makes more sense now :-)
+[19:26] <srhb> Derp, so sorry.
+[19:26] == jbetzend [~jbetzend@ip-37-201-156-54.unitymediagroup.de] has joined #haskell
+[19:26] == zcd [~zcd@c-71-202-182-239.hsd1.ca.comcast.net] has joined #haskell
+[19:26] == c-rog [~c-rog@173-167-126-166-sfba.hfc.comcastbusiness.net] has joined #haskell
+[19:27] == madjestic [~madjestic@95.98.255.70] has joined #haskell
+[19:27] <njsg> no worries
+[19:27] <srhb> njsg: So with that final line added, the type of quit is StateT [String] IO Int. [String] is the type of the internal state and IO Int is the type of our final value
+[19:27] == ts33kr [~ts33kr@5-1-3-93-dynamic.retail.datagroup.ua] has quit [Ping timeout: 240 seconds]
+[19:27] == innertracks [~Thunderbi@c-24-17-64-212.hsd1.wa.comcast.net] has joined #haskell
+[19:27] <njsg> I think I've seen some declarations with "->" in them, what's the difference?
+[19:27] <srhb> njsg: They take an argument that they use
+[19:27] == roconnor [~roconnor@e120-pool-d89a6f9e.brdbnd.voicenetwork.ca] has joined #haskell
+[19:28] <srhb> njsg: Let's make the example even more absurd
+[19:28] == sbjorn [~bjorn@107.209.7.109.rev.sfr.net] has joined #haskell
+[19:28] == maattdd [~matthieu@esc31-1-78-245-92-71.fbx.proxad.net] has quit [Ping timeout: 265 seconds]
+[19:28] == sgeisenh [~sgeisenh@128.237.184.237] has joined #haskell
+[19:28] == q66 [~q66@host109-158-141-46.range109-158.btcentralplus.com] has joined #haskell
+[19:29] == q66 [~q66@host109-158-141-46.range109-158.btcentralplus.com] has quit [Changing host]
+[19:29] == q66 [~q66@enlightenment/developer/q66] has joined #haskell
+[19:29] == elfenlaid [~elfenlaid@195.222.76.147] has joined #haskell
+[19:29] == acomar [~acomar@pool-71-178-210-214.washdc.fios.verizon.net] has joined #haskell
+[19:29] == Chaze [~Chase@P6106.pallas.wh.tu-darmstadt.de] has joined #haskell
+[19:29] <srhb> njsg: http://lpaste.net/102786 -- see annotation
+[19:29] <njsg> side question, if I want to keep the state, the whole computation that is intended to use the same state must be encapsulated in evalStateT?
+[19:29] <srhb> njsg: That's right
+[19:29] == mister_i_ [~misterint@199.227.56.230] has joined #haskell
+[19:30] == banister [~textual@5ED29234.cm-7-3c.dynamic.ziggo.nl] has joined #haskell
+[19:30] == bos [~bos@facebook/mercurial/bos] has joined #haskell
+[19:30] <srhb> njsg: Which is no different than all your IO stuff being somehow encapsulated in main
+[19:30] <njsg> but then the entire chain of functions I call has to be of type StateT, or can I use get in a function which is not StateT?
+[19:30] <savanni> Well, except that you could save that state off to feed into a later StateT computation.
+[19:31] <njsg> as far as it was called from some StateT function
+[19:31] <srhb> njsg: If a function dos not need the state, it does not need to be in State of any kind
+[19:31] <srhb> njsg: Notice that I use length in quit
+[19:31] == C6R [~C6R@2601:5:9900:3d2:41a0:ce3c:102c:e908] has quit [Ping timeout: 258 seconds]
+[19:31] <srhb> njsg: Surely that doesn't have a StateT type
+[19:31] == b3tamax [~b3tamax@38.100.174.226] has joined #haskell
+[19:32] == tstaton [~tstaton@70.127.254.161] has quit [Ping timeout: 265 seconds]
+[19:32] <srhb> njsg: But all parts that need to get the state will have State in their type, yes.
+[19:32] <srhb> (That's rather the beauty of it)
+[19:32] <njsg> srhb: what if foo called bar that calls quit, when quitting, would bar need to be StateT, or could it be something else as far as foo and quit are StateT?
+[19:32] == elfenlaid [~elfenlaid@195.222.76.147] has quit [Client Quit]
+[19:32] == mister_integer [~misterint@199.227.56.228] has quit [Ping timeout: 258 seconds]
+[19:33] <srhb> njsg: If you wanted quit to operate on the same state as foo, then bar too would need to be StateT
+[19:33] <Walther> So in the "evil" nonstrict mutable world of say, python, I could just have in the main loop "when receivemessage, log append(message)" and somewhere else "speed = difference in position of last two messages from log". State should help us get this sort of a log, but I really, even with your example open, can't figure out how
+[19:33] <srhb> njsg: I get the feeling that you think this is somehow problematic, but it's entirely unproblematic and nice. :-)
+[19:33] == bos [~bos@facebook/mercurial/bos] has quit [Remote host closed the connection]
+[19:33] <njsg> srhb: nah, not problematic, I'm just trying to cover all bases before I try to use this
+[19:33] <srhb> Walther: Which part is causing you trouble?
+[19:34] <srhb> Walther: In StateT you would still have getMessage >>= put
+[19:34] == xinming [~xinming@125.87.89.28] has joined #haskell
+[19:34] == bos [~bos@facebook/mercurial/bos] has joined #haskell
+[19:34] <srhb> Walther: Er or rather
+[19:34] <srhb> Walther: getMessage >>= \m -> modify (m:)
+[19:34] <bernalex> njsg: good to see you are finally becoming pure of heart. :-)
+[19:34] <Walther> srhb: "which part" -> applying this to practice
+[19:34] == dgpratt [~dpratt71@207.182.200.34] has quit [Read error: Connection reset by peer]
+[19:34] <njsg> srhb: I am just not used to haskell at all, so really asking about stuff step by step
+[19:35] == [aviraldg] [aviraldg@unaffiliated/aviraldg] has quit [Quit: Leaving]
+[19:35] <srhb> njsg: That's fine :)
+[19:35] <njsg> bernalex: ohai
+[19:35] <srhb> njsg: Just trying to not scare you off :)
+[19:35] <srhb> Walther: given a function getMessage which is a lifted IO Message
+[19:35] <Walther> And also what njsg said, we're both new to haskell (and if it weren't already obvious, sitting next to each other and trying to tackle the same problem)
+[19:35] == tfng [~tfng@180.183.158.155] has quit [Ping timeout: 245 seconds]
+[19:35] == aviraldg [~aviraldg@unaffiliated/aviraldg] has joined #haskell
+[19:35] <srhb> Walther: OK :)
+[19:35] == holoed [~holoed@host86-134-59-40.range86-134.btcentralplus.com] has joined #haskell
+[19:36] <bernalex> njsg: have you read LYAH? it's sort of the holy grail of haskell tutorials.
+[19:36] <srhb> Walther: No need for apologies I'm just trying to figure out which part is confusing you really. "in practice" doesn't help me much because my example is in fact working code
+[19:36] == jowens [~jowens@169.237.180.161] has joined #haskell
+[19:36] == alpounet [~alpounet@195-132-246-221.rev.numericable.fr] has quit []
+[19:36] == tpsinnem [~tpsinnem@a91-156-149-49.elisa-laajakaista.fi] has joined #haskell
+[19:36] <srhb> Walther: In fact, in order for my program to become your program, you would only have to replace getLine with getMessage
+[19:36] == gamegoblin [~grant@130.184.253.72] has joined #haskell
+[19:36] <srhb> fsvo getMessage :: IO Message
+[19:36] <monochrom> No! My tutorials are the holy grail :)
+[19:37] == neptunepink [~root@2601:9:4200:54b:230:48ff:feb0:6d7e] has quit [Ping timeout: 246 seconds]
+[19:37] == xinming__ [~xinming@125.87.108.79] has quit [Ping timeout: 265 seconds]
+[19:37] == Guest13453 [~Guest1345@69.76.156.160] has joined #haskell
+[19:37] == tfng [~tfng@180.183.158.155] has joined #haskell
+[19:38] == madjestic [~madjestic@95.98.255.70] has quit [Ping timeout: 255 seconds]
+[19:38] <njsg> bernalex: the book has been suggested to me, our local CS department library has a book on haskell
+[19:38] == pdpi [~pdpi@212.74.97.241] has quit [Ping timeout: 258 seconds]
+[19:38] <bernalex> njsg: lyah is gratis
+[19:38] <srhb> njsg: LYAH really is great, my recommendation for sure
+[19:38] <njsg> bernalex: I'd not mind something that is aimed at people who know lisp
+[19:38] == mirari [mirari@cs-auth-dc-129-97-60-182.dynamic.uwaterloo.ca] has joined #haskell
+[19:39] <bernalex> njsg: lyah isn't. but that just means you skim the parts that are familiar and focus on the parts that are different.
+[19:39] <srhb> The main focus is types anyway, which is the relevant bit.
+[19:39] == knoxilla [~knoxilla@caen-camassia.engin.umich.edu] has joined #haskell
+[19:39] == catalyst [~catalyst@allegro/user/angelchild] has joined #haskell
+[19:39] == twanvl [~twanvl@dhcp-077-250-086-217.chello.nl] has joined #haskell
+[19:40] == zeroknowledge [~zeroknowl@host90-119-dynamic.12-79-r.retail.telecomitalia.it] has joined #haskell
+[19:40] == tjohnson_ [~tjohnson@8-16.ptpg.oregonstate.edu] has joined #haskell
+[19:40] <bernalex> njsg: I don't know any, actually. all the lisp guys I talk to insist that learning haskell is pointless... because lisp.
+[19:41] == q66 [~q66@enlightenment/developer/q66] has quit [Quit: Leaving]
+[19:41] == ustunozg_ [~ustunozgu@85.110.83.220] has joined #haskell
+[19:41] == mister_i_ [~misterint@199.227.56.230] has quit [Remote host closed the connection]
+[19:41] <srhb> If I were forced to work on the JVM I'd probably go all lispy. :P
+[19:41] <savanni> I once programmed in Lisp.  I eventually returned to Haskell.
+[19:41] == sgeisenh [~sgeisenh@128.237.184.237] has quit [Remote host closed the connection]
+[19:42] == mister_integer [~misterint@199.227.56.228] has joined #haskell
+[19:42] == Sebastien-L [~sebastien@2a01:e35:8b47:7ab0:e4ad:1d33:5d8f:b62b] has joined #haskell
+[19:42] <mmachenry1> bernalex: I'm a lisp guy who would encourage you to learn Haskell :)
+[19:42] <catalyst> I'd rather know both
+[19:42] == abcd1234abcd [7aa4fc30@gateway/web/freenode/ip.122.164.252.48] has joined #haskell
+[19:42] == voxpopuli [~fanservic@c-24-3-22-132.hsd1.pa.comcast.net] has joined #haskell
+[19:42] <seanparsons> Oddly I think learning lisp is pointless because Haskell.
+[19:42] <njsg> srhb: what does make foo recursive?
+[19:42] <srhb> njsg: It calls itself in the else part
+[19:43] <srhb> njsg: After modifying the state
+[19:43] == q66 [~q66@host109-158-141-46.range109-158.btcentralplus.com] has joined #haskell
+[19:43] == q66 [~q66@host109-158-141-46.range109-158.btcentralplus.com] has quit [Changing host]
+[19:43] == q66 [~q66@enlightenment/developer/q66] has joined #haskell
+[19:43] <njsg> hmm, what does ">>" do?
+[19:43] <monochrom> learn both haskell and scheme. lisp is not functional enough, and too many strange corners
+[19:43] <mmachenry1> seanparsons: I think learning Lisp is very valuable even if you know Haskell
+[19:43] <Ywen> Is there a way to make GHC check instances of a class in some order? (so that I may avoid OverlappingInstances)
+[19:43] <srhb> njsg: Sequences too actions
+[19:43] == Swizec [~swizec@c-50-161-94-136.hsd1.ca.comcast.net] has quit [Quit: Leaving...]
+[19:43] <srhb> njsg: It's the same as a newline in a do block
+[19:43] <njsg> ah!
+[19:43] <srhb> njsg: two*
+[19:43] == abcd1234abcd [7aa4fc30@gateway/web/freenode/ip.122.164.252.48] has quit [Client Quit]
+[19:44] == madjestic [~madjestic@46-129-91-177.dynamic.upc.nl] has joined #haskell
+[19:44] == ustunozgur [~ustunozgu@li350-154.members.linode.com] has quit [Ping timeout: 250 seconds]
+[19:44] <srhb> njsg: else do { modify (l:); foo }
+[19:44] <monochrom> lisp is very true to its name. the emphasis has always been on "everything is a cons cell". functional programming is an afterthought.
+[19:44] == kipras has changed nick to kipras`away
+[19:44] == anRch [~markmilli@198.0.159.99] has joined #haskell
+[19:45] == fizruk [~anonymous@109.188.126.175] has quit [Quit: fizruk]
+[19:45] == nh2 [~niklas@dyn1212-112.wlan.ic.ac.uk] has joined #haskell
+[19:45] <mmachenry1> monochrom: That's definitely a common misconception.
+[19:45] <njsg> yeah, most of what I know in using lisp comes more from how it revolves around lists and lambdas, not because of functional programming
+[19:45] == lcfrs [~lcfrs@8.25.197.27] has joined #haskell
+[19:45] <njsg> it's not even like common lisp has any specific paradigm
+[19:45] <quchen> Oh yes! Let's have a discussion about what Lisp is!
+[19:45] <monochrom> the biggest value of learning lisp today is as preparation for javascript. lisp says "every name has a value binding and a function binding". javascript generalizes that.
+[19:46] == Swizec [~swizec@c-50-161-94-136.hsd1.ca.comcast.net] has joined #haskell
+[19:46] == mjs2600 [~mjs2600`@192.58.147.218] has joined #haskell
+[19:47] == yhager [~yuval@d207-216-222-232.bchsia.telus.net] has quit [Ping timeout: 276 seconds]
+[19:47] <srhb> quchen: D:
+[19:47] == gamegoblin [~grant@130.184.253.72] has quit [Quit: gamegoblin]
+[19:47] == mjs2600 [~mjs2600`@192.58.147.218] has quit [Remote host closed the connection]
+[19:47] == zlatan [~zlatan@adsl-165-169-206.teol.net] has joined #haskell
+[19:47] == startling [~startling@199-241-202-66.PUBLIC.monkeybrains.net] has joined #haskell
+[19:47] == Eduard_Munteanu [~edi@82.76.226.152] has quit [Quit: Leaving.]
+[19:47] == elfenlaid [~elfenlaid@195.222.76.147] has joined #haskell
+[19:47] == plucas [~plucas@72-18-233-188.static-ip.telepacific.net] has quit [Ping timeout: 252 seconds]
+[19:48] == anRch_ [~markmilli@198.0.159.99] has joined #haskell
+[19:48] == tazjin [~tazjin@80.239.169.194] has quit [Ping timeout: 252 seconds]
+[19:48] == plucas [~plucas@72-18-233-188.static-ip.telepacific.net] has joined #haskell
+[19:49] <njsg> srhb: how do I lift something other than IO?
+[19:49] <srhb> njsg: "lift"
+[19:49] <srhb> njsg: But it needs to be in the transformer stack
+[19:49] == anRch [~markmilli@198.0.159.99] has quit [Ping timeout: 276 seconds]
+[19:49] == anRch_ has changed nick to anRch
+[19:49] == S_T_A_N [~S_T_A_N@ip172-242.wlan-zone2.WKU.EDU] has joined #haskell
+[19:49] <srhb> njsg: Right now we only have StateT and IO monads, nothing else will make sense.
+[19:49] == vkbsh [~vkbsh@207-38-151-173.c3-0.avec-ubr2.nyr-avec.ny.cable.rcn.com] has joined #haskell
+[19:50] <srhb> njsg: And because State is on top of the stack, you don't need to lift get, put, modify and friends
+[19:50] <srhb> (And because of clever tricks, you won't have to explicitly lift most other things either)
+[19:51] == schlaftier [~daniel@5.158.140.193] has joined #haskell
+[19:51] <Walther> srhb: Just curious, you mentioned earlier "just use getMessage instead ofgetLine" earlier, how's that work (getMessage not in scope, am I getting something wrong or...)
+[19:51] == Rarrikins [~Rarrikins@unaffiliated/rarrikins] has quit [Read error: Connection reset by peer]
+[19:51] <njsg> I think srhb said liftMessage
+[19:51] <srhb> Walther: That's the hypothetical IO Message-typed value you have
+[19:51] <srhb> Walther: The one that reads a message from the server
+[19:51] <njsg> but that's not in the scope either
+[19:52] <srhb> Well no, you have to write getMessage, and then lift it (since it's an IO-typed thing)
+[19:52] == BobFunk [~mbc@173-228-80-252.dsl.static.sonic.net] has joined #haskell
+[19:52] == tarruda [~tarruda@186.220.191.27] has joined #haskell
+[19:52] <Walther> Well, we have "carPositions" that is in the current scope the newest received message itself
+[19:52] <Walther> do we need to lift that somehow or?
+[19:52] <srhb> Walther: What is its type?
+[19:52] == silasm [~silas@130.65.0.3] has quit [Quit: leaving]
+[19:53] <Walther> carPositions is [CarPosition], and CarPosition is a data type properly defined elsewhere
+[19:53] <srhb> That can't be right.
+[19:53] <Walther> json :)
+[19:53] <srhb> How would carPositions get a message from a server if it doesn't have IO in its type?
+[19:53] == gentleben [~gentleben@c-69-181-208-202.hsd1.ca.comcast.net] has quit [Quit: My MacBook Pro has gone to sleep. ZZZzzz…]
+[19:53] <srhb> Hint: It cannot.
+[19:54] <njsg> srhb: at this point, it's not a message to be received, it's the translation of the received JSON
+[19:54] == mister_i_ [~misterint@199.227.56.230] has joined #haskell
+[19:54] <Walther> Oh, the actual receive-message/parse-message thingy is elsewhere, this is already where the message has been parsed and is just a ...uh, parsed message
+[19:54] <Walther> What njsg said.'
+[19:54] <njsg> srhb: so this is effectively a normal object, I'd suppose, dunno what's the right name for that in haskell
+[19:54] <srhb> It's not. It's a list of CarPosition
+[19:54] <njsg> but in this state, at least the way the code is right now, the IO happened before
+[19:54] == maattdd [~matthieu@esc31-1-78-245-92-71.fbx.proxad.net] has joined #haskell
+[19:54] <srhb> Well then I don't even understand the initial need for an IORef
+[19:54] <njsg> well, wait, haskell *is* lazy, so I don't know to which extent I am even correct
+[19:55] <srhb> It sounds like you're correct, but I no longer understand the problem you're trying to solve.
+[19:55] <njsg> srhb: I think that was one of the things Walther found when he was trying to figure out how to do it
+[19:55] <Walther> srhb: the original need is that we need a log of all messages received instead of just functionally handling the last one received as fifo
+[19:55] <njsg> srhb: a function is going to be called with different arguments and we want to keep a list of the different arguments
+[19:55] <njsg> in a way that another function can use
+[19:55] <Walther> srhb: and we need to be able to append that list on the fly, as well as read n last messages, etc
+[19:56] <srhb> Well, you can take n from a list
+[19:56] <Walther> think: we get position data, want to evaluate current speed and adjust throttle
+[19:56] <srhb> And you can append with value:list
+[19:56] == robb [~robb@cpc6-sotn12-2-0-cust829.15-1.cable.virginm.net] has joined #haskell
+[19:56] <njsg> srhb: so it's possible to modify a list in-place?
+[19:56] <srhb> Yes/no
+[19:56] == tfng [~tfng@180.183.158.155] has quit [Ping timeout: 258 seconds]
+[19:56] <srhb> Technically it's a new list, with a shared tail, probably
+[19:56] <Walther> srhb: which is the problem :P
+[19:57] == tfng [~tfng@180.183.158.155] has joined #haskell
+[19:57] <srhb> Alright, then just append to the as in my example :)
+[19:57] <srhb> to the state*
+[19:57] == mister_integer [~misterint@199.227.56.228] has quit [Ping timeout: 240 seconds]
+[19:57] <njsg> srhb: but the reference, as in "variable name" in c-speak is still the same?
+[19:57] == mjs2600 [~mjs2600`@192.58.147.218] has joined #haskell
+[19:57] <srhb> Forget about references for now.
+[19:57] == ustunozg_ [~ustunozgu@85.110.83.220] has quit [Remote host closed the connection]
+[19:57] <njsg> wait, better question to ask
+[19:57] <njsg> is append destructive?
+[19:58] <vanila> in lisp?
+[19:58] <savanni> Not in a normal list.
+[19:58] <srhb> Oops, I did not mean append
+[19:58] <njsg> vanila: in haskell
+[19:58] <srhb> prepend*
+[19:58] == ustunozgur [~ustunozgu@li350-154.members.linode.com] has joined #haskell
+[19:58] <vanila> but haskell is purely functional
+[19:58] <vanila> so nothing is destructive
+[19:58] <ion> writeIORef
+[19:59] <srhb> njsg: The prepending bit is in the else clause
+[19:59] == myoriel [~Myoriel@aftr-88-217-181-61.dynamic.mnet-online.de] has joined #haskell
+[19:59] == pooya72 [~pooya@31.220.200.23] has joined #haskell
+[19:59] == pooya72 [~pooya@31.220.200.23] has left #haskell []
+[19:59] <BoR0> could anyone briefly explain to me what liftIO does? I had problems with calling IO function on Snap() but with liftIO it magically worked
+[19:59] <ReinH> :t liftIO
+[19:59] <lambdabot> MonadIO m => IO a -> m a
+[20:00] <BoR0> I looked at that already, so it converts IO monad to some other monad? I don't get it
+[20:00] == pooya72 [~pooya@31.220.200.23] has joined #haskell
+[20:00] <srhb> BoR0: It lifts an IO action into the monad on top of the stack
+[20:00] <njsg> srhb: so wait, modify is something that's not specific to StateT?
+[20:00] <ReinH> BoR0: liftIO takes an IO action and turns it into an action on some other monad, as long as that monad is a MonadIO instance.
+[20:00] <BoR0> @src liftIO
+[20:00] <lambdabot> Source not found. Maybe if you used more than just two fingers...
+[20:00] <srhb> njsg: Nono
+[20:00] <geekosaur> many useful monads are stackable on top of IO
+[20:00] <srhb> njsg: It IS specific to state
+[20:00] <pooya72> hi guys
+[20:00] == Icewing [~Icewing@unaffiliated/icewing] has quit [Remote host closed the connection]
+[20:00] == vijaykiran [~user@52D90577.cm-11-1a.dynamic.ziggo.nl] has joined #haskell
+[20:00] <geekosaur> you often want a quick way to get at the IO at the bottom
+[20:00] <srhb> njsg: It takes a function to modify the current state with
+[20:00] <geekosaur> that's liftIO
+[20:00] <ReinH> geekosaur: but it isn't :)
+[20:00] == byorgey_ [~byorgey@LVN513-9.cis.upenn.edu] has joined #haskell
+[20:00] == byorgey_ [~byorgey@LVN513-9.cis.upenn.edu] has quit [Client Quit]
+[20:00] <geekosaur> (note that IO can only be at the bottom of a stack)
+[20:00] <ReinH> it's the opposite
+[20:00] <srhb> njsg: (carpos:) would be such a function
+[20:00] <BoR0> so Snap is a MonadIO instance?
+[20:01] <srhb> njsg: ie. it would prepend a carpos to the current state
+[20:01] <ReinH> BoR0: it must be :)
+[20:01] <urbanslug> I have set up a VM to develop yesod in. The book I am reading advises I install the haskell platform but I know better. I am thinking of installing ghc and cabal through my package manager then installing the rest using cabal. Is this a good approach?
+[20:01] <geekosaur> are we talking from oppposite sides or ar you claiming it's for IOT SomeMonad?
+[20:01] == sirdancealot [~koo5@37-48-42-137.tmcz.cz] has joined #haskell
+[20:01] <BoR0> is there a way to look at the source code of liftIO? or is it something internal
+[20:01] <ReinH> geekosaur: I'm claiming that litIO doesn't "get to the IO"
+[20:01] <ReinH> it does the opposite
+[20:01] <ReinH> :t liftIO
+[20:01] <lambdabot> MonadIO m => IO a -> m a
+[20:01] <geekosaur> it relays a function call to the IO and get s the reuslt back
+[20:02] <BoR0> @src liftIO
+[20:02] <lambdabot> Source not found. Maybe you made a typo?
+[20:02] <ReinH> no, it doesn't
+[20:02] <ReinH> it takes an IO a and turns it into a m a for some MonadIO m
+[20:02] == derek_c [~derek@nat-128-84-124-0-397.cit.cornell.edu] has quit [Ping timeout: 245 seconds]
+[20:02] <geekosaur> ...
+[20:02] <pooya72> I had a question about HPC. How to you get it create the test coverage data (.tix .mix) from cabal-dev? I know you can do it when you build via GHC: ghc -fhpc Run.hs --make , but how do you do it from cabal-dev?
+[20:02] <geekosaur> you are being pedantic in the "who needs to be comprehensible" sense, yes?
+[20:02] <imalsogreg> BoR0: https://hackage.haskell.org/package/snap-core-0.9.6.2/docs/Snap-Core.html#t:MonadSnap  Yep - there is a MonadIO instance for the Snap monad, and that's the source you probably want to look at - that instance.
+[20:03] == maattdd [~matthieu@esc31-1-78-245-92-71.fbx.proxad.net] has quit [Ping timeout: 265 seconds]
+[20:03] == lcfrs [~lcfrs@8.25.197.27] has quit [Remote host closed the connection]
+[20:03] <ReinH> geekosaur: I don't think I am
+[20:03] <geekosaur> whatever, listen to the pedanticism, if you do not understand it then I guess thats' intended
+[20:03] <ReinH> I think it's an important distinciton
+[20:03] == derek_c_ [~derek@nat-128-84-124-0-397.cit.cornell.edu] has quit [Ping timeout: 276 seconds]
+[20:03] <ReinH> because monad morphisms are important
+[20:03] == sirdancealot [~koo5@37-48-42-137.tmcz.cz] has quit [Max SendQ exceeded]
+[20:03] == killerswan [~kevin.can@173-167-102-130-sfba.hfc.comcastbusiness.net] has joined #haskell
+[20:03] == ustunozgur [~ustunozgu@li350-154.members.linode.com] has quit [Remote host closed the connection]
+[20:04] <imalsogreg> BoR0: Here is Snap monad's liftIO implementation: https://hackage.haskell.org/package/snap-core-0.9.6.2/docs/src/Snap-Internal-Types.html#Snap
+[20:04] == Linkages [~Linkages@host14-192-dynamic.25-79-r.retail.telecomitalia.it] has quit [Remote host closed the connection]
+[20:04] == RaceCondition [~RaceCondi@217.158.172.234] has joined #haskell
+[20:04] == vadzimt [~textual@178.124.162.213] has joined #haskell
+[20:04] == Curser [~quassel@c-76-114-19-246.hsd1.ca.comcast.net] has joined #haskell
+[20:04] == kotopies [~kotopies@unaffiliated/kotopies] has quit [Ping timeout: 250 seconds]
+[20:04] == lw [~lw@dsl-69-171-153-205.acanac.net] has joined #haskell
+[20:05] <ReinH> geekosaur: I think that what liftIO *actually* does is far more interesting than the hand-wavey explanation
+[20:05] <vanila> ReinH, liftIO is very much trivial
+[20:05] == sepp2k [~sepp2k@g224102151.adsl.alicedsl.de] has joined #haskell
+[20:05] <ReinH> vanila: I know
+[20:05] <BoR0> what's $! do
+[20:05] == maattdd [~matthieu@esc31-1-78-245-92-71.fbx.proxad.net] has joined #haskell
+[20:05] == brettweavnet [~brettweav@fremont.intuit.com] has quit [Ping timeout: 252 seconds]
+[20:05] <davean> if geekosaur was correct, catch would be liftable?
+[20:05] == sirdancealot [~koo5@37-48-42-137.tmcz.cz] has joined #haskell
+[20:05] <banister> BoR0 most recent exception
+[20:05] == vadzimt [~textual@178.124.162.213] has quit [Client Quit]
+[20:05] == nilg` [~user@77.70.2.229] has joined #haskell
+[20:05] <njsg> srhb: I think I finally understood you, yeah, just using "modify" directly now
+[20:06] <vanila> BoR0, all that liftIO does is let you easily use IO actions inside a monad transformer stack which includes IO
+[20:06] <quchen> @src $!
+[20:06] <lambdabot> f $! x = x `seq` f x
+[20:06] <srhb> njsg: If it makes more sense you can get the state, and then put the modified sense
+[20:06] <njsg> srhb: I'm having some trouble with the function declarations, what can go in there? I suppose StateT is the type of the function, not the type of the return value?
+[20:06] == bos [~bos@facebook/mercurial/bos] has quit [Ping timeout: 240 seconds]
+[20:06] <srhb> njsg: do { s <- get; put (carpos:s) }
+[20:06] <BoR0> I am very confused. what should I read about? is this monad transformers?
+[20:06] <vanila> you don't need to get bogged down with things like $!
+[20:06] == neptunepink [~root@2601:9:4200:54b:230:48ff:feb0:6d7e] has joined #haskell
+[20:06] <Walther> srhb: But like you said earlier, this *could* potentially be doable with just a list - i just have no idea how to make that persist yet be modifiable throughout the loop
+[20:06] <srhb> njsg: Well every "line" in the do-block must have type StateT [String] IO a
+[20:07] <albeit> If I need to feed a functions return value back into that function say three times, is the best way to do this folding over a list like [0..2], where the accumulator is the initial value that is fed into the function?
+[20:07] == pantsman [~pantsman@cpc12-haye16-2-0-cust45.haye.cable.virginm.net] has joined #haskell
+[20:07] <srhb> Walther: I'm sorry, I don't understand the problem well enough to be sure it can be.
+[20:07] == pantsman [~pantsman@cpc12-haye16-2-0-cust45.haye.cable.virginm.net] has quit [Changing host]
+[20:07] == pantsman [~pantsman@pdpc/supporter/active/pantsman] has joined #haskell
+[20:07] == tfng [~tfng@180.183.158.155] has quit [Ping timeout: 265 seconds]
+[20:07] <vanila> BoR0, yes, basically imagine if you created a new monad Foo which was able to do IO as well as some other things - then to use some IO action like print :: IO () you need a way to "lift" from IO to Foo
+[20:07] == FreeFull [~freefull@defocus/sausage-lover] has joined #haskell
+[20:07] == tfng [~tfng@180.183.158.155] has joined #haskell
+[20:07] <srhb> Walther: For one thing I have absolutely no idea how you can have a [CarPos] anywhere if you have to communicate with the outside world in order to get a CarPos.
+[20:07] == klaut [~klaut@176.250.174.160] has joined #haskell
+[20:08] == gXen [~gxen@cs78187062.pp.htv.fi] has joined #haskell
+[20:08] <srhb> Which is how I understood the problem initially. But now I'm starting to think there's no IO going on at all.
+[20:08] <vanila> BoR0, does that help at all?
+[20:08] <Walther> srhb: fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+[20:08] <Walther> ermmm
+[20:08] <njsg> srhb: the function where I want to add this already has different return types and input types
+[20:08] <Walther> wrong pastebuffer
+[20:08] == Guest22192 [~8680@2002:4404:712c:0:9d5:b8bb:1a47:8bdd] has quit [Ping timeout: 252 seconds]
+[20:08] <Walther> respond :: ServerMessage -> IO [ClientMessage]
+[20:08] <gXen> since people keep saying on hackernews how awsome and mindopening haskell is, I decided to learn it... my q: what sources to use to leanr haskell?
+[20:08] <srhb> Walther: So _you're_ the server?
+[20:09] <Walther> No.
+[20:09] <srhb> gXen: lyah
+[20:09] <srhb> @where lyah
+[20:09] <lambdabot> http://www.learnyouahaskell.com/
+[20:09] == ZettaBlade [~ZettaBlad@50-46-196-65.evrt.wa.frontiernet.net] has joined #haskell
+[20:09] == jutaro [~jutaro@p20030045EE435889DDCE76390BF96A7B.dip0.t-ipconnect.de] has quit [Quit: Leaving.]
+[20:09] <srhb> njsg: I don't understand, sorry.
+[20:09] <BoR0> vanila: why do we need lift at all? why simply can't Foo call IO
+[20:09] <gXen> thats a clear answer :) ty
+[20:09] == etehtsea [~kes@5.18.134.6] has joined #haskell
+[20:09] <monochrom> I ignore hackernews. but I am glad you want to know haskell. what srhb says.
+[20:09] == stolaruk [~stolaruk@199.16.190.210] has quit [Remote host closed the connection]
+[20:09] == _8680_ [~8680@2002:4404:712c:0:f855:adb2:c730:ff47] has joined #haskell
+[20:09] <gXen> should I ignore hackernews for toher reasons it breaks my productivity?
+[20:10] == _8680_ has changed nick to Guest87885
+[20:10] == dgpratt [~dpratt71@207.182.200.34] has joined #haskell
+[20:10] == sirdancealot [~koo5@37-48-42-137.tmcz.cz] has quit [Max SendQ exceeded]
+[20:10] <gXen> is the writer of lyah inhere?
+[20:10] == path[l] [~vsi@199-241-201-85.PUBLIC.monkeybrains.net] has quit [Read error: Connection reset by peer]
+[20:10] <shelf> think of HN as woody allen. would you hang out with woody allen
+[20:10] == bos [~bos@facebook/mercurial/bos] has joined #haskell
+[20:10] <monochrom> tryhaskell.org lets you play a bit
+[20:10] == edsko_ [~edsko@80.111.60.101] has quit [Quit: This computer has gone to sleep]
+[20:10] <pooya72> I had a question about member:HPC. How to you get it create the test coverage data (.tix .mix) from cabal-dev? I know you can do it when you build via GHC: ghc -fhpc Run.hs --make , but how do you do it from cabal-dev?
+[20:10] == path[l] [~vsi@173.252.71.189] has joined #haskell
+[20:11] <Walther> srhb: http://pastebin.com/4th93Wfd
+[20:11] <alphonse23> how is Hn like woody allen? and is that a rhetorical question?
+[20:11] <pooya72> hpc as in test coverage
+[20:11] <njsg> srhb: ghc says "add an instance declaration for (MonadState [[CarPosition]] IO)", [[CarPosition]] being what the StateT should be, I guess
+[20:11] == MK_FG [~MK_FG@pdpc/supporter/active/mk-fg] has quit [Read error: Connection reset by peer]
+[20:11] <bernalex> gXen: not atm, apparently. he's called BONUS on Freenode.
+[20:11] <vanila> BoR0, well Foo is not IO even though it includes those functions, it's like a wrapper around it - that's why you need to use liftIO
+[20:11] == testan [~testan@jabber.org.uk] has joined #haskell
+[20:11] == Ralith [~ralith@66.114.129.162] has joined #haskell
+[20:11] <BoR0> so liftIO is like using parent's methods (in OOP) in context of where IO is the parent? or is this complete nonsense what I said
+[20:11] <gXen> yeah, i read it frequents here... I was wondering if he is a nice guy, if so, i would buy the book
+[20:12] <BoR0> (@ vanila)
+[20:12] <vanila> BoR0, yeah kind of!
+[20:12] <ReinH> BoR0: I wouldn't suggest making analogies to OOP :)
+[20:12] == nt [~antiq@a89-152-9-45.cpe.netcabo.pt] has joined #haskell
+[20:12] <srhb> njsg: Yes, you don't want to do that. What exactly are you trying to do?
+[20:12] <ReinH> BoR0: you're working in some monad
+[20:12] <ReinH> BoR0: if it's an instance of MonadIO then it is a monad transformer with IO at the base
+[20:12] <ReinH> for instance, StateT SomeState IO a
+[20:12] <ReinH> that type is your m a
+[20:13] <vanila> BoR0, if you want something to read on page 11 of http://www.cs.virginia.edu/~wh5a/personal/Transformers.pdf it goes into some detail about why liftIO is done
+[20:13] <ReinH> you have an IO action, some IO a, for instance
+[20:13] <ReinH> :t putStrLn
+[20:13] <lambdabot> String -> IO ()
+[20:13] <ReinH> er
+[20:13] == real-or-random [~quassel@dhcp-252-0-107.mmci.uni-saarland.de] has quit [Ping timeout: 240 seconds]
+[20:13] <ReinH> :t putStrLn "hello"
+[20:13] <lambdabot> IO ()
+[20:13] <ReinH> in this case a is ()
+[20:13] <bernalex> BoR0: you lift a function to deal with monads. it's like promoting it.
+[20:13] == Anoyz [Anoyz@AStrasbourg-651-1-144-220.w92-161.abo.wanadoo.fr] has joined #haskell
+[20:13] <ReinH> you want to run putStrLn with *your* monad
+[20:13] <bernalex> :t lift
+[20:13] <lambdabot> (MonadTrans t, Monad m) => m a -> t m a
+[20:13] <bernalex> :t liftA
+[20:13] <lambdabot> Applicative f => (a -> b) -> f a -> f b
+[20:13] == qzr [~qzr@77-57-127-155.dclient.hispeed.ch] has joined #haskell
+[20:13] == Anoyz [Anoyz@AStrasbourg-651-1-144-220.w92-161.abo.wanadoo.fr] has left #haskell []
+[20:13] * hackagebot penny 0.32.0.8 - Extensible double-entry accounting system  http://hackage.haskell.org/package/penny-0.32.0.8 (OmariNorman)
+[20:13] <srhb> Walther: There are several issues here
+[20:13] == testan [~testan@jabber.org.uk] has left #haskell []
+[20:13] == marsam [~mario@unaffiliated/marsam] has quit [Quit: WeeChat 0.4.3]
+[20:13] <ReinH> which means you need to do something to putStrLn to give it the type StateT SomeState IO ()
+[20:14] <ReinH> BoR0: does that make sense?
+[20:14] <gXen> is haskell any usefull for cryptography?
+[20:14] == {AS} [~{AS}@unaffiliated/as/x-9314764] has quit [Quit: leaving]
+[20:14] <ReinH> gXen: yes, although there are some issues
+[20:14] == MK_FG [~MK_FG@pdpc/supporter/active/mk-fg] has joined #haskell
+[20:14] <BoR0> ReinH: will putStrLn behaviour be kept, or we need to override it? do we do it just to make the return type of it to match?
+[20:14] <srhb> Walther: For one, I don't think respond does what you think it does. Running it will always yield a length-one list
+[20:14] == kgadek [~kgadek@62.121.148.46] has joined #haskell
+[20:14] <gXen> Reinh: which issues? are the libraries any good?
+[20:14] <tac> gXen: in theory, yes, in practice, probably not
+[20:15] == fizruk [~anonymous@broadband-77-37-154-204.nationalcablenetworks.ru] has joined #haskell
+[20:15] <ReinH> BoR0: so we have an IO action, putStrLn "hello"
+[20:15] <vanila> ReinH, Typeclass dispatch works very similar to OO
+[20:15] <Walther> srhb: Yes indeed, which is why in "respond" is a perfect chance to append to the magical log list that we need
+[20:15] <ReinH> that's your IO a, or in this case, IO ()
+[20:15] <gXen> tac: sounds like: it is the capabilities, but not the existing libs... which sounds awsome, since I could develop some...
+[20:15] <gXen> has*
+[20:15] == sdf_ [~clif@174.46.28.106] has quit [Ping timeout: 240 seconds]
+[20:15] <ReinH> :t liftIO (putStrLn "hello)
+[20:15] <vanila> ReinH, it's purpose in haskell is allow open world assumption based programming, similar to OO classes
+[20:15] <lambdabot>     lexical error in string/character literal at end of input
+[20:16] <ReinH> :t liftIO (putStrLn "hello")
+[20:16] <lambdabot> MonadIO m => m ()
+[20:16] <njsg> srhb: the function will sometimes be called with an argument which is a list of carPosition, so [carPosition], I want to keep all [carPosition]s in a list to search later
+[20:16] == yhager [~yuval@d207-216-222-232.bchsia.telus.net] has joined #haskell
+[20:16] <BoR0> ReinH: so it magically matches the return type putStrLn
+[20:16] == kazimir42 [~kazimir42@gateway/tor-sasl/kazimir42] has joined #haskell
+[20:16] <srhb> Walther, njsg: Ok
+[20:16] <ReinH> BoR0: it "magically" changes it from an IO action to an action for your monad stack
+[20:16] <ReinH> as long as it's an instance of MonadIO
+[20:16] <srhb> njsg: Remind me where this list gets created or should get created?
+[20:16] <Wizek> ion:ping :)
+[20:17] <ReinH> BoR0: but actually not magically at all
+[20:17] <Walther> srhb: that's the problem
+[20:17] <BoR0> ReinH: ok. will putStrLn behave for any MonadIO instance? or do they all override it
+[20:17] <srhb> Hehe, well you have to decide
+[20:17] <Wizek> To those who are interested: http://stackoverflow.com/questions/23103654/how-can-a-function-be-transparently-augmented-in-haskell
+[20:17] <ReinH> BoR0: that's the thing
+[20:17] <ReinH> :t liftIO
+[20:17] <lambdabot> MonadIO m => IO a -> m a
+[20:17] <Walther> srhb: we want that kind of a list, but as you don't have global variables or mutables
+[20:17] <srhb> Walther: What information do you need to generate those positions?
+[20:17] <njsg> srhb: outside of the scope of the function, some json parser hands us the list
+[20:17] <urbanslug> Does installing ghci come with runhaskell? If not how can I get runhaskell?
+[20:17] <ReinH> BoR0: liftIO CANNOT know what `a' is
+[20:17] == maxcan [~textual@c-76-21-8-212.hsd1.ca.comcast.net] has joined #haskell
+[20:17] <srhb> njsg: And the json comes from where?
+[20:17] == mister_i_ [~misterint@199.227.56.230] has quit [Remote host closed the connection]
+[20:17] <ReinH> BoR0: so it cannot possibly modify the a
+[20:17] <BoR0> ReinH: so every MonadIO instance has an instance of liftIO as well?
+[20:17] <njsg> srhb: we can probably change how that list is passed, but I'd prefer to start with a not-so-wide code change
+[20:17] <ReinH> BoR0: MonadIO is a typeclass that provide liftIO
+[20:17] <ReinH> *provides
+[20:17] <BoR0> got it
+[20:18] <Walther> srhb: again, from what we read in each call for function respond as the input, we want to push that into a list of received messages as a side-effect
+[20:18] <ReinH> BoR0: so your IO action is guaranteed to be exactly the same
+[20:18] <njsg> srhb: another process, over tcp
+[20:18] <ReinH> all liftIO does is move it from being an IO action to being an action in some other monad
+[20:18] <Walther> srhb: and the actual effect is the response message, of course, but it needs the side-effect of logging received messages
+[20:18] <Walther> srhb: huge thanks btw for bearing with us
+[20:18] <srhb> No worries.
+[20:18] <BoR0> ok! thank you ReinH and vanila for the help. I have some basic sense of what it does now, but I'd like to read some more into it. I'll look into LYAH to see if there is something regarding this
+[20:18] <ReinH> BoR0: each instance of MonadIO has to define liftIO to Do The Right Thing
+[20:18] <vanila> BoR0, check page11 of the PDF if you like
+[20:18] <BoR0> vanila: yeah just opened it
+[20:19] == gentleben [~gentleben@67-207-112-138.static.wiline.com] has joined #haskell
+[20:19] == AleXoundOS [~AleXoundO@188.244.39.76] has joined #haskell
+[20:19] <srhb> njsg, Walther: Let me just get this straight. respond should be able to read one (new?) carposition from the tcp + parser, and have access to all the old ones, yes?
+[20:19] <ReinH> BoR0: monad morphisms, of which this is a rather trivial example, are interesting because they can be used to (e.g.) control access to effects within a stack
+[20:19] == vijaykiran [~user@52D90577.cm-11-1a.dynamic.ziggo.nl] has quit [Ping timeout: 252 seconds]
+[20:19] == mmachenry1 [~Adium@208.78.140.246] has quit [Quit: Leaving.]
+[20:19] == sdegutis [~sdegutis@unaffiliated/futile] has joined #haskell
+[20:20] <njsg> srhb: no, respond already gets the parsed carposition
+[20:20] <sdegutis> is a string a function that returns itself?
+[20:20] <ReinH> BoR0: for instance if you have a monad transformer stack with both ReaderT and StateT, you can use a monad morphism from Reader a to your stack to guarantee that your monadic action can't access or modify state
+[20:20] <vanila> sdegutis, no it's a value
+[20:20] <sdegutis> Thanks!
+[20:20] <BoR0> ReinH: liftIO is a monad morphism, right?
+[20:20] <Walther> srhb: respond gets the newest message as input, magically given by other functions. We want to log that input message as a side-effect. Then we want some AI logic to read the log of last messages, e.g. calculate current speed, and adjust our throttle accordingly, and send a throttlemessage as the output
+[20:20] == sdegutis [~sdegutis@unaffiliated/futile] has left #haskell []
+[20:20] <ReinH> BoR0: in the same way, your IO a can't access any of the other parts of the monad stack.
+[20:20] <vanila> lol did i just solve a mutiple choice quiz
+[20:20] <ReinH> BoR0: yes
+[20:20] <ReinH> BoR0: the other reason that this is important is that if you have, e.g.
+[20:20] <njsg> srhb: ... or so I think, that's my idea. there may be some lazyness I don't know about
+[20:20] <Walther> Well, actually respond also gets all the other messages like Join and GameInit as you can see, but we're currently just interested in the CarPositions branch
+[20:21] <srhb> Walther, njsg: OK, I say make the sweeping change and actually use modify (newmessage:) in respond
+[20:21] <ReinH> do { liftIO (putStrLn "hello"); liftIO (putStrLn "world") }
+[20:21] <ReinH> BoR0: because of the rules for monad morphisms, you know this is equivalent to
+[20:21] == jdnavarro [~danny@210.Red-81-33-78.dynamicIP.rima-tde.net] has quit [Ping timeout: 265 seconds]
+[20:21] <ReinH> do { liftIO (putStrLn "hello" >> putStrLn "world") }
+[20:21] == twanvl_ [~twanvl@dhcp-077-250-086-217.chello.nl] has joined #haskell
+[20:21] <Walther> srhb: how does that help us towards the goal of keeping a list of all received carPositions?
+[20:21] <ReinH> BoR0: in other words, you can take two liftIOs in sequence and combine them
+[20:22] == mister_integer [~misterint@199.227.56.230] has joined #haskell
+[20:22] <srhb> Walther: Well is that not the received carPosition?
+[20:22] == kipras`away has changed nick to kipras
+[20:22] <njsg> srhb: sweeping change?
+[20:22] <BoR0> so >> combines lifts
+[20:22] == elfenlaid [~elfenlaid@195.222.76.147] has quit [Quit: elfenlaid]
+[20:22] <ReinH> BoR0: so this is why I prefer to introduce monad morphisms to explain liftIO
+[20:22] == dacali [~dacali@rrcs-67-78-97-126.sw.biz.rr.com] has joined #haskell
+[20:22] == FVG-R0010X [~0x2fab@68.235.146.240] has quit [Ping timeout: 252 seconds]
+[20:22] <ReinH> also it's the explanation that actually works with the type of liftIO
+[20:22] <srhb> Walther: Otherwise: Where do all new messages get handled? Then we'll do it there
+[20:22] <BoR0> ok, I'll look into "monad morphisms" and transfomers. btw, what do transformers present in that context? is it just another fancy word for morphisms?
+[20:23] <srhb> Walther: handleMessage?
+[20:23] <srhb> handleMessages*
+[20:23] <Walther> srhb: nod, but how does that require changing the logic of sending messages?
+[20:23] == nominolo [~nominolo@cust.static.81-63-183-2.swisscomdata.ch] has quit [Ping timeout: 245 seconds]
+[20:23] <srhb> Walther: If it wants access to the state, it will need to be in StateT
+[20:23] <vanila> BoR0, a monad transformer stack is how you build a new monad with the features of several others, in your case the Snap monad is a stack which includes IO
+[20:23] <srhb> Really it;s just a type change
+[20:23] <Walther> I'm *really* thinking we should be able to stick this to respond, within CarPositions
+[20:23] <ReinH> BoR0: monad transformers are a way to "stack" different monads
+[20:23] <srhb> Walther: So respond is called for each carPosition?
+[20:23] <ReinH> BoR0: iirc LYAH talks about them a bit
+[20:24] <Walther> srhb: respond is called each time we receive a message
+[20:24] <BoR0> ah, right. so when I'm liftIO-ing I'm building this stack?
+[20:24] <gdoteof> can anyone give me some hints on compiling haskell for distribution on osx?
+[20:24] == fredmorcos [~fred@cm56-209-5.liwest.at] has joined #haskell
+[20:24] <Walther> srhb: and we currently respond just based on the newest message
+[20:24] <njsg> srhb: yeah, respond is called for every single message
+[20:24] <ReinH> BoR0: you build the stack at the type level
+[20:24] <srhb> Walther: Right. I think it's wrong that respond should be responsible for storing the newest message, but you can do that if you want
+[20:24] <ReinH> so StateT SomeState IO a is a monad transformer stack
+[20:24] <Walther> srhb: while for the car logic, we definitely want to influence the sent client message by previous messages as well
+[20:24] <gdoteof> compiling with -static doesn't work; but the dynamically linked executable is failing with libcrt0.o not being on the client machine
+[20:24] <Walther> srhb: currently nothing is stored
+[20:25] == twanvl [~twanvl@dhcp-077-250-086-217.chello.nl] has quit [Ping timeout: 252 seconds]
+[20:25] <ReinH> BoR0: where StateT SomeState "tranforms" the base monad, IO, to give you one that can also do State stuff
+[20:25] == fredmorcos [~fred@cm56-209-5.liwest.at] has quit [Client Quit]
+[20:25] <srhb> njsg, Walther What you want is for some top-level place to run execStateT loop []
+[20:25] <Walther> currently, respond is a fifo function that reads newest message, applies functions to it, and responds with a client message
+[20:25] == epsilonhalbe [~epsilonha@212-17-107-66.static.inode.at] has quit [Ping timeout: 276 seconds]
+[20:25] == chad [~chad@p4FF5BBB3.dip0.t-ipconnect.de] has joined #haskell
+[20:25] <ReinH> BoR0: monad tranformers are sort of like type-level monad morphisms. StateT SomeState is a type constructor that takes some base monad and turns it into a new one
+[20:25] <srhb> njsg, Walther: loop takes care of receiving messages, storing them in the log and calling respond for each new one
+[20:25] <BoR0> ReinH: aha, I see. so the instance of MonadIO is the transformer (stack), and we use liftIO to "execute" stuff within the transformer?
+[20:25] == kiddesr [~scott@38.122.34.90] has left #haskell []
+[20:25] <Walther> we want that to stay, but we want it to also as a side-effect save the just-got newest message, and while deciding what to send back, read a couple last messages as well
+[20:25] <ReinH> BoR0: right, MonadIO (like all typeclasses) is just a way of giving liftIO more than one definition
+[20:26] <BoR0> ok
+[20:26] == quant1 [~Thunderbi@2a02:810d:d80:104:ac84:3cea:8df2:e7e2] has joined #haskell
+[20:26] <srhb> njsg, Walther: respond has access to that state, being a message -> StateT YourLog IO ()
+[20:26] <ReinH> BoR0: you are actually using the definition of liftIO for your stack
+[20:26] <Walther> there is no need for respond to actually have the list as a parameter or anything
+[20:26] == etehtsea [~kes@5.18.134.6] has quit [Quit: Computer has gone to sleep.]
+[20:26] <ReinH> so in our case you actually have liftIO instantiated at liftIO :: IO a -> StateT SomeState IO a
+[20:26] <Walther> srhb: again; isn't there a way to do this without state?
+[20:26] <srhb> Walther, njsg: OK. You're doing it wrong, but if you really insist, stick it in an IORef
+[20:26] <srhb> It's very much against my will
+[20:26] <srhb> I'm almost crying
+[20:26] <BoR0> ReinH: got it
+[20:26] <srhb> :-)
+[20:27] <srhb> But feel free
+[20:27] <Walther> srhb: Or without ioref
+[20:27] == pooya72 [~pooya@31.220.200.23] has left #haskell []
+[20:27] <BoR0> thanks a lot :)
+[20:27] == jesyspa [~jesyspa@ip4da1331c.direct-adsl.nl] has quit [Quit: leaving]
+[20:27] <Walther> srhb: i mean, couldn't we just do this with a updating list
+[20:27] <ReinH> BoR0: np :)
+[20:27] <Walther> srhb: we just have no idea how
+[20:27] <ReinH> BoR0: so "moprhism" in this case just means funciton
+[20:27] <ReinH> *function
+[20:27] == bocaneri [~bocaneri_@about/linux/staff/sauvin] has quit [Remote host closed the connection]
+[20:27] <srhb> Walther: You can do it with either with IORef or with StateT, or with simple recursion passing the log in a parameter all the way through your program
+[20:28] <ReinH> BoR0: but we call it a morphism because it behaves in a predictable way (based on the definition of morphism in category theory)
+[20:28] <srhb> Walther: Those are basically your options.
+[20:28] <ReinH> BoR0: and liftIO is indeed a function, just one with some nice properties.
+[20:28] == augur [~augur@129-2-129-33.wireless.umd.edu] has joined #haskell
+[20:29] <njsg> srhb: the loop is doing by using two mutually recursive functions, so I'm already hacking there, but I still need to fix their types
+[20:29] <Walther> srhb: so you're saying there's no way we can just say in a similar way as the current putStrLn line, that somelist ++ [carPositions] and be happy
+[20:29] <ReinH> BoR0: hope that hels
+[20:29] <ReinH> helps
+[20:29] <BoR0> ahh so many stuff that came to my mind now, since you mentioned category theory. could you explain e : 1 -> M to me? what does the '1' represent in that context?
+[20:29] <srhb> Walther: Well you want to keep the information for the next round, you need to pass it back somehow
+[20:29] <njsg> srhb: it seems to be complaining about the first line in a do loop, you said something about every line needing to have a StateT, how does that go?
+[20:29] <BoR0> someone mentioned it is a terminal object but I have no idea what that means
+[20:30] == mpiechotka [~mpiechotk@178-36-46-235.adsl.inetia.pl] has joined #haskell
+[20:30] <srhb> njsg: Now I'm confused, I thought you weren't going the StateT route
+[20:30] == yarou [~yarou@ool-2f1168bc.dyn.optonline.net] has joined #haskell
+[20:30] <ReinH> BoR0: I assume you're talking about return?
+[20:30] <srhb> Walther, njsg: Either way, I have a date so I need to go shower now. If you're still struggling much later or another day, feel free to poke me.
+[20:30] <Walther> srhb: we are actively trying all possible options
+[20:30] <Walther> Huge thanks for the help.
+[20:30] <srhb> o/
+[20:30] <Walther> sorry for being so dumb :P
+[20:31] <njsg> srhb: it goes like this, Walther was now exploring something else, I was still trying to use StateT
+[20:31] == qzr [~qzr@77-57-127-155.dclient.hispeed.ch] has quit [Remote host closed the connection]
+[20:31] == ndrei [~avo@83.142.149.227] has joined #haskell
+[20:31] <savanni> I'm still around and have been silently watching the conversation.  I'm not necessarily up to speed, but I may still be able to help, and I'm not leaving for a few hours.
+[20:31] == fredmorcos [~fredmorco@cm56-209-5.liwest.at] has joined #haskell
+[20:31] <ReinH> BoR0: if M is a monad, 1 -> M is a natural transformation from the identity functor to the monad (which is also a functor)
+[20:31] <vanila> BoR0, it's a zero morphism
+[20:31] <njsg> one "function declaration" is "handleServerMessage :: Handle -> ServerMessage -> IO ()", and I see it takes a Handle and a ServerMessage as parameters, so where do I fit the StateT there? :-\
+[20:31] <ReinH> BoR0: that didn't quite help, did it :)
+[20:32] <njsg> srhb: have a good date, then!
+[20:32] == ormaaj [~ormaaj@97-116-181-230.mpls.qwest.net] has joined #haskell
+[20:33] == brettweavnet [~brettweav@fremont.intuit.com] has joined #haskell
+[20:33] == gamegoblin [~grant@ip72-204-35-188.fv.ks.cox.net] has joined #haskell
+[20:34] == assia_t [~assia_t@187.121.82.241] has joined #haskell
+[20:34] <imalsogreg> njsg, Walther: Like savanni I've been listening, happy to give some more thoughts about your architecture issue if you need
+[20:35] <savanni> njsg: if I assume correctly, you want to have [CarPosition] available to handleServerMessage, tohugh I don't see you changing the state there.
+[20:35] <savanni> But, you could redefine handleServerMessage to `handleServerMessage :: Handle -> ServerMessage -> StateT [CarPosition] IO ()"
+[20:36] == elfenlaid [~elfenlaid@195.222.76.147] has joined #haskell
+[20:36] <savanni> That's going to trigger some more changes that I'm tracing now.
+[20:36] <vanila> BoR0, oops, or unit of an adjunction
+[20:36] == spintronic [~jovan@ma.sdf.org] has joined #haskell
+[20:37] == OlegYch [~OlegYch@213.184.238.131] has joined #haskell
+[20:37] == fannye [~fannye@adsl-ull-163-188.50-151.net24.it] has quit [Read error: Connection reset by peer]
+[20:37] == tharper [~tomh@unaffiliated/sioraiocht] has quit [Remote host closed the connection]
+[20:37] <savanni> The print messages in `respond`: are those just debugging traces?
+[20:37] == sdf_ [~clif@174.46.28.106] has joined #haskell
+[20:37] <Walther> savanni: yes, and those are also the things we would gladly instead put to the log
+[20:37] <ReinH> vanila: it's a zero morphism?
+[20:37] == brettweavnet [~brettweav@fremont.intuit.com] has quit [Ping timeout: 250 seconds]
+[20:37] == Chaze [~Chase@P6106.pallas.wh.tu-darmstadt.de] has quit [Ping timeout: 265 seconds]
+[20:37] <vanila> no
+[20:37] <ReinH> vanila: ok good
+[20:38] == fredmorcos [~fredmorco@cm56-209-5.liwest.at] has quit [Quit: Leaving]
+[20:38] <savanni> Hmmm.  There is something I could recommend that would make the type for respond simpler, but it only works if you intended to eliminate those messages completely.
+[20:38] <vanila> :/
+[20:38] <ReinH> vanila: I thought I was confused for a second :)
+[20:38] == vkbsh [~vkbsh@207-38-151-173.c3-0.avec-ubr2.nyr-avec.ny.cable.rcn.com] has quit [Remote host closed the connection]
+[20:39] == shesek [~shesek@IGLD-84-228-71-163.inter.net.il] has joined #haskell
+[20:39] == maxcan [~textual@c-76-21-8-212.hsd1.ca.comcast.net] has quit [Quit: My MacBook Pro has gone to sleep. ZZZzzz…]
+[20:39] == Chaze [~Chase@P6106.pallas.wh.tu-darmstadt.de] has joined #haskell
+[20:39] <savanni> Oh.  Wait.  Walther, is [CarPosition] your starte, or are those log messages your state?
+[20:39] <lispy> srhb: in this context, 'go all lispy' means make a Haskell -> JVM compiler? Because that's what I would probably do.
+[20:39] <Walther> savanni: wouldn't probably work as respond always receives a ServerMessage as input and needs to output a IO [ClientMessage], we just need some magic side-effects to save previous messages that affect what we output within the IO [ClientMessage]
+[20:39] == FreeFull [~freefull@defocus/sausage-lover] has quit [Quit: Starting tmux]
+[20:39] == MrGwen [~Thunderbi@hem62-1-82-238-50-252.fbx.proxad.net] has quit [Quit: MrGwen]
+[20:40] == lw [~lw@dsl-69-171-153-205.acanac.net] has quit [Quit: s]
+[20:40] <BoR0> sorry, was afk. no, I was talking in context of category theory, if we have f : A -> B then we can view A and B as sets, but what is up with f : 1 -> B? what is 1?
+[20:40] <njsg> savanni: imalsogreg: right now, I've moved a bit up in the call chain, and I'm trying to apply it at a higher level, even then I get one complaint from ghc
+[20:40] == Ywen [~user@134.157.234.27] has quit [Remote host closed the connection]
+[20:40] == ArneL [~ArneL@p4FE84A42.dip0.t-ipconnect.de] has quit [Remote host closed the connection]
+[20:40] <njsg> "No instance for (MonadState [ServerMessage] IO) arising from a use of `modify'"
+[20:40] <ReinH> BoR0: f is a natural transformation, a morphism between functors that preserves their structure.
+[20:40] <lispy> srhb: I'd probably do it the way ghcjs is written.
+[20:41] <ReinH> 1 is an identity functor
+[20:41] <njsg> the function has no 'prototype' so to speak (the :: line), and ghc suggests adding an "instance declaration" -- is there some simple fix for this?
+[20:41] <savanni> njsg: could you post an updated version?
+[20:41] == nt [~antiq@a89-152-9-45.cpe.netcabo.pt] has quit [Quit: Leaving]
+[20:41] == agjacome [~agjacome@242.211.11.37.dynamic.jazztel.es] has joined #haskell
+[20:41] <imalsogreg> njsg: I did miss any link you gave to the code you're looking at.
+[20:41] <BoR0> ReinH: is "identity functor" the same as "terminal object"?
+[20:41] <lispy> srhb: that way you get all of ghc's frontend goodness. You still have to implement a gmachine on the JVM (slow), write a run-time, and figure out an FFI, but at least you'd get all the fancy type checking and extensions.
+[20:41] == coltfred [~coltfred@inet-aumc01-o.oracle.com] has quit [Remote host closed the connection]
+[20:42] == C6R [~C6R@2601:5:9900:3d2:41a0:ce3c:102c:e908] has joined #haskell
+[20:42] == tharper [~tomh@unaffiliated/sioraiocht] has joined #haskell
+[20:42] <albeit> In a fold, does the accumulator contain the thunks of the previous accumulator? Or is the previous accumulator evaluated?
+[20:42] == RaceCondition [~RaceCondi@217.158.172.234] has quit [Quit: RaceCondition]
+[20:42] <imalsogreg> njsg: A very general comment - it sounds like different types of logic are coupled a little funny in your functions.
+[20:43] == lw [~lw@dsl-69-171-153-205.acanac.net] has joined #haskell
+[20:43] <njsg> what is an instance declaration?
+[20:43] <imalsogreg> njsg: I'd suggest trying to get a function like:   getMessage :: Handle -> IO CarPosition
+[20:43] <ReinH> BoR0: no
+[20:43] == ArneL [~ArneL@p4FE84A42.dip0.t-ipconnect.de] has joined #haskell
+[20:43] <savanni> njsg: think of that as declaring an interface in Java.
+[20:43] == klrr_ [~klrr@88.129.149.98] has quit [Quit: leaving]
+[20:43] <njsg> savanni: can I have more than one?
+[20:43] <savanni> In this case, it would look something like `instance MonadState [CarPositions] where`, followed by some function definitions.
+[20:43] <jle`> instance declaration would be more analogous to implementing an interface
+[20:43] <ReinH> BoR0: first of all, what category are we in?
+[20:44] <savanni> Oh, yes.  Many useful things have a lot of instances.
+[20:44] <srhb> njsg: You stick that on the return type of the function
+[20:44] <savanni> And, jle` is right.  "implementing" is the right word.
+[20:44] <BoR0> ReinH: pick any :) I am just trying to get a general sense of it
+[20:44] <srhb> njsg: No writing instances for now
+[20:44] <lispy> albeit: it depends on how lazy the fold is in the accumulator
+[20:44] == DarkTiger [~user@cpc3-brig18-2-0-cust870.3-3.cable.virginm.net] has quit [Ping timeout: 240 seconds]
+[20:44] <jfischoff> Am I correct that a broadcast TChan can support multiple writers and readers?
+[20:44] <albeit> Wondering because if the fold's step takes a accumulator :: [a] and creates a new accumulator :: [a], are all the previous accumulator lists still stored in memory?
+[20:44] <savanni> Anyway, I think this is what you'll want to do
+[20:44] == jchee [~jchee@8.25.197.24] has quit [Quit: leaving]
+[20:44] == lw [~lw@dsl-69-171-153-205.acanac.net] has quit [Client Quit]
+[20:44] <lispy> albeit: if the fold is just adding to the accumulator, but not forcing it, then the current thunk will have pointers to the previous accumulator
+[20:44] <vanila> BoR0: 1 is probably just a set with one element, so f : 1 -> B names an element of B
+[20:45] <jle`> albeit: it depends on the compiler
+[20:45] <jle`> albeit: that's an implementation detail :)
+[20:45] <ReinH> BoR0: if the identity functor is to be a terminal object then it has to be an object in some categorty
+[20:45] <albeit> lispy: Ah so if I use something like foldl' it would non-lazy and thus evaluate the accumulator?
+[20:45] <ReinH> BoR0: so in order to answer the question we need to know what category we're in
+[20:45] <savanni> Change handleServerMessage to `handleServerMessage :: Handle -> ServerMessage -> StateT [CarPosition] IO ()`
+[20:45] <savanni> Do the same thing with `respond`
+[20:45] == heath [quassel@2600:3c02::f03c:91ff:feae:6e5b] has joined #haskell
+[20:45] <jle`> albeit: remember that all data structures in haskell are technically "persistent"
+[20:45] == heath [quassel@2600:3c02::f03c:91ff:feae:6e5b] has quit [Changing host]
+[20:45] == heath [quassel@unaffiliated/ybit] has joined #haskell
+[20:45] == S_T_A_N [~S_T_A_N@ip172-242.wlan-zone2.WKU.EDU] has quit [Quit: ?????]
+[20:45] <lispy> albeit: That's the motivation behind foldl', but keep in mind you can still be too lazy with foldl'
+[20:45] <savanni> And then in `respond`, you'll use the `modify` call that srhb posted.  It would probably be...
+[20:46] <jle`> meaning that copies of it are available forever, and that the are never edited in-place, only copied and modified
+[20:46] <jle`> in reality, garbage collection and smart compilers make that less of a reality
+[20:46] <njsg> srhb: in this case, the one I'm looking at now doesn't even have a "declaration", but if it does have a return type "a", what do I do to make it so that it complies with StateT?
+[20:46] <lispy> albeit: did you read dcoutt's post about foldl?
+[20:46] == yhager [~yuval@d207-216-222-232.bchsia.telus.net] has quit [Ping timeout: 245 seconds]
+[20:46] <albeit> Hmm... I'm trying to implement an algorithm that is O(n^3) for space, but I can modify it so that it is O(n^2) if I use fold and the accumulators are discarded.
+[20:46] <albeit> lispy: No I have not
+[20:46] == jowens [~jowens@169.237.180.161] has quit [Ping timeout: 245 seconds]
+[20:46] == pi3r [~pi3r@130.205-240-81.adsl-dyn.isp.belgacom.be] has quit [Ping timeout: 265 seconds]
+[20:47] <srhb> njsg: Basically your return type should (must) be of type StateT YourState IO Something
+[20:47] <srhb> njsg: So you need your evalState to wrap the main loop of your program
+[20:47] <albeit> lispy: Do you have a link?
+[20:47] <ReinH> BoR0: let me correct an assumption by asking if f : 1 -> M is meant to refer to the unit for some monad M
+[20:47] <lispy> albeit: http://www.well-typed.com/blog/90/
+[20:47] <njsg> srhb: it seems to be complaining that, inside a StateT function, some lines in a "do" sequence aren't of that type
+[20:47] <robb> I'm coming from an imperative background to haskell - is there a resource which is targeted to this transition?
+[20:47] <srhb> njsg: Are they of type IO Something?
+[20:47] <lispy> albeit: It's a long read and posted on april 1st, but it's legit
+[20:47] <Walther> srhb: we *don't* want the return type of respond to change
+[20:47] == maxcan [~textual@c-76-21-8-212.hsd1.ca.comcast.net] has joined #haskell
+[20:48] <srhb> Walther: Then you can't make it StateT.
+[20:48] == jowens [~jowens@dhcp-169-237-74-97.ece.ucdavis.edu] has joined #haskell
+[20:48] <savanni> njsg: that's a very common error
+[20:48] <Walther> srhb: we just want a secret side-effect of logging there
+[20:48] <albeit> lispy: Thanks
+[20:48] <jle`> all lines of a do block have to be of the same monad; note
+[20:48] <lispy> albeit: and there is also a reddit thread: http://www.reddit.com/r/haskell/comments/21wvk7/foldl_is_broken/
+[20:48] <jle`> :t (>>=)
+[20:48] <srhb> Yes, that's why you want StateT
+[20:48] == Kron [~Kron@bas5-ottawa10-3096709350.dsl.bell.ca] has quit [Quit: Kron awayyy!]
+[20:48] <lambdabot> Monad m => m a -> (a -> m b) -> m b
+[20:48] <ReinH> BoR0: btw we might want to move this to ##categorytheory, quieter and other people can correct me when I'm wrong ;)
+[20:49] <srhb> Walther: If you want to not change the return type, you have to do it wrong, either by passing the state through a parameter of every function in you program or by making an IORef and passing that through every function that needs it.
+[20:49] == sepp2k [~sepp2k@g230248153.adsl.alicedsl.de] has joined #haskell
+[20:49] == mmachenry [~Adium@208.78.140.246] has joined #haskell
+[20:49] <lispy> robb: Not that I know of.
+[20:49] <njsg> savanni: how do I work around it, then?
+[20:49] <njsg> srhb: nope, just another object, which seems to be the return value of whatever function call is in there
+[20:50] <Walther> srhb: welll- we can't change the returntype of response as the server expects to receive the messages in a certain fashion
+[20:50] <lispy> robb: If you haven't done much functional programming you might try one of the more traditional texts about Haskell. Like School of Expression.
+[20:50] <savanni> njsg: it's going to depend on the data type of the line.  What is the line?
+[20:50] == tfng [~tfng@180.183.158.155] has quit [Ping timeout: 245 seconds]
+[20:50] <srhb> Walther: surely responding involves using IO somehow
+[20:50] <Walther> nod
+[20:50] == agjacome [~agjacome@242.211.11.37.dynamic.jazztel.es] has quit [Quit: leaving]
+[20:50] == urbanslug [~urbanslug@unaffiliated/zipper] has quit [Ping timeout: 240 seconds]
+[20:50] <srhb> Walther: Using IO is permitted in StateT YourState IO Something
+[20:50] == tfng [~tfng@180.183.158.155] has joined #haskell
+[20:50] <srhb> So just make it actually respond to the server.
+[20:50] <Walther> repond :: ServerMessage -> IO [ClientMessage]
+[20:50] == RaceCondition [~RaceCondi@217.158.172.234] has joined #haskell
+[20:50] <robb> lipsy: Not to worry, then. There's great documentation on the web to keep me occupied.
+[20:50] <BoR0> ReinH: ok :)
