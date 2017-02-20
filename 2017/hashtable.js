@@ -14,18 +14,12 @@ function hashing_func(str, len) {
 }
 
 function init_hash(len) {
-	var array = [];
-
-	for (var i = 0; i < len; i++) {
-		array[i] = [];
-	}
-
-	return [array, len];
+	return new Array(len);
 }
 
 function get_hash(hash, key) {
-	var the_hash = hashing_func(key, hash[1]);
-	var keys = hash[0][the_hash];
+	var the_hash_index = hashing_func(key, hash.length);
+	var keys = hash[the_hash_index] || [];
 
 	for (var i = 0; i < keys.length; i++) {
 		if (keys[i][0] === key) {
@@ -35,8 +29,13 @@ function get_hash(hash, key) {
 }
 
 function set_hash(hash, key, val) {
-	var the_hash = hashing_func(key, hash[1]);
-	var keys = hash[0][the_hash];
+	var the_hash_index = hashing_func(key, hash.length);
+
+	if (!hash[the_hash_index]) {
+		hash[the_hash_index] = [];
+	}
+
+	var keys = hash[the_hash_index];
 
 	for (var i = 0; i < keys.length; i++) {
 		if (keys[i][0] === key) {
