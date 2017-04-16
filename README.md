@@ -13,6 +13,7 @@ In addition to the practices, here are my favorite readings that shaped my knowl
 | 5. The Pragmatic Programmer            | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
 | 6. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
 | 7. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
+| 8. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
 
 In addition, here are some good tutorials:
 
@@ -33,6 +34,7 @@ Notes on the readings (books):
 5. Introduces the reader to common programming patterns, such as DRY, keeping up to date with tools, etc.
 6. **Work in progress**.
 7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
+8. **Work in progress**.
 
 Notes on the readings (tutorials):
 
