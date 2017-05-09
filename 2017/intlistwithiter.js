@@ -20,13 +20,12 @@ function listtonumber_queue(q) {
 
 function numbertolist_stack(n) {
         var stack = [n];
-        var sum = 0;
 
         while (stack.length) {
                 var x = stack.pop();
+		stack.push(x % 10);
 
-                if (x / 10) {
-			stack.push(x % 10);
+                if (parseInt(x / 10)) {
                         stack.push(parseInt(x / 10));
                 } else {
                         break;
@@ -38,15 +37,20 @@ function numbertolist_stack(n) {
 
 function numbertolist_queue(n) {
         var queue = [n];
-        var sum = 0;
 
         while (queue.length) {
+		var flag = false;
                 var x = queue.shift();
 
-                if (x / 10) {
-			queue.unshift(x % 10);
-                        queue.unshift(parseInt(x / 10));
-                } else {
+                if (parseInt(x / 10)) {
+                        queue.push(parseInt(x / 10));
+		} else {
+			flag = true;
+		}
+
+		queue.push(x % 10);
+
+                if (flag) {
                         break;
                 }
         }
