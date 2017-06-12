@@ -23,7 +23,7 @@ In addition, here are some good tutorials:
 | 2. DBMS Lecture Notes   | http://www.cs.sfu.ca/CourseCentral/354/zaiane/material/notes/contents.html |
 | 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
-| 5. Mathematics for CS   | https://www.cs.princeton.edu/courses/archive/fall06/cos341/handouts/mathcs.pdf |
+| 5. Math CS foundations  | https://web.stanford.edu/class/cs103/notes/Mathematical%20Foundations%20of%20Computing.pdf |
 
 Notes on the readings (books):
 
