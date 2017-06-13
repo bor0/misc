@@ -9,7 +9,7 @@ In addition to the practices, here are my favorite readings that shaped my knowl
 | 1. The C Programming Language          | https://www.amazon.com/dp/0131103628 | |
 | 2. The Little Schemer                  | https://www.amazon.com/dp/0262560992 | |
 | 3. Learn You a Haskell for Great Good! | https://www.amazon.com/dp/1593272839 | http://learnyouahaskell.com/chapters |
-| 4. How to Prove It                     | https://www.amazon.com/dp/0521675995 | |
+| 4. Proofs and Concepts                 | | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html |
 | 5. The Pragmatic Programmer            | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
 | 6. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
 | 7. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
