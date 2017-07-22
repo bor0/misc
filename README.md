@@ -23,7 +23,6 @@ In addition, here are some good tutorials:
 | 2. DBMS Lecture Notes   | http://www.cs.sfu.ca/CourseCentral/354/zaiane/material/notes/contents.html |
 | 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
-| 5. Math CS foundations  | https://web.stanford.edu/class/cs103/notes/Mathematical%20Foundations%20of%20Computing.pdf |
 
 Notes on the readings (books):
 
@@ -42,6 +41,5 @@ Notes on the readings (tutorials):
 2. The theory behind DB systems. Relational algebra, etc.
 3. An interesting way to declare integers (and other objects) in terms of f(x), f(f(x)), etc.
 4. Prolog was fun for me because it's a different non-mainstream paradigm and also introduces some interesting concepts.
-5. **Work in progress**.
 
 Boro Sitnikovski
