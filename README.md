@@ -14,7 +14,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 6. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
 | 7. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
 | 8. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
-| 9. Make Your Own Neural Network        | https://www.amazon.com/dp/1530826608 | |
+| 9. Software Foundations Vol. 1: Logic  | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
 
 Notes:
 
@@ -26,7 +26,7 @@ Notes:
 6. **Work in progress**.
 7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
 8. **Work in progress**.
-9. Easy introduction to neural networks.
+9. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3 and 4 from this list.
 
 In addition, here are some good technical tutorials:
 
