@@ -26,7 +26,7 @@ Proof.
   intros not_p.
   intros proof_p.
   (* We either have not_p or proof_p. Consider the case of not_p. *)
-  destruct not_p. (* performs case analysis without recursion, unlike induction *)
+  destruct not_p. (* discharge current goal q by p -> False, p .:. False *)
   exact proof_p.
 Qed.
 
