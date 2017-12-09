@@ -52,6 +52,7 @@ Interesting not-so-technical books/readings:
 | 2. The Laws of Simplicity              | https://www.amazon.com/dp/0262134721 |
 | 3. Redesigning Leadership              | https://www.amazon.com/dp/0262015889 |
 | 4. How to think like Sherlock Holmes   | https://www.amazon.com/dp/014312434X |
+| 5. Propositions as Types               | http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf |
 
 Notes:
 
@@ -59,5 +60,6 @@ Notes:
 2. General interesting rules about design, technology, business, and life.
 3. Interesting observations on how leaders should lead.
 4. A mix of story telling and psychological observations.
+5. Historical overview of how the concept Props as Types was developed (e.g. forall n, n + 0 = 0 : Prop.)
 
 Boro Sitnikovski
