@@ -23,9 +23,9 @@ Notes:
 3. Even if you don't program in Haskell after reading this, it introduces you to a lot of good concepts (which some can be applied to other programming languages as well). Pattern matching, Algebraic data types, Monads/Monoids, Map/Reduce and their implementation, Currying, etc.
 4. Introduces the reader to set theory, and proving properties for it. Found to be useful to prove correctness of functional programming languages programs. For example, using induction to prove the correctness of `length`.
 5. Introduces the reader to common programming patterns, such as DRY, keeping up to date with tools, etc.
-6. **Work in progress**.
+6. **Work in progress**. Covering some general concepts about programming, such as: abstraction, recursion, DSLs, streams, etc.
 7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
-8. **Work in progress**.
+8. **Work in progress**. Algorithms and complexitiy.
 9. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3 and 4 from this list.
 
 In addition, here are some good technical tutorials:
