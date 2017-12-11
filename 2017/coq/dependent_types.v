@@ -14,6 +14,11 @@ Formally, suppose we're given a type A : U in universe of types. Let B : A -> U.
 That is, B assigns to every a : A, a type B(a) : U.
 
 In the example above, B s = length s > 0, so B : string a -> Prop.
+
+In Calculus of Constructions, dependent types are a generalization of the P -> Q function.
+This is because for any p : P, B(p) can return a different type (not necessarily Q).
+Per BHK, forall x in S : phi(x) is a function f that converts a : S to proof phi(a).
+So, dependent types are equivalent to forall.
 *)
 Module Example_1.
 Definition B n := n = 0.
