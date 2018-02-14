@@ -15,6 +15,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 7. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
 | 8. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
 | 9. Software Foundations Vol. 1: Logic  | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
+| 10. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
 
 Notes:
 
@@ -27,6 +28,7 @@ Notes:
 7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
 8. **Work in progress**. Algorithms and complexitiy.
 9. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3 and 4 from this list.
+10. **Work in progress**. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 
 In addition, here are some good technical tutorials:
 
