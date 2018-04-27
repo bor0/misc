@@ -38,6 +38,7 @@ In addition, here are some good technical tutorials:
 | 2. DBMS Lecture Notes   | http://www.cs.sfu.ca/CourseCentral/354/zaiane/material/notes/contents.html |
 | 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
+| 5. Idris tutorial       | http://docs.idris-lang.org/en/latest/tutorial/ |
 
 Notes:
 
@@ -45,6 +46,7 @@ Notes:
 2. The theory behind DB systems. Relational algebra, etc.
 3. An interesting way to declare integers (and other objects) in terms of f(x), f(f(x)), etc.
 4. Prolog was fun for me because it's a different non-mainstream paradigm and also introduces some interesting concepts.
+5. Idris is an interesting functional programming language with dependent types that is combined with IO support.
 
 Interesting not-so-technical books/readings:
 
