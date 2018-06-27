@@ -1,4 +1,10 @@
 #lang racket
+(define-namespace-anchor anc)
+(define ns (namespace-anchor->namespace anc))
+(define my-lisp-eval
+  (let ((ns (make-base-namespace)))
+    (lambda (expr) (eval expr ns))))
+
 (define (init-env)
   (define ht (make-hash))
   (hash-set! ht 'car (lambda (x) (car x)))
@@ -15,22 +21,23 @@
     (cond ((number? ast) ast)
           ;check env for atom (single retrieval of variable)
           ((and (symbol? ast) (hash-has-key? global-env ast)
-                (apply (hash-ref global-env ast) '())))
+                (hash-ref global-env ast)))
           ;check env for atom
           ((hash-has-key? global-env (car ast))
            (apply (hash-ref global-env (car ast)) (map my-eval (cdr ast))))
           ;quote
           ((and (eq? (car ast) 'quote)) (cadr ast))
-          ;lambda todo
-          ((eq? (car ast) 'lambda) '())
+          ;lambda todo without eval
+          ((eq? (car ast) 'lambda) (my-lisp-eval ast))
           ;if
           ((eq? (car ast) 'if) (if (my-eval (cadr ast)) (my-eval (caddr ast)) (my-eval (cadddr ast))))
           ;define
-          ((eq? (car ast) 'define) (hash-set! global-env (cadr ast) (lambda () (my-eval (caddr ast)))) (cadr ast))
+          ((eq? (car ast) 'define) (hash-set! global-env (cadr ast) (my-eval (caddr ast))) (cadr ast))
           ;print with eval
           ((and (eq? (car ast) 'print) (list? (cadr ast))) (displayln (my-eval (cadr ast))))
           ;print atom
           ((eq? (car ast) 'print) (displayln (my-eval (cadr ast))))
+          ;((list? ast) (my-eval (map my-eval ast)))
           (else "undefined")))
 
 (define (evaluate-string str) (my-eval (read (open-input-string str))))
@@ -43,7 +50,6 @@
 
 
 ;=== examples ===
-
 (begin (evaluate-string "(define x (quote (1 2)))") (evaluate-string "(car x)"))
 (my-eval '(car (quote (1 2))))
 (my-eval '(quote (1 2)))
@@ -57,3 +63,8 @@
 (my-eval '(define a 123))
 (my-eval '(if (eq? a 1) 2 3))
 (my-eval '(if (eq? a 123) 2 3))
+
+(my-eval '(define wat (lambda (x) (car x))))
+(my-eval '(wat (quote (1 2))))
+;todo
+;(my-eval '((lambda (x) (car x)) (quote (1 2))))
