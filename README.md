@@ -6,29 +6,31 @@ In addition to the practices, here are my favorite technical readings that shape
 
 | Name of the book                       | Amazon link                          | Online link |
 | -------------------------------------- | ------------------------------------ | ----------- |
-| 1. The C Programming Language          | https://www.amazon.com/dp/0131103628 | |
-| 2. The Little Schemer                  | https://www.amazon.com/dp/0262560992 | |
+| 1. Gentle Introduction to Dependent Types with Idris | https://www.amazon.com/dp/1723139416 | https://leanpub.com/gidti |
+| 2. Proofs and Concepts                 | | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html |
 | 3. Learn You a Haskell for Great Good! | https://www.amazon.com/dp/1593272839 | http://learnyouahaskell.com/chapters |
-| 4. Proofs and Concepts                 | | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html |
-| 5. The Pragmatic Programmer            | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
-| 6. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
-| 7. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
-| 8. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
-| 9. Software Foundations Vol. 1: Logic  | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
-| 10. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
+| 4. The Little Schemer                  | https://www.amazon.com/dp/0262560992 | |
+| 5. The C Programming Language          | https://www.amazon.com/dp/0131103628 | |
+| 6. The Pragmatic Programmer            | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
+| 7. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
+| 8. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
+| 9. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
+| 10. Software Foundations Vol. 1: Logic | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
+| 11. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
 
 Notes:
 
-1. This is a classic. I believe any programmer should at least be aware of the things C offers, like manual memory management, working with stacks, etc. This is found to be useful even when programming in higher level languages. For example, whenever you create an anonymous function in JS, given its scope change we can see it as the stack frame change.
-2. This book really helped me grasp recursion, and Scheme.
+1. This is an introductory textbook. It covers mathematical logic and proofs, type theory, and finally dependent types using the programming language Idris. Afterwards, it uses dependent types to prove correctness of programs, for example, using induction to prove the correctness of `length`.
+2. Introduces the reader to mathematical logic, proofs, and some set theory.
 3. Even if you don't program in Haskell after reading this, it introduces you to a lot of good concepts (which some can be applied to other programming languages as well). Pattern matching, Algebraic data types, Monads/Monoids, Map/Reduce and their implementation, Currying, etc.
-4. Introduces the reader to set theory, and proving properties for it. Found to be useful to prove correctness of functional programming languages programs. For example, using induction to prove the correctness of `length`.
-5. Introduces the reader to common programming patterns, such as DRY, keeping up to date with tools, etc.
-6. **Work in progress**. Covering some general concepts about programming, such as: abstraction, recursion, DSLs, streams, etc.
-7. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
-8. **Work in progress**. Algorithms and complexitiy.
-9. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3 and 4 from this list.
-10. **Work in progress**. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
+4. This book really helped me grasp recursion, and Scheme.
+5. This is a classic. I believe any programmer should at least be aware of the things C offers, like manual memory management, working with stacks, etc. This is found to be useful even when programming in higher level languages. For example, whenever you create an anonymous function in JS, given its scope change we can see it as the stack frame change.
+6. Introduces the reader to common programming patterns, such as DRY, keeping up to date with tools, etc.
+7. **Work in progress**. Covering some general concepts about programming, such as: abstraction, recursion, DSLs, streams, etc.
+8. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
+9. **Work in progress**. Algorithms and complexitiy.
+10. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3, 4 and 5 from this list.
+11. **Work in progress**. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 
 In addition, here are some good technical tutorials:
 
