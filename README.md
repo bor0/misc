@@ -1,6 +1,8 @@
-Tutorials
-=========
+Misc playground
+===============
 In this repository you will find a lot of stuff which I've been practicing throughout the years. I have a bunch of other stuff on my other computers, so as soon as I sort them I will be posting them here.
+
+# Technical books
 
 In addition to the practices, here are my favorite technical readings that shaped my knowledge in a way:
 
@@ -18,7 +20,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 10. Software Foundations Vol. 1: Logic | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
 | 11. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
 
-Notes:
+## Notes
 
 1. This is an introductory textbook. It covers mathematical logic and proofs, type theory, and finally dependent types using the programming language Idris. Afterwards, it uses dependent types to prove correctness of programs, for example, using induction to prove the correctness of `length`.
 2. Introduces the reader to mathematical logic, proofs, and some set theory.
@@ -30,9 +32,9 @@ Notes:
 8. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
 9. **Work in progress**. Algorithms and complexitiy.
 10. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3, 4 and 5 from this list.
-11. **Work in progress**. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
+11. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 
-In addition, here are some good technical tutorials:
+# Technical tutorials
 
 | Name of the tutorial    | Online link |
 | ----------------------- | ----------- |
@@ -42,7 +44,7 @@ In addition, here are some good technical tutorials:
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
 | 5. Idris tutorial       | http://docs.idris-lang.org/en/latest/tutorial/ |
 
-Notes:
+## Notes
 
 1. I read this tutorial a long time ago. It helped me understand 32-bit assembly in Windows.
 2. The theory behind DB systems. Relational algebra, etc.
@@ -50,7 +52,7 @@ Notes:
 4. Prolog was fun for me because it's a different non-mainstream paradigm and also introduces some interesting concepts.
 5. Idris is an interesting functional programming language with dependent types that is combined with IO support.
 
-Interesting not-so-technical books/readings:
+# Other books/tutorials
 
 | Name of the book                       | Link                                 |
 | -------------------------------------- | ------------------------------------ |
@@ -60,12 +62,12 @@ Interesting not-so-technical books/readings:
 | 4. How to think like Sherlock Holmes   | https://www.amazon.com/dp/014312434X |
 | 5. Propositions as Types               | http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf |
 
-Notes:
+## Notes
 
 1. Criticizes the present mathematical education.
 2. General interesting rules about design, technology, business, and life.
 3. Interesting observations on how leaders should lead.
 4. A mix of story telling and psychological observations.
-5. Historical overview of how the concept Props as Types was developed (e.g. forall n, n + 0 = 0 : Prop.)
+5. Historical overview of how the concept Props as Types was developed (e.g. `forall n, n + 0 = 0 : Prop`.)
 
 Boro Sitnikovski
