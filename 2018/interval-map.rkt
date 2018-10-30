@@ -1,6 +1,5 @@
 #lang racket
 ; TODO: Use skip-lists for efficiency
-; TODO: Optimize list. (interval 0 1 0), (interval 1 5 0), (interval 5 7 1) -> (interval 0 5 0), (interval 5 7 1)
 ; Initial implementation done in 2 hours.
 
 (define-struct interval (l u val) #:transparent)
@@ -25,9 +24,26 @@
   (if (member interval-inst interval-map)
       interval-map
       (let ([interval-with-spaces (erase-intervals interval-map (interval-l interval-inst) (interval-u interval-inst))])
-        (interval-map-process interval-with-spaces interval-inst))))
+        (balance-intervals (interval-map-process interval-with-spaces interval-inst)))))
 
-; Erases (and balances) intervals, making room for a new entry.
+; Balances interval map.
+; e.g. (list (interval 0 1 0) (interval 1 5 0) (interval 5 7 1) -> (list (interval 0 5 0) (interval 5 7 1))
+(define (balance-intervals interval-map)
+  (let ([interval-map-length (length interval-map)])
+    (cond ((<= interval-map-length 1) interval-map)
+          ((>= interval-map-length 2)
+           (let ([first-interval (car interval-map)]
+                 [second-interval (cadr interval-map)])
+             (if (= (interval-val first-interval)
+                    (interval-val second-interval))
+                 (balance-intervals (cons (interval (interval-l first-interval)
+                                                    (interval-u second-interval)
+                                                    (interval-val first-interval))
+                                          (cddr interval-map)))
+                 (cons first-interval (balance-intervals (cdr interval-map))))))
+          (else (cons (car interval-map) (balance-intervals (cdr interval-map)))))))
+
+; Erases (and splits) intervals, making room for a new entry.
 ; Conditionals in this procedure are repeated on purpose, for easier understanding of cases.
 (define (erase-intervals interval-map start end)
   (define (erase-intervals-iter interval-map start end res)
