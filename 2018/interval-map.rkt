@@ -28,7 +28,7 @@
         (interval-map-process interval-with-spaces interval-inst))))
 
 ; Erases (and balances) intervals, making room for a new entry.
-; Conditionals in this method are repeated on purpose, for easier understanding of cases.
+; Conditionals in this procedure are repeated on purpose, for easier understanding of cases.
 (define (erase-intervals interval-map start end)
   (define (erase-intervals-iter interval-map start end res)
     (if (empty? interval-map)
