@@ -34,7 +34,7 @@ In addition to the practices, here are my favorite technical readings that shape
 10. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3, 4 and 5 from this list.
 11. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 
-# Technical tutorials
+# Technical tutorials/papers
 
 | Name of the tutorial    | Online link |
 | ----------------------- | ----------- |
@@ -43,6 +43,9 @@ In addition to the practices, here are my favorite technical readings that shape
 | 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
 | 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
 | 5. Idris tutorial       | http://docs.idris-lang.org/en/latest/tutorial/ |
+| 6. McCarthy's LISP      | http://www-formal.stanford.edu/jmc/recursive.pdf |
+| 7. Hoare logic          | https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf |
+| 8. LambdaPi tutorial    | https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf |
 
 ## Notes
 
@@ -51,6 +54,9 @@ In addition to the practices, here are my favorite technical readings that shape
 3. An interesting way to declare integers (and other objects) in terms of f(x), f(f(x)), etc.
 4. Prolog was fun for me because it's a different non-mainstream paradigm and also introduces some interesting concepts.
 5. Idris is an interesting functional programming language with dependent types that is combined with IO support.
+6. Recursive Functions of Symbolic Expressions and Their Computation by Machine describes the LISP programming system.
+7. An Axiomatic Basis for Computer Programming introduces Hoare logic.
+8. A tutorial for implementing dependently typed lambda calculus in Haskell.
 
 # Other books/tutorials
 
@@ -61,6 +67,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 3. Redesigning Leadership              | https://www.amazon.com/dp/0262015889 |
 | 4. How to think like Sherlock Holmes   | https://www.amazon.com/dp/014312434X |
 | 5. Propositions as Types               | http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf |
+| 6. The Alchemist                       | https://www.amazon.com/dp/0061122416 |
 
 ## Notes
 
@@ -69,5 +76,6 @@ In addition to the practices, here are my favorite technical readings that shape
 3. Interesting observations on how leaders should lead.
 4. A mix of story telling and psychological observations.
 5. Historical overview of how the concept Props as Types was developed (e.g. `forall n, n + 0 = 0 : Prop`.)
+6. Life.
 
 Boro Sitnikovski
