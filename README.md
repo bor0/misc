@@ -19,6 +19,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 9. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
 | 10. Software Foundations Vol. 1: Logic | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
 | 11. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
+| 12. Types and Programming Languages    | https://www.amazon.com/dp/0262162091 | |
 
 ## Notes
 
@@ -33,6 +34,7 @@ In addition to the practices, here are my favorite technical readings that shape
 9. **Work in progress**. Algorithms and complexitiy.
 10. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3, 4 and 5 from this list.
 11. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
+12. **Work in progress**. Theory and implementation of types in programming languages.
 
 # Technical tutorials/papers
 
