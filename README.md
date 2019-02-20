@@ -6,20 +6,20 @@ In this repository you will find a lot of stuff which I've been practicing throu
 
 In addition to the practices, here are my favorite technical readings that shaped my knowledge in a way:
 
-| Name of the book                       | Amazon link                          | Online link |
-| -------------------------------------- | ------------------------------------ | ----------- |
-| 1. Gentle Introduction to Dependent Types with Idris | https://www.amazon.com/dp/1723139416 | https://leanpub.com/gidti |
-| 2. Proofs and Concepts                 | | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html |
-| 3. Learn You a Haskell for Great Good! | https://www.amazon.com/dp/1593272839 | http://learnyouahaskell.com/chapters |
-| 4. The Little Schemer                  | https://www.amazon.com/dp/0262560992 | |
-| 5. The C Programming Language          | https://www.amazon.com/dp/0131103628 | |
-| 6. The Pragmatic Programmer            | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
-| 7. SICP                                | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html |
-| 8. JavaScript Patterns                 | https://www.amazon.com/dp/0596806752 | |
-| 9. Competetive Programmer's Handbook   | | https://cses.fi/book.html |
-| 10. Software Foundations Vol. 1: Logic | | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html |
-| 11. Metamath                           | | http://us.metamath.org/downloads/metamath.pdf |
-| 12. Types and Programming Languages    | https://www.amazon.com/dp/0262162091 | |
+| Name of the book                                     | Amazon link                          | Online link                                                               |
+| ---------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
+| 1. Gentle Introduction to Dependent Types with Idris | https://www.amazon.com/dp/1723139416 | https://leanpub.com/gidti                                                 |
+| 2. How To Prove It/Proofs and Concepts               | https://www.amazon.com/dp/0521675995 | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html            |
+| 3. Learn You a Haskell for Great Good!               | https://www.amazon.com/dp/1593272839 | http://learnyouahaskell.com/chapters                                      |
+| 4. The Little Schemer                                | https://www.amazon.com/dp/0262560992 | |
+| 5. The C Programming Language                        | https://www.amazon.com/dp/0131103628 | |
+| 6. The Pragmatic Programmer                          | https://www.amazon.com/dp/020161622X | Tips summarized https://blog.codinghorror.com/a-pragmatic-quick-reference |
+| 7. SICP                                              | https://www.amazon.com/dp/0262510871 | https://mitpress.mit.edu/sicp/full-text/book/book.html                    |
+| 8. JavaScript Patterns                               | https://www.amazon.com/dp/0596806752 | |
+| 9. Competetive Programmer's Handbook                 | https://www.amazon.com/dp/3319725467 | https://cses.fi/book.html                                                 |
+| 10. Software Foundations Vol. 1: Logic               |                                      | https://softwarefoundations.cis.upenn.edu/lf-current/toc.html             |
+| 11. Metamath                                         | https://www.amazon.com/dp/1411637240 | http://us.metamath.org/downloads/metamath.pdf                             |
+| 12. Types and Programming Languages                  | https://www.amazon.com/dp/0262162091 | |
 
 ## Notes
 
@@ -36,18 +36,18 @@ In addition to the practices, here are my favorite technical readings that shape
 11. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 12. **Work in progress**. Theory and implementation of types in programming languages.
 
-# Technical tutorials/papers
+# Tutorials/papers
 
-| Name of the tutorial    | Online link |
-| ----------------------- | ----------- |
-| 1. Win32asm tutorial    | http://www.madwizard.org/download/tutors/win32asmtutorial.zip |
+| Name of the tutorial    | Online link                                                                |
+| ----------------------- | -------------------------------------------------------------------------- |
+| 1. Win32asm tutorial    | http://www.madwizard.org/download/tutors/win32asmtutorial.zip              |
 | 2. DBMS Lecture Notes   | http://www.cs.sfu.ca/CourseCentral/354/zaiane/material/notes/contents.html |
-| 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus |
-| 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf |
-| 5. Idris tutorial       | http://docs.idris-lang.org/en/latest/tutorial/ |
-| 6. McCarthy's LISP      | http://www-formal.stanford.edu/jmc/recursive.pdf |
-| 7. Hoare logic          | https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf |
-| 8. LambdaPi tutorial    | https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf |
+| 3. Lambda calculus      | https://en.wikipedia.org/wiki/Lambda__calculus                             |
+| 4. Prolog               | https://staff.science.uva.nl/u.endriss/teaching/prolog/prolog.pdf          |
+| 5. Idris tutorial       | http://docs.idris-lang.org/en/latest/tutorial/                             |
+| 6. McCarthy's LISP      | http://www-formal.stanford.edu/jmc/recursive.pdf                           |
+| 7. Hoare logic          | https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf                          |
+| 8. LambdaPi tutorial    | https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf                           |
 
 ## Notes
 
@@ -60,16 +60,16 @@ In addition to the practices, here are my favorite technical readings that shape
 7. An Axiomatic Basis for Computer Programming introduces Hoare logic.
 8. A tutorial for implementing dependently typed lambda calculus in Haskell.
 
-# Other books/tutorials
+# Misc. reading
 
-| Name of the book                       | Link                                 |
-| -------------------------------------- | ------------------------------------ |
-| 1. A Mathematician's Lament            | https://www.maa.org/external_archive/devlin/LockhartsLament.pdf |
-| 2. The Laws of Simplicity              | https://www.amazon.com/dp/0262134721 |
-| 3. Redesigning Leadership              | https://www.amazon.com/dp/0262015889 |
-| 4. How to think like Sherlock Holmes   | https://www.amazon.com/dp/014312434X |
+| Name of the book                       | Link                                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1. A Mathematician's Lament            | https://www.maa.org/external_archive/devlin/LockhartsLament.pdf                             |
+| 2. The Laws of Simplicity              | https://www.amazon.com/dp/0262134721                                                        |
+| 3. Redesigning Leadership              | https://www.amazon.com/dp/0262015889                                                        |
+| 4. How to think like Sherlock Holmes   | https://www.amazon.com/dp/014312434X                                                        |
 | 5. Propositions as Types               | http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf |
-| 6. The Alchemist                       | https://www.amazon.com/dp/0061122416 |
+| 6. The Alchemist                       | https://www.amazon.com/dp/0061122416                                                        |
 
 ## Notes
 
