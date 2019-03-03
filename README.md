@@ -6,7 +6,7 @@ In this repository you will find a lot of stuff which I've been practicing throu
 
 In addition to the practices, here are my favorite technical readings that shaped my knowledge in a way:
 
-| Name of the book                                     | Amazon link                          | Online link                                                               |
+| Name                                                 | Amazon URL                           | Online URL                                                                |
 | ---------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
 | 1. Gentle Introduction to Dependent Types with Idris | https://www.amazon.com/dp/1723139416 | https://leanpub.com/gidti                                                 |
 | 2. How To Prove It/Proofs and Concepts               | https://www.amazon.com/dp/0521675995 | http://people.uleth.ca/~dave.morris/books/proofs+concepts.html            |
@@ -32,13 +32,13 @@ In addition to the practices, here are my favorite technical readings that shape
 7. **Work in progress**. Covering some general concepts about programming, such as: abstraction, recursion, DSLs, streams, etc.
 8. Assumes at least some JavaScript experience. Introduces the reader to some useful JavaScript patterns. Also, JavaScript is used a lot these days, so it's preferable we keep up to date :)
 9. **Work in progress**. Algorithms and complexitiy.
-10. Logical foundations, covering functional programming, logic, theorem proving and Coq. Good prerequisites for this are books 3, 4 and 5 from this list.
+10. **Work in progress**. Logical foundations, covering functional programming, logic, theorem proving and Coq.
 11. An interesting metalanguage for working with formal systems, and formalizing mathematical proofs. Specifications of the language is only 4 pages.
 12. **Work in progress**. Theory and implementation of types in programming languages.
 
 # Tutorials/papers
 
-| Name of the tutorial    | Online link                                                                |
+| Name                    | URL                                                                        |
 | ----------------------- | -------------------------------------------------------------------------- |
 | 1. Win32asm tutorial    | http://www.madwizard.org/download/tutors/win32asmtutorial.zip              |
 | 2. DBMS Lecture Notes   | http://www.cs.sfu.ca/CourseCentral/354/zaiane/material/notes/contents.html |
@@ -48,6 +48,7 @@ In addition to the practices, here are my favorite technical readings that shape
 | 6. McCarthy's LISP      | http://www-formal.stanford.edu/jmc/recursive.pdf                           |
 | 7. Hoare logic          | https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf                          |
 | 8. LambdaPi tutorial    | https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf                           |
+| 9. Int. Type Theory     | https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf |
 
 ## Notes
 
@@ -59,10 +60,11 @@ In addition to the practices, here are my favorite technical readings that shape
 6. Recursive Functions of Symbolic Expressions and Their Computation by Machine describes the LISP programming system.
 7. An Axiomatic Basis for Computer Programming introduces Hoare logic.
 8. A tutorial for implementing dependently typed lambda calculus in Haskell.
+9. Intuitionistic type theory.
 
 # Misc. reading
 
-| Name of the book                       | Link                                                                                        |
+| Name                                   | URL                                                                                         |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
 | 1. A Mathematician's Lament            | https://www.maa.org/external_archive/devlin/LockhartsLament.pdf                             |
 | 2. The Laws of Simplicity              | https://www.amazon.com/dp/0262134721                                                        |
