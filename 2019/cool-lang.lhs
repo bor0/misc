@@ -321,19 +321,26 @@ Evaluation inference rules
 
 `eval'` is exactly the same with `eval`, with the only addition to support retrieval of types for variables in a context.
 
-> eval' :: Context -> Term -> Term
-> eval' ctx (TVar _ value) = value
-> eval' _ (IfThenElse T t2 t3) = t2
-> eval' _ (IfThenElse F t2 t3) = t3
-> eval' _ (IfThenElse t1 t2 t3) = let t' = eval t1 in IfThenElse t' t2 t3
-> eval' _ (Succ t1) = let t' = eval t1 in Succ t'
-> eval' _ (Pred O) = O
-> eval' _ (Pred (Succ k)) = k
-> eval' _ (Pred t1) = let t' = eval t1 in Pred t'
-> eval' _ (IsZero O) = T
-> eval' _ (IsZero (Succ t)) = F
-> eval' _ (IsZero t1) = let t' = eval t1 in IsZero t'
-> eval' _ _ = error "No rule applies"
+> eval' :: Term -> Term
+> eval' (TVar _ value) = value
+> eval' (IfThenElse T t2 t3) = t2
+> eval' (IfThenElse F t2 t3) = t3
+> eval' (IfThenElse t1 t2 t3) = let t' = eval t1 in IfThenElse t' t2 t3
+> eval' (Succ t1) = let t' = eval t1 in Succ t'
+> eval' (Pred O) = O
+> eval' (Pred (Succ k)) = k
+> eval' (Pred t1) = let t' = eval t1 in Pred t'
+> eval' (IsZero O) = T
+> eval' (IsZero (Succ t)) = F
+> eval' (IsZero t1) = let t' = eval t1 in IsZero t'
+> eval' _ = error "No rule applies"
+
+`safeEval` is eval plus typechecking:
+
+> safeEval :: Context -> Term -> Either String Term
+> safeEval ctx t = case (typeOf' ctx t) of
+>     Right _ -> Right $ eval' t
+>     Left e  -> Left e
 
 Type-checking inference rules
 -----------------------------
@@ -375,11 +382,13 @@ Examples:
 Main> let ctx = [("a", TNat), ("b", TBool)]
 Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in eval' ctx expr
 TVar "a" (Succ O)
+Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in safeEval ctx expr
+Left "Types mismatch"
 Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in typeOf' ctx expr
 Left "Types mismatch"
 Main> let ctx = [("a", TNat), ("b", TNat)]
 Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" O) in typeOf' ctx expr
 Right TNat
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" O) in eval' ctx expr
+Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" O) in safeEval ctx expr
 Var "a" (Succ O)
 ```
