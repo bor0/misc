@@ -9,7 +9,6 @@ Syntax
 ------
 
 Our syntax, per BNF is defined as follows:
-
 ```
 <term>  ::= <bool> | <num> | If <bool> Then <expr> Else <expr> | <arith>
 <bool>  ::= T | F | IsZero <num>
@@ -56,6 +55,8 @@ t1 ⇓ true          t2 ⇓ v
 -------------------------
 If t1 Then t2 Else t3 ⇓ v
 ```
+
+We now proceed with the remaining rules.
 
 Rule `E-IfFalse`:
 ```
@@ -144,7 +145,6 @@ Pred O
 ```
 
 Corresponds to the following inference rules:
-
 ```
              ----------- E-PredZero
              pred O -> O
@@ -166,11 +166,10 @@ It's type-checking time!
 Typed simple language
 =====================
 
-Type syntax 
+Type syntax
 -----------
 
-We extend the previous syntax with types, so the new one per BNF is defined as follows:
-
+We create an additional previous syntax for types, so the new one per BNF is defined as follows:
 ```
 <type> ::= Bool | Nat
 ```
@@ -183,7 +182,7 @@ We extend the previous syntax with types, so the new one per BNF is defined as f
 Inference rules
 ---------------
 
-Getting a type of a term expects a type, and either returns an error or the type derived:
+Getting a type of a term expects a term, and either returns an error or the type derived:
 
 > typeOf :: Term -> Either String Type
 
@@ -239,7 +238,6 @@ Succ t : Nat
 >         Right TNat -> Right TNat
 >         _ -> error "Not supported type for Succ"
 
-
 Rule `T-Pred`:
 ```
    t : Nat
@@ -267,7 +265,7 @@ IsZero t : Bool
 Conclusion
 ----------
 
-Going back to the previous example, we can now "safely" run, depending on type-check results:
+Going back to the previous example, we can now "safely" evaluate, depending on type-check results:
 
 ```haskell
 Main> typeOf $ IfThenElse O O O
@@ -280,7 +278,6 @@ Main> eval $ IfThenElse T O (Succ O)
 O
 Main> eval $ IfThenElse F O (Succ O)
 Succ O
-Main> 
 ```
 
 Context
@@ -294,7 +291,6 @@ Our neat language supports evaluation and type checking, but does not allow for 
 We also get to use `TVar` at this point, for defining a variable.
 
 The rule for adding a binding:
-
 ```
  G  a : T
 ----------
@@ -305,7 +301,6 @@ G |- a : T
 > addBinding ctx varname b = (varname, b) : ctx
 
 The rule for retrieving a binding:
-
 ```
 a : T in G
 ----------
@@ -321,33 +316,23 @@ Note that the context only holds information of a variable's type, and not term 
 Evaluation inference rules
 --------------------------
 
-`eval'` is exactly the same with `eval`, with the only addition to support retrieval of values for variables.
+`eval'` is exactly the same as `eval`, with the only addition to support retrieval of values for variables.
 
 > eval' :: Term -> Term
 > eval' (TVar _ value) = value
-> eval' (IfThenElse T t2 t3) = t2
-> eval' (IfThenElse F t2 t3) = t3
-> eval' (IfThenElse t1 t2 t3) = let t' = eval t1 in IfThenElse t' t2 t3
-> eval' (Succ t1) = let t' = eval t1 in Succ t'
-> eval' (Pred O) = O
-> eval' (Pred (Succ k)) = k
-> eval' (Pred t1) = let t' = eval t1 in Pred t'
-> eval' (IsZero O) = T
-> eval' (IsZero (Succ t)) = F
-> eval' (IsZero t1) = let t' = eval t1 in IsZero t'
-> eval' _ = error "No rule applies"
+> eval' t = eval t
 
 `safeEval` is eval plus typechecking:
 
 > safeEval :: Context -> Term -> Either String Term
-> safeEval ctx t = case (typeOf' ctx t) of
+> safeEval ctx t = case typeOf' ctx t of
 >     Right _ -> Right $ eval' t
 >     Left e  -> Left e
 
 Type-checking inference rules
 -----------------------------
 
-`typeOf'` is exactly the same with `typeOf`, with the only addition to support retrieval of types for variables in a context.
+`typeOf'` is exactly the same as `typeOf`, with the only addition to support context and retrieval of types for variables in a context.
 
 > typeOf' :: Context -> Term -> Either String Type
 > typeOf' ctx (TVar varname _) = case getTypeFromContext ctx varname of
