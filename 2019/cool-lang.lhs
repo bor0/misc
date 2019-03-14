@@ -286,7 +286,7 @@ Main>
 Context
 =======
 
-Our neat language supports evaluation and type checking, but does not allow for defining variables. To do that, we will need kind of a context (or environment).
+Our neat language supports evaluation and type checking, but does not allow for defining variables. To do that, we will need kind of a context (or environment) which will hold the types for each variable.
 
 > type Context = [(String, Binding)]
 > type Binding = Type
@@ -316,10 +316,12 @@ G |- a : T
 > getTypeFromContext [] _ = Nothing
 > getTypeFromContext ((varname', b) : ctx) varname = if varname' == varname then Just b else getTypeFromContext ctx varname
 
+Note that the context only holds information of a variable's type, and not term (why?)
+
 Evaluation inference rules
 --------------------------
 
-`eval'` is exactly the same with `eval`, with the only addition to support retrieval of types for variables in a context.
+`eval'` is exactly the same with `eval`, with the only addition to support retrieval of values for variables.
 
 > eval' :: Term -> Term
 > eval' (TVar _ value) = value
