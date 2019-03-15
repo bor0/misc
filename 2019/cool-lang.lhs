@@ -16,6 +16,8 @@ Our syntax, per BNF is defined as follows:
 <arith> ::= Succ <num> | Pred <num>
 ```
 
+For simplicity, we merge all them together in a single `Term`.
+
 > data Term =
 >     T
 >     | F
@@ -24,7 +26,7 @@ Our syntax, per BNF is defined as follows:
 >     | Succ Term
 >     | Pred Term
 >     | IsZero Term
->     | TVar String Term
+>     | TVar String
 >     deriving (Show, Eq)
 
 We will use `TVar` later.
@@ -93,12 +95,12 @@ Pred O -> O
 
 Rule `E-PredSucc`:
 ```
-Pred (Succ k) = k
+Pred (Succ k) -> k
 ```
 
 > eval (Pred (Succ k)) = k
 
-Rule `E-Pred`:
+Rule `E-Pred` (why?):
 ```
      t1 -> t'
 ------------------
@@ -109,14 +111,14 @@ Pred t1 -> Pred t'
 
 Rule `E-IszeroZero`:
 ```
-IsZero O = T
+IsZero O -> T
 ```
 
 > eval (IsZero O) = T
 
 Rule `E-IszeroSucc`:
 ```
-IsZero (Succ t) = F
+IsZero (Succ t) -> F
 ```
 
 > eval (IsZero (Succ t)) = F
@@ -177,6 +179,7 @@ We create an additional previous syntax for types, so the new one per BNF is def
 > data Type =
 >     TBool            -- bools
 >     | TNat           -- natural number
+>     | TyVar String   -- constants, use later
 >     deriving (Show, Eq)
 
 Inference rules
@@ -224,7 +227,7 @@ If t1 Then t2 Else t3 : T
 >                 if t2' == t3'
 >                 then t2'
 >                 else Left "Types mismatch"
->         _ -> Left "Not supported type for IfThenElse"
+>         _ -> Left "Unsupported type for IfThenElse"
 
 Rule `T-Succ`:
 ```
@@ -236,7 +239,7 @@ Succ t : Nat
 > typeOf (Succ k) =
 >     case typeOf k of
 >         Right TNat -> Right TNat
->         _ -> error "Not supported type for Succ"
+>         _ -> Left "Unsupported type for Succ"
 
 Rule `T-Pred`:
 ```
@@ -248,7 +251,7 @@ Pred t : Nat
 > typeOf (Pred k) =
 >     case typeOf k of
 >         Right TNat -> Right TNat
->         _ -> error "Not supported type for Pred"
+>         _ -> Left "Unsupported type for Pred"
 
 Rule `T-IsZero`:
 ```
@@ -260,7 +263,7 @@ IsZero t : Bool
 > typeOf (IsZero k) =
 >     case typeOf k of
 >         Right TNat -> Right TBool
->         _ -> error "Not supported type for IsZero"
+>         _ -> Left "Unsupported type for IsZero"
 
 Conclusion
 ----------
@@ -269,7 +272,7 @@ Going back to the previous example, we can now "safely" evaluate, depending on t
 
 ```haskell
 Main> typeOf $ IfThenElse O O O
-Left "Not supported type for IfThenElse"
+Left "Unsupported type for IfThenElse"
 Main> typeOf $ IfThenElse T O (Succ O)
 Right TNat
 Main> typeOf $ IfThenElse F O (Succ O)
@@ -280,15 +283,15 @@ Main> eval $ IfThenElse F O (Succ O)
 Succ O
 ```
 
-Context
-=======
+Environment
+===========
 
-Our neat language supports evaluation and type checking, but does not allow for defining variables. To do that, we will need kind of a context (or environment) which will hold the types for each variable.
+Our neat language supports evaluation and type checking, but does not allow for defining constants. To do that, we will need kind of an environment which will hold information about constants.
 
-> type Context = [(String, Binding)]
-> type Binding = Type
+> type TyEnv = [(String, Type)] -- Type env
+> type TeEnv = [(String, Term)] -- Term env
 
-We also get to use `TVar` at this point, for defining a variable.
+We also get to use `TVar` at this point, for defining a constant.
 
 The rule for adding a binding:
 ```
@@ -297,8 +300,8 @@ The rule for adding a binding:
 G |- a : T
 ```
 
-> addBinding :: Context -> String -> Binding -> Context
-> addBinding ctx varname b = (varname, b) : ctx
+> addType :: String -> Type -> TyEnv -> TyEnv
+> addType varname b env = (varname, b) : env
 
 The rule for retrieving a binding:
 ```
@@ -307,75 +310,92 @@ a : T in G
 G |- a : T
 ```
 
-> getTypeFromContext :: Context -> String -> Maybe Type
-> getTypeFromContext [] _ = Nothing
-> getTypeFromContext ((varname', b) : ctx) varname = if varname' == varname then Just b else getTypeFromContext ctx varname
+> getTypeFromEnv :: TyEnv -> String -> Maybe Type
+> getTypeFromEnv [] _ = Nothing
+> getTypeFromEnv ((varname', b) : env) varname = if varname' == varname then Just b else getTypeFromEnv env varname
 
-Note that the context only holds information of a variable's type, and not term (why?)
+Analogously for terms:
+
+> addTerm :: String -> Term -> TeEnv -> TeEnv
+> addTerm varname b env = (varname, b) : env
+
+> getTermFromEnv :: TeEnv -> String -> Maybe Term
+> getTermFromEnv [] _ = Nothing
+> getTermFromEnv ((varname', b) : env) varname = if varname' == varname then Just b else getTermFromEnv env varname
 
 Evaluation inference rules
 --------------------------
 
-`eval'` is exactly the same as `eval`, with the only addition to support retrieval of values for variables.
+`eval'` is exactly the same as `eval`, with the only addition to support retrieval of values for constants.
 
-> eval' :: Term -> Term
-> eval' (TVar _ value) = value
-> eval' t = eval t
+> eval' :: TeEnv -> Term -> Term
+> eval' env (TVar v) = case getTermFromEnv env v of
+>     Just ty -> ty
+>     _       -> error "No var found in env"
 
-`safeEval` is eval plus typechecking:
+We will modify `IfThenElse` slightly to allow for evaluating variables:
 
-> safeEval :: Context -> Term -> Either String Term
-> safeEval ctx t = case typeOf' ctx t of
->     Right _ -> Right $ eval' t
->     Left e  -> Left e
+> eval' env (IfThenElse T t2 t3) = eval' env t2
+> eval' env (IfThenElse F t2 t3) = eval' env t3
+> eval' env (IfThenElse t1 t2 t3) = let t' = eval' env t1 in IfThenElse t' t2 t3
+
+> eval' env (Succ t1) = let t' = eval' env t1 in Succ t'
+> eval' _ (Pred O) = O
+> eval' _ (Pred (Succ k)) = k
+> eval' env (Pred t1) = let t' = eval' env t1 in Pred t'
+> eval' _ (IsZero O) = T
+> eval' _ (IsZero (Succ t)) = F
+> eval' env (IsZero t1) = let t' = eval' env t1 in IsZero t'
+
+Also since we modified `IfThenElse`, we also need to consider bottom values:
+
+> eval' _ T = T
+> eval' _ F = F
+> eval' _ O = O
 
 Type-checking inference rules
 -----------------------------
 
-`typeOf'` is exactly the same as `typeOf`, with the only addition to support context and retrieval of types for variables in a context.
+`typeOf'` is exactly the same as `typeOf`, with the only addition to support env and retrieval of types for constants in an env.
 
-> typeOf' :: Context -> Term -> Either String Type
-> typeOf' ctx (TVar varname _) = case getTypeFromContext ctx varname of
+> typeOf' :: TyEnv -> Term -> Either String Type
+> typeOf' env (TVar v) = case getTypeFromEnv env v of
 >     Just ty -> Right ty
->     _       -> Left "No type found in context"
+>     _       -> Left "No type found in env"
 > typeOf' _ T = Right TBool
 > typeOf' _ F = Right TBool
 > typeOf' _ O = Right TNat
-> typeOf' ctx (IfThenElse t1 t2 t3) =
->     case typeOf' ctx t1 of
+> typeOf' env (IfThenElse t1 t2 t3) =
+>     case typeOf' env t1 of
 >         Right TBool ->
->             let t2' = typeOf' ctx t2
->                 t3' = typeOf' ctx t3 in
+>             let t2' = typeOf' env t2
+>                 t3' = typeOf' env t3 in
 >                 if t2' == t3'
 >                 then t2'
->                 else Left "Types mismatch"
->         _ -> Left "Not supported type for IfThenElse"
-> typeOf' ctx (Succ k) =
->     case typeOf' ctx k of
+>                 else Left $ "Type mismatch between " ++ show t2' ++ " and " ++ show t3'
+>         _ -> Left "Unsupported type for IfThenElse"
+> typeOf' env (Succ k) =
+>     case typeOf' env k of
 >         Right TNat -> Right TNat
->         _ -> error "Not supported type for Succ"
-> typeOf' ctx (Pred k) =
->     case typeOf' ctx k of
+>         _ -> Left "Unsupported type for Succ"
+> typeOf' env (Pred k) =
+>     case typeOf' env k of
 >         Right TNat -> Right TNat
->         _ -> error "Not supported type for Pred"
-> typeOf' ctx (IsZero k) =
->     case typeOf' ctx k of
+>         _ -> Left "Unsupported type for Pred"
+> typeOf' env (IsZero k) =
+>     case typeOf' env k of
 >         Right TNat -> Right TBool
->         _ -> error "Not supported type for IsZero"
+>         _ -> Left "Unsupported type for IsZero"
 
 Examples:
 
 ```haskell
-Main> let ctx = [("a", TNat), ("b", TBool)]
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in eval' ctx expr
-TVar "a" (Succ O)
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in safeEval ctx expr
-Left "Types mismatch"
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" F) in typeOf' ctx expr
-Left "Types mismatch"
-Main> let ctx = [("a", TNat), ("b", TNat)]
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" O) in typeOf' ctx expr
-Right TNat
-Main> let expr = IfThenElse T (TVar "a" (Succ O)) (TVar "b" O) in safeEval ctx expr
-Var "a" (Succ O)
+Main> let termEnv = addTerm "a" O $ addTerm "b" (Succ O) $ addTerm "c" F []
+Main> let typeEnv = addType "a" TNat $ addType "b" TNat $ addType "c" TBool []
+Main> let e = IfThenElse T (TVar "a") (TVar "b") in (eval' termEnv e, typeOf' typeEnv e)
+(O,Right TNat)
+Main> let e = IfThenElse T (TVar "a") (TVar "c") in (eval' termEnv e, typeOf' typeEnv e)
+(O,Left "Type mismatch between Right TNat and Right TBool")
+Main> let e = IfThenElse T F (TVar "c") in (eval' termEnv e, typeOf' typeEnv e)
+(F,Right TBool)
 ```
