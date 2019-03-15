@@ -27,9 +27,13 @@ For simplicity, we merge all them together in a single `Term`.
 >     | Pred Term
 >     | IsZero Term
 >     | TVar String
+>     | Pair Term Term
+>     | EitherL Term
+>     | EitherR Term
+>     | Let String Term Term
 >     deriving (Show, Eq)
 
-We will use `TVar` later.
+We will use `TVar`, `Pair`, `EitherL`, `EitherR`, and `LetIn` later.
 
 Inference rules
 ---------------
@@ -177,9 +181,11 @@ We create an additional previous syntax for types, so the new one per BNF is def
 ```
 
 > data Type =
->     TBool            -- bools
->     | TNat           -- natural number
->     | TyVar String   -- constants, use later
+>     TBool                -- bools
+>     | TNat               -- natural number
+>     | TyVar String       -- constants, use later
+>     | TyPair Type Type   -- pairs, use later
+>     | TyEither Type Type -- sum, use later
 >     deriving (Show, Eq)
 
 Inference rules
@@ -347,7 +353,7 @@ We will modify `IfThenElse` slightly to allow for evaluating variables:
 > eval' _ (IsZero (Succ t)) = F
 > eval' env (IsZero t1) = let t' = eval' env t1 in IsZero t'
 
-Also since we modified `IfThenElse`, we also need to consider bottom values:
+Also since we modified `IfThenElse`, we also need to consider base types:
 
 > eval' _ T = T
 > eval' _ F = F
@@ -399,3 +405,76 @@ Main> let e = IfThenElse T (TVar "a") (TVar "c") in (eval' termEnv e, typeOf' ty
 Main> let e = IfThenElse T F (TVar "c") in (eval' termEnv e, typeOf' typeEnv e)
 (F,Right TBool)
 ```
+
+Pairs
+=====
+
+Pairs are awesome, so we will implement them! The only change that we need to do is add this to the evaluator:
+
+> eval' _ (Pair a b) = Pair a b
+
+And also add this to the type checker:
+
+> typeOf' env (Pair a b) =
+>     let a' = typeOf' env a
+>         b' = typeOf' env b in
+>         case a' of
+>             Right ta -> case b' of
+>                 Right tb -> Right $ TyPair ta tb
+>                 Left _ -> Left "Unsupported type for Pair"
+>             Left _  -> Left "Unsupported type for Pair"
+
+```haskell
+Main> let e = IfThenElse T (Pair (TVar "a") (TVar "b")) O in (eval' termEnv e, typeOf' typeEnv e)
+(Pair (TVar "a") (TVar "b"),Left "Type mismatch between Right (TyPair TNat TNat) and Right TNat")
+Main> let e = IfThenElse T (Pair (TVar "a") (TVar "b")) (Pair O O) in (eval' termEnv e, typeOf' typeEnv e)
+(Pair (TVar "a") (TVar "b"),Right (TyPair TNat TNat))
+```
+
+Sum
+===
+
+Union types are also awesome, and implementing them is easy, too! We add handling for left and right side on the evaluator
+
+> eval' env (EitherL a) = eval' env a
+> eval' env (EitherR a) = eval' env a
+
+The type checker is also straight-forward, where TyVar "x" represents a polymorphic variable:
+
+> typeOf' env (EitherL a) = case (typeOf' env a) of
+>     Right t -> Right $ TyEither t (TyVar "x")
+>     _       -> Left "Unsupported type for EitherL"
+> typeOf' env (EitherR a) = case (typeOf' env a) of
+>     Right t -> Right $ TyEither t (TyVar "x")
+>     _       -> Left "Unsupported type for EitherR"
+
+```haskell
+Main> eval' termEnv (EitherL (TVar "a"))
+O
+Main> typeOf' typeEnv (EitherL (TVar "a"))
+Right (TyEither TNat (TyVar "x"))
+```
+
+Let ... in ...
+==============
+
+Time to get the env rolling by adding support for `let ... in ...` syntax.
+
+> eval' env (Let v t t') = eval' (addTerm v (eval' env t) env) t'
+
+And the type checker:
+
+> typeOf' env (Let v t t') = case typeOf' env t of
+>    Right ty -> typeOf' (addType v ty env) t'
+>    _        -> Left "Unsupported type for Let"
+
+Some examples:
+
+```haskell
+Main> eval' termEnv (Let "y" (TVar "a") (Succ (TVar "y")))
+Succ O
+Main> typeOf' typeEnv (Let "y" (TVar "a") (Succ (TVar "y")))
+Right TNat
+```
+
+Specify the inference rules for Pair, Sum, and Let ... in ....
