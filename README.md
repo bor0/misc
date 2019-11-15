@@ -4,7 +4,7 @@ In this repository you will find a lot of stuff which I've been practicing throu
 
 # Technical books
 
-In addition to the practices, here are my favorite technical readings that shaped my knowledge in a way:
+In addition to the practices, here are my favorite technical reads that shaped my knowledge in a way:
 
 | Name                                                 | Amazon URL                           | Online URL                                                                |
 | ---------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
@@ -62,7 +62,7 @@ In addition to the practices, here are my favorite technical readings that shape
 8. A tutorial for implementing dependently typed lambda calculus in Haskell.
 9. Intuitionistic type theory.
 
-# Misc. reading
+# Misc. reads
 
 | Name                                   | URL                                                                                         |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
