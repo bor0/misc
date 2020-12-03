@@ -1,7 +1,6 @@
 type Coordinate = (Int, Int)
 type GridSize   = (Int, Int)
 
-
 list :: [String]
 list = []
 
@@ -49,3 +48,23 @@ partOne' = countTrees' list ( \(x, y) -> (x + 3, y + 1) )
 
 partTwo :: Int
 partTwo  = product $ map (countTrees' list) slopeModifiers
+
+-- Simpler findCoordinates
+findCoordinates'' :: Coordinate -> GridSize -> (Coordinate -> Coordinate) -> [Coordinate]
+findCoordinates'' (x, y) (gridWidth, gridHeight) slopeModifier = let slopeModifiedCoords = take gridHeight $ iterate slopeModifier (x, y)
+                                                                     flattenedXCoords    = map (\(x, y) -> (x `mod` gridWidth, y)) slopeModifiedCoords
+                                                                     filteredYCoords     = filter (\(x, y) -> y <= gridHeight) flattenedXCoords
+                                                                 in filteredYCoords
+
+countTrees'' :: [String] -> (Coordinate -> Coordinate) -> Int
+countTrees'' list slopeModifier = let gridWidth   = length $ head list
+                                      gridHeight   = length list
+                                      coordinates  = findCoordinates'' (0, 0) (gridWidth, gridHeight) slopeModifier
+                                      landedCoords = map (\(x, y) -> list !! y !! x) coordinates
+                                  in length $ filter (== '#') landedCoords
+
+partOne'' :: Int
+partOne'' = countTrees'' list ( \(x, y) -> (x + 3, y + 1) )
+
+partTwo' :: Int
+partTwo'  = product $ map (countTrees'' list) slopeModifiers
