@@ -11,7 +11,7 @@ findRowCol s = head $ go s [0..2^length s - 1] where
       | x `elem` ['B', 'R'] = go xs (drop (length l `div` 2) l)
       | otherwise = l
   go _ l = l
-  
+
 calcSeatId :: String -> Int
 calcSeatId s = let row = findRowCol $ take 7 s
                    col = findRowCol $ drop 7 s
@@ -29,3 +29,12 @@ main = do
         print $ maximum $ map calcSeatId entries
         print $ findMySeat $ map calcSeatId entries
         hClose handle   
+
+-- Alternative implementation of `findRowCol`, but less readable (to me)
+findRowCol' :: String -> Int
+findRowCol' s = go s 0 (2^length s - 1) where
+  go (x:xs) lb ub
+      | x `elem` ['F', 'L'] = go xs lb (lb + floor (fromIntegral (ub - lb) / 2))
+      | x `elem` ['B', 'R'] = go xs (lb + ceiling (fromIntegral (ub - lb) / 2)) ub
+      | otherwise = lb
+  go _ lb ub = lb
