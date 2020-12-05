@@ -7,7 +7,7 @@ import Data.Maybe
 import Data.List.Utils
 
 isFieldValid :: String -> String -> Bool
-isFieldValid "byr" value = let valueNum = read value :: Int in 1920 <= valueNum && valueNum <= 2002
+isFieldValid "byr" value = let valueNum = read value :: Int in 1920 <= valueNum && valueNum <= 2002 -- Could use readMaybe instead, to be safer
 isFieldValid "iyr" value = let valueNum = read value :: Int in 2010 <= valueNum && valueNum <= 2020
 isFieldValid "eyr" value = let valueNum = read value :: Int in 2020 <= valueNum && valueNum <= 2030
 isFieldValid "hgt" value =
