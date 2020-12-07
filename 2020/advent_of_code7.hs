@@ -17,8 +17,8 @@ findOuterMostBagsContaining m = go where
   filterFun bagname bags       = bagname `elem` map snd bags
 
 -- Part two
-countGoldBagContainment :: Map.Map BagName [Bag] -> BagNumber
-countGoldBagContainment m = go "shiny gold" where
+countBagContainment :: Map.Map BagName [Bag] -> BagName -> BagNumber
+countBagContainment m = go where
   go bagname                    = let bags = bagsInBag bagname in foldr foldFun 0 bags
   bagsInBag bagname             = m Map.! bagname
   foldFun (number, bagname) acc = number + number * go bagname + acc
@@ -29,7 +29,7 @@ main = do
         contents <- hGetContents handle
         let entries = parseContents contents
         print $ length $ findOuterMostBagsContaining entries "shiny gold"
-        print $ countGoldBagContainment entries
+        print $ countBagContainment entries "shiny gold"
         hClose handle   
 
 parseLine s = let [bag, bags]  = split " contain " s
