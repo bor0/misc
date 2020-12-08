@@ -21,16 +21,17 @@ eval ctx (I Acc n) = let acc = ctx Map.! "acc"
 eval ctx (I Jmp n) = incIP n ctx
 
 -- Left when it does not terminate, Right when it does. Additionally, prevIPs will be displayed
--- to show the last line before the looping command
+-- to show the last line before the looping command, this is used for part two.
+-- The task defined terminating programs in such a way (command being executed more than once)
+-- that this solution is applicable. In general, it's not a good definition for what a terminating program is.
 evalAll :: [Command] -> Either (Context, [Int]) (Context, [Int])
 evalAll cmds = go cmds getEmptyCtx [] where
-  go cs ctx prevIPs = let ip = ctx Map.! "IP" in
-                          if ip >= length cs
-                          then Right (ctx, prevIPs)
-                          else let newctx = eval ctx (cs !! ip) in
-                          if ip `elem` prevIPs
-                          then Left (ctx, prevIPs)
-                          else go cs newctx (ip:prevIPs)
+  go cs ctx prevIPs = let ip = ctx Map.! "IP" in go' ip where
+     go' ip
+         | ip >= length cs   = Right (ctx, prevIPs)
+         | ip `elem` prevIPs = Left (ctx, prevIPs)
+         | otherwise         = let newctx = eval ctx (cs !! ip) in
+                                   go cs newctx (ip:prevIPs)
 
 main = do
         let list = []
