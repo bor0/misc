@@ -32,8 +32,6 @@ evalAll cmds = go cmds getEmptyCtx [] where
                           then Left (ctx, prevIPs)
                           else go cs newctx (ip:prevIPs)
 
-instrs = [I Nop 0, I Acc 1, I Jmp 4, I Acc 3, I Jmp (-3), I Acc (-99), I Acc 1, I Jmp (-4), I Acc 6]
-
 main = do
         let list = []
         handle <- openFile "input.txt" ReadMode
