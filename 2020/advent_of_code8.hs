@@ -6,6 +6,7 @@ import Data.List.Utils
 
 data Instruction = Nop | Acc | Jmp deriving (Show)
 data Command = I Instruction Int deriving (Show)
+type Program = [Command]
 type Context = Map.Map String Int
 
 getEmptyCtx :: Context
@@ -24,8 +25,8 @@ eval ctx (I Jmp n) = incIP n ctx
 -- to show the last line before the looping command, this is used for part two.
 -- The task defined terminating programs in such a way (command being executed more than once)
 -- that this solution is applicable. In general, it's not a good definition for what a terminating program is.
-evalAll :: [Command] -> Either (Context, [Int]) (Context, [Int])
-evalAll cmds = go cmds getEmptyCtx [] where
+run :: Program -> Either (Context, [Int]) (Context, [Int])
+run cmds = go cmds getEmptyCtx [] where
   go cs ctx prevIPs = let ip = ctx Map.! "IP" in go' ip where
      go' ip
          | ip >= length cs   = Right (ctx, prevIPs)
@@ -38,7 +39,7 @@ main = do
         handle <- openFile "input.txt" ReadMode
         contents <- hGetContents handle
         let entries = map parseLine $ lines contents
-        print $ evalAll entries
+        print $ run entries
         hClose handle   
 
 parseLine :: String -> Command
