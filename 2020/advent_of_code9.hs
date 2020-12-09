@@ -11,7 +11,7 @@ findFirstInvalid _        []     = Nothing
 findFirstInvalid preamble (x:xs) = if isElementInvalid x
                               then Just x
                               else findFirstInvalid (tail preamble ++ [x]) xs where
-  isElementInvalid el = null ([x + y | x <- preamble, y <- preamble, x + y == el])
+  isElementInvalid el = null ([x + y | x <- preamble, y <- preamble, x + y == el, x /= y])
 
 ---- Part two
 -- Returns a list such that the first n elements sum up to `el`.
