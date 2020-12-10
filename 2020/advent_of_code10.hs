@@ -37,27 +37,27 @@ countAdapterCombinations joltages = length $ nub lists where
 
 -- Part two good solution with recurrent relation but I need to learn how to apply Haskell memoization :(
 countAdapterCombinations' :: [Integer] -> Integer
-countAdapterCombinations' joltages = let joltages' = prepare joltages in go (maximum joltages') joltages' where
-  prepare joltages = 0 : (3 + maximum joltages) : joltages
-  go n joltages
+countAdapterCombinations' joltages = let joltages' = go joltages' (maximum joltages') where
+  joltages' = 0 : (3 + maximum joltages) : joltages
+  go joltages n
     | n == 1 || n == 0 = 1
-    | n `elem` joltages = (if n - 1 `elem` joltages then go (n - 1) joltages else 0)
-                        + (if n - 2 `elem` joltages then go (n - 2) joltages else 0)
-                        + (if n - 3 `elem` joltages then go (n - 3) joltages else 0)
+    | n `elem` joltages = (if n - 1 `elem` joltages then go joltages (n - 1) else 0)
+                        + (if n - 2 `elem` joltages then go joltages (n - 2) else 0)
+                        + (if n - 3 `elem` joltages then go joltages (n - 3) else 0)
     | otherwise = 0
-
 
 memoize :: (Int -> a) -> (Int -> a)
 memoize f = (map f [0 ..] !!)
 
 countAdapterCombinations'' :: [Int] -> Int
 countAdapterCombinations'' joltages = fix (memoize . go joltages') (maximum joltages') where
-    joltages' = 0 : (3 + maximum joltages) : joltages
-    go joltages f 0 = 1
-    go joltages f 1 = 1
-    go joltages f n = (if n - 1 `elem` joltages then f (n - 1) else 0)
-                      + (if n - 2 `elem` joltages then f (n - 2) else 0)
-                      + (if n - 3 `elem` joltages then f (n - 3) else 0)
+  joltages' = 0 : (3 + maximum joltages) : joltages
+  go joltages f n
+    | n == 1 || n == 0 = 1
+    | n `elem` joltages = (if n - 1 `elem` joltages then f (n - 1) else 0)
+                        + (if n - 2 `elem` joltages then f (n - 2) else 0)
+                        + (if n - 3 `elem` joltages then f (n - 3) else 0)
+    | otherwise = 0
 
 -- Same solution in Python (countAdapterCombinations'')
 {-
