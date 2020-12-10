@@ -1,7 +1,5 @@
 import Data.Function (fix)
-import Data.List (nub, sort)
-import qualified Data.Map as Map
-import Data.Maybe (isJust, fromJust)
+import Data.List (nub)
 
 list = [ 16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4 ]
 
@@ -37,7 +35,7 @@ countAdapterCombinations joltages = length $ nub lists where
 
 -- Part two good solution with recurrent relation but I need to learn how to apply Haskell memoization :(
 countAdapterCombinations' :: [Integer] -> Integer
-countAdapterCombinations' joltages = let joltages' = go joltages' (maximum joltages') where
+countAdapterCombinations' joltages = go joltages' (maximum joltages') where
   joltages' = 0 : (3 + maximum joltages) : joltages
   go joltages n
     | n == 1 || n == 0 = 1
@@ -49,6 +47,7 @@ countAdapterCombinations' joltages = let joltages' = go joltages' (maximum jolta
 memoize :: (Int -> a) -> (Int -> a)
 memoize f = (map f [0 ..] !!)
 
+-- Part three best solution with recurrent relation and memoization
 countAdapterCombinations'' :: [Int] -> Int
 countAdapterCombinations'' joltages = fix (memoize . go joltages') (maximum joltages') where
   joltages' = 0 : (3 + maximum joltages) : joltages
