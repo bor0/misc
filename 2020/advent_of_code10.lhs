@@ -257,7 +257,7 @@ Part two (final)
 From the Haskell docs, the following `memoize` function is shown:
 
 > memoize :: (Int -> a) -> (Int -> a)
-> memoize f n = map f [0 ..] !! n
+> memoize f = (map f [0 ..] !!) -- not using eta-reduction may affect performance
 
 Note how this function allows the *sharing* of values, so it will avoid recomputation. Now, finally, we have:
 
