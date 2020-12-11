@@ -207,12 +207,17 @@ You can test this; If you create a file named `test.hs` with the following conte
 import Debug.Trace
 
 test = let x = trace "forced" (map (+1) [0..]) in (x !! 0, x !! 0)
--- Main> test
--- (forced
--- 1,1)
 ```
 
-If you run this expression directly in the REPL you will get different results:
+It will produce:
+
+```
+Main> test
+(forced
+1,1)
+```
+
+However, if you run this expression directly in the REPL you will get different results:
 
 ```
 Main> let x = trace "forced" (map (+1) [0..]) in (x !! 0, x !! 0)
@@ -223,7 +228,7 @@ Main> let x = trace "forced" (map (+1) [0..]) in (x !! 0, x !! 0)
 
 The reason for that is that GHC optimized the expression by *inlining* it - it replaced `(x !! 0, x !! 0)` with ``("forced" `trace` 1, "forced" `trace` 1)``. The primary optimization mechanism in GHC is inlining, inlining and inlining.
 
-However, note that this is just a specific case and not related to the memoization since GHC will not inline recursive things, so we digress a little bit.
+However, note that this problem occurs just for this specific example, and memoization is not affected by it. The reason for that is GHC will not inline recursive things.
 
 Monomorphism and Polymorphism
 -----------------------------
@@ -240,11 +245,11 @@ Main>
 
 You might be wondering, why on earth did this happen? We start to dig a little into the internals of Haskell but I will keep it short.
 
-A function with a polymorphic type is `t a`. A function with a monomorphic type is `[Int]` - so monomorphic is the opposite of polymorphic.o
+A function with a polymorphic type is `t a`. A function with a monomorphic type is `[Int]` (or `List Int`) - so monomorphic is the opposite of polymorphic, it's like a particular instance of a polymorphic.
 
-If we consider the expression `x = 4` and if it has a type of `Num a => a` then it requires re-computation every time it will be used. This will not happen with monomorphic types since the types are static and can be memoized.
+If we consider the expression `x = 4` with a type of `Num a => a` then it requires re-computation every time it will be used. The reason for that is Haskell can't be certain of what `x` really is, because `x :: Int` is different from `x :: Double`. I don't know about GHC internals much, but maybe it could use a map of `(Type, Value)` to keep the values of these types? Shrug.
 
-However, can not GHC use a map of (Type, Value) to memoize even polymorphic types? For this, I was told I will have to dig deeper into the Haskell report.
+This will not happen with monomorphic types since the types are static and can be memoized, so that's why `-XMonomorphismRestriction` fixes the problem.
 
 Part two (final)
 ================
@@ -254,7 +259,7 @@ From the Haskell docs, the following `memoize` function is shown:
 > memoize :: (Int -> a) -> (Int -> a)
 > memoize f n = map f [0 ..] !! n
 
-Now, finally, we have:
+Note how this function allows the *sharing* of values, so it will avoid recomputation. Now, finally, we have:
 
 > countAdapterCombinations'' :: [Int] -> Int
 > countAdapterCombinations'' joltages = fix (memoize . go joltages') (maximum joltages') where
