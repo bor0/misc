@@ -36,13 +36,12 @@ findSum'' el cl (x : xs)
 
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = map read $ lines contents
-        let (preamble, l) = splitAt 25 entries
-        let s = findSum' (fromJust $ findFirstInvalid preamble l) l
-        print $ findFirstInvalid preamble l
-        print s
-        print $ minimum (fromJust s) + maximum (fromJust s)
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = map read $ lines contents
+  let (preamble, l) = splitAt 25 entries
+  let s = findSum' (fromJust $ findFirstInvalid preamble l) l
+  print $ findFirstInvalid preamble l
+  print s
+  print $ minimum (fromJust s) + maximum (fromJust s)
+  hClose handle   

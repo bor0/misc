@@ -44,16 +44,16 @@ generateNewMatrix l = let (rows, _) = getColsRows l
       | otherwise = split rows (n - 1) cs (acc ++ [c])
 
 goFind n infiniteCalcs = do
-    putStrLn $ join ["calculating ", show n]
-    if (infiniteCalcs !! n) == (infiniteCalcs !! (n + 2))
-    then return $ infiniteCalcs !! n
-    else goFind (n+1) infiniteCalcs
+  putStrLn $ join ["calculating ", show n]
+  if (infiniteCalcs !! n) == (infiniteCalcs !! (n + 2))
+  then return $ infiniteCalcs !! n
+  else goFind (n+1) infiniteCalcs
 
 main = do
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = lines contents
-        let infiniteCalcs = iterate generateNewMatrix entries
-        foundList     <- goFind 0 infiniteCalcs
-        print $ length $ filter (== '#') $ join foundList
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = lines contents
+  let infiniteCalcs = iterate generateNewMatrix entries
+  foundList     <- goFind 0 infiniteCalcs
+  print $ length $ filter (== '#') $ join foundList
+  hClose handle   

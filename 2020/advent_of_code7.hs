@@ -24,13 +24,12 @@ countBagContainment m = go where
   foldFun (number, bagname) acc = number + number * go bagname + acc
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = parseContents contents
-        print $ length $ findOuterMostBagsContaining entries "shiny gold"
-        print $ countBagContainment entries "shiny gold"
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = parseContents contents
+  print $ length $ findOuterMostBagsContaining entries "shiny gold"
+  print $ countBagContainment entries "shiny gold"
+  hClose handle   
 
 parseLine s = let [bag, bags]  = split " contain " s
                   bags'        = split ", " bags
@@ -43,7 +42,7 @@ parseLine s = let [bag, bags]  = split " contain " s
                    in (read number :: BagNumber, bagName ++ " " ++ bagName'')
 
 parseContents contents = let
-    entries       = filter (/= "") $ split "\n" contents
-    parsedEntries = map parseLine entries
-    entriesMap    = Map.fromList parsedEntries
-    in entriesMap
+  entries       = filter (/= "") $ split "\n" contents
+  parsedEntries = map parseLine entries
+  entriesMap    = Map.fromList parsedEntries
+  in entriesMap

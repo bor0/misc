@@ -22,13 +22,12 @@ findMySeat :: [Int] -> Int
 findMySeat l = head $ [minimum l..maximum l] \\ l
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = lines contents
-        print $ maximum $ map calcSeatId entries
-        print $ findMySeat $ map calcSeatId entries
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = lines contents
+  print $ maximum $ map calcSeatId entries
+  print $ findMySeat $ map calcSeatId entries
+  hClose handle   
 
 -- Alternative implementation of `findRowCol`, but less readable (to me)
 findRowCol' :: String -> Int

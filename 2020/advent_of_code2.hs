@@ -13,18 +13,17 @@ isValidPartTwo min max c s = let (first, second) = (s !! (min - 1), s !! (max - 
 --
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let passwords = lines contents
-        print $ length $ filter (== True) $ map (\x -> parseAndCheckLine isValidPartOne x) $ passwords
-        print $ length $ filter (== True) $ map (\x -> parseAndCheckLine isValidPartTwo x) $ passwords
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let passwords = lines contents
+  print $ length $ filter (== True) $ map (\x -> parseAndCheckLine isValidPartOne x) $ passwords
+  print $ length $ filter (== True) $ map (\x -> parseAndCheckLine isValidPartTwo x) $ passwords
+  hClose handle   
 
 parseAndCheckLine f s = let
-    line = words s
-    dashIndex = fromMaybe 0 $ elemIndex '-' (head line)
-    (minS, maxS) = splitAt dashIndex (head line)
-    (min, max) = (read minS :: Int, read (tail maxS) :: Int)
-    in
-    f min max (head $ line !! 1) $ line !! 2
+  line = words s
+  dashIndex = fromMaybe 0 $ elemIndex '-' (head line)
+  (minS, maxS) = splitAt dashIndex (head line)
+  (min, max) = (read minS :: Int, read (tail maxS) :: Int)
+  in
+  f min max (head $ line !! 1) $ line !! 2

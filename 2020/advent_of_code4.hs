@@ -21,21 +21,20 @@ isFieldValid "pid" value = let regex = mkRegex "^[0-9]{9}$" in isJust $ matchReg
 isFieldValid _ _         = False
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = parseContents contents
-        print $ length $ filter (== True) $ map parseAndCheckEntry entries
-        print $ length $ filter (== True) $ map parseAndCheckEntryTwo entries
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = parseContents contents
+  print $ length $ filter (== True) $ map parseAndCheckEntry entries
+  print $ length $ filter (== True) $ map parseAndCheckEntryTwo entries
+  hClose handle   
 
 parseContents contents = let
-    entries          = split "\n\n" contents
-    newlinesStripped = map (replace "\n" " ") entries
-    fieldsSplitted   = map (split " ") newlinesStripped
-    fieldsFiltered   = map (filter (/= "")) fieldsSplitted
-    fields           = map (map $ split ":") fieldsFiltered
-    in fields
+  entries          = split "\n\n" contents
+  newlinesStripped = map (replace "\n" " ") entries
+  fieldsSplitted   = map (split " ") newlinesStripped
+  fieldsFiltered   = map (filter (/= "")) fieldsSplitted
+  fields           = map (map $ split ":") fieldsFiltered
+  in fields
 
 parseAndCheckEntry entry    = 8 == length entry || ( 7 == length entry && "cid" `notElem` map head entry )
 parseAndCheckEntryTwo entry = parseAndCheckEntry $ filter (\y -> isFieldValid (head y) (y !! 1)) entry

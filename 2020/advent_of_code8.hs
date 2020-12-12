@@ -35,12 +35,11 @@ run cmds = go cmds getEmptyCtx [] where
                                    go cs newctx (ip:prevIPs)
 
 main = do
-        let list = []
-        handle <- openFile "input.txt" ReadMode
-        contents <- hGetContents handle
-        let entries = map parseLine $ lines contents
-        print $ run entries
-        hClose handle   
+  handle <- openFile "input.txt" ReadMode
+  contents <- hGetContents handle
+  let entries = map parseLine $ lines contents
+  print $ run entries
+  hClose handle   
 
 parseLine :: String -> Command
 parseLine s = let [cmd, number] = split " " s in go cmd number where
