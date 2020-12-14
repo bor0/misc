@@ -1,7 +1,7 @@
 import System.IO  
 import Control.Monad
 
-import Data.List (nub, intersect, union)
+import Data.List (intersect, union)
 import Data.List.Utils
 
 -- Part one

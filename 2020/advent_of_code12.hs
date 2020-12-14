@@ -1,9 +1,6 @@
 import System.IO  
 import Control.Monad
 
-import qualified Data.Map as Map
-import Data.List.Utils
-
 data Instruction = North Int | East Int | South Int | West Int | TurnLeft Int | TurnRight Int | Forward Int
 
 type Coordinates = (Int, Int, Int, Int)
