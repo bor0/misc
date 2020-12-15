@@ -13,14 +13,18 @@ foreach ( $numbers as $key => $value ) {
 
 $n = 30000000;
 
-for ( $i = 0; $i < $n - count( $numbers ); $i++ ) {
+$bound = $n - count( $numbers );
+
+for ( $i = 0; $i < $bound; $i++ ) {
 	$lastIndex++;
-	if ( count( $mapa[ $lastNumber ] ) == 1 ) {
+	if ( ! isset( $mapa[ $lastNumber ][1] ) ) {
 		$lastNumber = 0;
 	} else {
-		$mapa[ $lastNumber ] = $lastTwo = array_slice( $mapa[ $lastNumber ], -2, 2, true);
-		$lastNumber = array_shift( $lastTwo );
-		$lastNumber = array_shift( $lastTwo ) - $lastNumber;
+		// Consume the pair
+		$first = $mapa[ $lastNumber ][0];
+		$last  = $mapa[ $lastNumber ][1];
+		$mapa[ $lastNumber ] = [ $last ];
+		$lastNumber = $last - $first;
 	}
 	$mapa[ $lastNumber ][] = $lastIndex;
 }
