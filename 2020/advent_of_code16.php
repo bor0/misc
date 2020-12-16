@@ -103,6 +103,7 @@ for ( $i = 0; $i < $loc_count; $i++ ) {
 	if ( 1 == $indices ) {
 		$assumptions[ $location ] = $last_index;
 		// Reset iteration from beginning to repeat some calculations with the new assumptions
+		// No need to do this, we can be smarter and optimize it by re-using the current calculations but this is simpler (code wise).
 		$i = -1;
 	}
 }
