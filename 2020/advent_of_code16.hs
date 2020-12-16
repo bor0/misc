@@ -26,8 +26,9 @@ ticketValidByColumnAndLocation rules ticketIds column location =
 -- Go through all combinations of rules and column indices, filtering only the valid ones.
 getValidityCombinations rules tickets =
   let validTickets = filterValidTickets rules tickets
-      calculation = [ (location, col) | location <- M.keys rules,
-                                        col <- [0..length validTickets - 1],
+      locations    = M.keys rules
+      calculation  = [ (location, col) | location <- locations,
+                                        col <- [0..(length locations - 1)],
                                         ticketValidByColumnAndLocation rules validTickets col location ]
       in calculation
 
@@ -37,24 +38,21 @@ getValidityCombinations rules tickets =
 -- We can then further process this in an easier way to determine the columns.
 -- For example, for column 0 it's only `row` that satisfies, so we can conclude the mapping 0 -> `row`.
 processValidityCombinations combinations = let
-      sortedCalc  = sortBy (compare `on` snd) combinations
-      groupedCalc = groupBy (\p1 p2 -> snd p1 == snd p2) sortedCalc
-      in groupedCalc
+      sortedCalc  = sortBy (compare `on` fst) combinations
+      groupedCalc = groupBy (\p1 p2 -> fst p1 == fst p2) sortedCalc
+      in sortBy (compare `on` length) groupedCalc
 
 -- The following function is just an iterative approach to the same idea of `processValidityCombinations`.
 getColumns rules tickets = go (processValidityCombinations $ getValidityCombinations rules tickets) [] where
   go []        acc = acc -- return the determined columns
   go (x : xs') acc =
-    let filtered_x = filter (\x -> fst x `notElem` map fst acc) x -- remove all determined columns so far
+    let filtered_x = filter (\x -> snd x `notElem` map snd acc) x -- remove all determined columns so far
     in  go xs' (head filtered_x : acc)
 
 ---- Sample data
 rules = M.fromList [("class", [0..1] ++ [4..19]),
                     ("row", [0..5] ++ [8..19]),
                     ("seat", [0..13] ++ [16..19])]
-
-myTicket :: Ticket
-myTicket = [11,12,13]
 
 tickets :: [Ticket]
 tickets = [[15,1,5],
