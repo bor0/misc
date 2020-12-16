@@ -24,6 +24,7 @@ ticketValidByColumnAndLocation rules ticketIds column location =
   in all (`elem` ruleTicketIds) columnedTicketIds
 
 -- Go through all combinations of rules and column indices, filtering only the valid ones.
+getValidityCombinations :: Rules -> [Ticket] -> [(Location, Column)]
 getValidityCombinations rules tickets =
   let validTickets = filterValidTickets rules tickets
       locations    = M.keys rules
@@ -32,17 +33,19 @@ getValidityCombinations rules tickets =
                                         ticketValidByColumnAndLocation rules validTickets col location ]
       in calculation
 
--- This function will process validity combinations by sorting them by the column and then grouping them by the column.
--- For example, `[("class",1),("class",2),("row",0),("row",1),("row",2),("seat",2)]` turns to
--- `[[("row",0)],[("class",1),("row",1)],[("class",2),("row",2),("seat",2)]]`.
--- We can then further process this in an easier way to determine the columns.
--- For example, for column 0 it's only `row` that satisfies, so we can conclude the mapping 0 -> `row`.
+-- This function will process validity combinations by sorting them by the location and then grouping them by it.
+-- Afterwards, they will be sorted by group length. For example, `[("class",1),("class",2),("row",0),("row",1),("row",2),("seat",2)]`
+-- turns to `[[("seat",2)],[("class",1),("class",2)],[("row",0),("row",1),("row",2)]]`. Further, we can process this
+-- in an easyer way to determine the columns mapping. For example, for column 0 it's only `row` that satisfies, so
+-- we conclude (from the first group) the mapping 0 -> `row`.
+processValidityCombinations :: [(Location, Column)] -> [[(Location, Column)]]
 processValidityCombinations combinations = let
       sortedCalc  = sortBy (compare `on` fst) combinations
       groupedCalc = groupBy (\p1 p2 -> fst p1 == fst p2) sortedCalc
       in sortBy (compare `on` length) groupedCalc
 
 -- The following function is just an iterative approach to the same idea of `processValidityCombinations`.
+getColumns :: Rules -> [Ticket] -> [(Location, Column)]
 getColumns rules tickets = go (processValidityCombinations $ getValidityCombinations rules tickets) [] where
   go []        acc = acc -- return the determined columns
   go (x : xs') acc =
