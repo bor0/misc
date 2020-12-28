@@ -1,0 +1,75 @@
+Directory Navigation
+
+
+You are starting with a '/' and you can only change a directory 
+relative to the one you are at the moment.
+
+e.g. valid commands
+  cd ..    (change one directory back)
+  cd abc  (change toa subdirectory abc)
+
+e.g. not valid commands
+  cd / is not a valid command
+  cd /dir is also a not valid command, you can't change back to the root, you need to navigate back with cd .. 
+  cd a/b/c is also not a valid command, you can't change into more than one directory at once.
+
+Given a set of directories, find the minimal number of "cd" commands to pass through all the directories.
+
+e.g. 
+  Directories /a , /b , /c, 
+  Commands "cd a", "cd ..", "cd b", "cd ..", "cd c" go through all the directories
+  The result is 5.
+
+e.g. 
+  Directories /a/b , /b , /a/c, 
+  Commands "cd b", "cd ..", "cd a", "cd b", "cd..", "cd c" go through all the directories
+  The result is 6.
+
+Input parameters:
+  directories - set of directories
+  
+Constraints:
+  directories will contain between 1 and 50 elements inclusive
+  each element of directories will be a string between 2 and 300 characters inclusive
+  each element of directories will start with a '/' and will contain only 'a' to 'z' and '/' characters
+  there will be no two '/' in the directory, and directory does not end with '/' 
+  there will be no two same directories in the directories list
+  each number will be between 0 and 1000000 (one million)
+
+Return value:
+  The minimum number of "cd" commands to pass through all the directories
+Class Name:
+  DirectoryNavigation
+
+Method signature:
+  public int min(String[] directories)
+
+Test Case 1:
+  min({"/a","/b","/c"}) = 5
+
+Test Case 2:
+  min({"/a/b","/b","/a/c"}) = 6
+
+Test Case 3:
+  min({"/dir"}) = 1
+
+Test Case 4:
+  min({"/dir1","/dir2","/dir3","/dir4","/dir5","/dir6","/dir7","/dir8","/dir9","/dir10"}) = 19
+
+Test Case 5:
+  min({"/dir1","/dir2","/dir3","/dir4","/dir5","/dir5","/dir7","/dir8","/dir9","/dir10"}) = 17
+
+Test Case 6:
+  min({"/dir","/dir/dir"}) = 2
+
+Test Case 7:
+  min({"/b","/b/c","/b/c/d","/b/c/d/a/g/h","/b/c/d/a"}) = 6
+
+Test Case 8:
+  min({"/b","/b/c","/b/c/d/a/g/h","/b/c/d/a"}) = 6
+
+Test Case 9:
+  min({"/b","/b/c","/b/c/d/a"}) = 4
+
+Test Case 10:
+  min({"/a/a/a/a/a/a/a/a/a/a"}) = 10

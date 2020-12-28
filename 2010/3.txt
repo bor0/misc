@@ -1,0 +1,78 @@
+Minesweeper
+
+Minesweeper is a game played on a rectangular board with NxN cells.
+Some of the cells contain mines, and the rest of them are without.
+The objective of the game is to clear the minefield without detonating a mine.
+
+In this problem, you will be given the positions of the mines. Your task is to mark every cell 
+on the minefield with a number from 0 to 8, depending on the number of neighboring cells with mines.
+Every cell has 8 neighboring cells: 2 horizontally, 2 vertically and 4 diagonally.
+The mines in the output will stay the same, i.e. 'x'. 
+
+The minefield will be represented as String, with 'x' on a cell that has mine in it, and '.' on 
+a cell without a mine. The first N characters of the String are the topmost row of the minefied,
+the second N characters are the second row of the minefield, and so on.
+ 
+Example: This is a 3x3 minefiled, with mines in the corner cells.
+
+"x.x...x.x"
+or
+x.x
+...
+x.x
+
+The output should be:
+
+"x2x242x2x"
+or
+x2x
+242
+x2x
+
+Input parameters:
+  minefield - String, description of the minefield.
+  N - integer, the size of the minefield.
+  
+Constraints:
+  minefield will contain exactly N*N characters.
+  each character of minefield will be either 'x' or '.'.
+  N will be between 2 and 10 inclusive.
+  
+Return value:
+ String, the minefield where each cell is marked with number from 0 to 8, or 'x'.
+
+Class Name:
+  Minesweeper
+
+Method signature:
+  public String solve(String minefield, int n)
+
+Test Case 1:
+  solve(".x..", 2) = "1x11"
+
+Test Case 2:
+  solve("x..x", 2) = "x22x"
+
+Test Case 3:
+  solve("xx..", 2) = "xx22"
+
+Test Case 4:
+  solve("....x....", 3) = "1111x1111"
+
+Test Case 5:
+  solve("xxxx.xxxx", 3) = "xxxx8xxxx"
+
+Test Case 6:
+  solve("xxx...xxx", 3) = "xxx464xxx"
+
+Test Case 7:
+  solve(".x.xxx.x.", 3) = "3x3xxx3x3"
+
+Test Case 8:
+  solve("xxxxxxxxx", 3) = "xxxxxxxxx"
+
+Test Case 9:
+  solve(".........", 3) = "000000000"
+
+Test Case 10:
+  solve(".............x..x......x...x.x.............x.......x......x.x.x.", 8) = "0000111011001x21x111323x111x2x2100223110002x2000013x321101x3x2x1"

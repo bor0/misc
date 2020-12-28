@@ -1,0 +1,19 @@
+12345
+
+nov = 5;
+broj2 = 1234
+
+nov = 50;
+broj = 123;
+
+nov = 500;
+broj = 12;
+
+nov = 5000;
+broj = 1;
+
+nov = 50000;
+broj = 0;
+
+nov = nov + broj2; 
+nov = 50000 + broj2 = 50000 + 1234 = 51234

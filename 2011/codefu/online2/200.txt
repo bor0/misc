@@ -1,0 +1,64 @@
+SMSOutcome
+
+Given an SMS text that you need to send, return the numbers sequence that you need to press
+in order to write the entire message.
+
+The keyboard is as follows:
+
+ 1    2    3
+     abc  def
+
+ 4    5    6
+ghi  jkl  mno
+
+ 7    8   9 
+pqrs tuv wxyz 
+
+For example, the word "hello" is written with "4433555555666".
+
+The blank space is written with a "0".
+
+Input parameters:
+  sentence - the sentence that needs to be written via the keyboard
+  
+Constraints:
+  sentence will consist of 1 to 50 characters inclusive
+  each character of sentence will be [a-z] or ' ' (blank space)
+
+Return value:
+  String - The keyboard number sequence representing the written message
+Class Name:
+  SMSOutcome
+
+Method signature:
+  public String getSequence(String sentence)
+
+Test Case 1:
+  getSequence("hello") = "4433555555666"
+
+Test Case 2:
+  getSequence("how do you do") = "4466690366609996668803666"
+
+Test Case 3:
+  getSequence("i am fine") = "44402603334446633"
+
+Test Case 4:
+  getSequence("lorem ipsum lorem") = "5556667773360444777778860555666777336"
+
+Test Case 5:
+  getSequence("ubique singulis vis id") = "8822444778833077774446648855544477770888444777704443"
+
+Test Case 6:
+  getSequence("an omittam appetere") = "26606666444882602773383377733"
+
+Test Case 7:
+  getSequence("contentiones vim") = "222666668336684446666633777708884446"
+
+Test Case 8:
+  getSequence("at decore senserit") = "280333222666777330777733667777337774448"
+
+Test Case 9:
+  getSequence("inciderint est") = "4446622244433377744466803377778"
+
+Test Case 10:
+  getSequence("legere diceret no pro") = "5553343377733034442223377733806666607777666"

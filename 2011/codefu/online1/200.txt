@@ -1,0 +1,58 @@
+HighestArea
+
+We have a set of triangles and we need to find the one with the highest area.
+If two triangles have the same area, we should return the one that comes first in the list.
+Triangles are given in a format "x1,y1,x2,y2,x3,y3" where each x,y are coordinates of one of the triangle vertices.
+We should return the index of the highest area triangle (zero based)
+e.g. 
+  Given the triangles 1,1,2,2,1,2 and 0,0,0,2,2,0 and 0,0,2,2,2,0
+  The triangles 0,0,0,2,2,0 and 0,0,2,2,2,0 have the same area, and highest from the set
+  So, the result is 0,0,0,2,2,0, or its index 1. (index is 0 based)
+
+Input parameters:
+  triangles - String in a format "x1,y1,x2,y2,x3,y3;x1,y1,x2,y2,x3,y3;x1,y1,x2,y2,x3,y3"
+              Triangles are separated with semicolon ;
+              Each triangle is described with 6 integers       
+  
+Constraints:
+  There will be between 1 and 20 triangles
+  Each coordinate of the triangle will be between 0 and 100 inclusive
+  All triangles have more than 0 area.
+
+Return value:
+  0 based index of the triangle with highest area
+Class Name:
+  HighestArea
+
+Method signature:
+  public int highest(String triangles)
+
+Test Case 1:
+  highest("1,1,2,2,1,2") = 0
+
+Test Case 2:
+  highest("1,1,2,2,1,2;0,0,2,2,2,0") = 1
+
+Test Case 3:
+  highest("0,0,0,2,2,0;0,0,2,2,2,0") = 0
+
+Test Case 4:
+  highest("1,1,2,2,1,2;0,0,0,2,2,0;0,0,2,2,2,0") = 1
+
+Test Case 5:
+  highest("80,97,70,7,70,99;9,42,76,16,87,67;59,19,96,92,23,65;73,53,77,65,82,76;5,40,69,91,78,33;47,89,1,37,41,53;72,72,41,91,45,27;5,5,92,100,52,86") = 2
+
+Test Case 6:
+  highest("93,43,85,38,34,19;29,28,16,7,73,48;5,9,91,30,52,60;37,8,21,39,13,100;60,24,45,80,25,70;22,63,4,71,20,45;49,10,81,22,19,49;36,70,47,71,9,21;68,94,80,32,69,5;52,71,39,73,46,33;64,41,100,74,26,96;12,24,56,33,4,78;15,18,49,14,51,66;56,25,76,91,61,14;86,30,96,67,27,28;92,36,40,63,90,56;50,21,67,17,15,100;39,59,19,82,46,76;66,51,100,23,83,50;7,3,57,25,28,94") = 19
+
+Test Case 7:
+  highest("47,2,18,96,85,41") = 0
+
+Test Case 8:
+  highest("89,25,14,37,65,69;67,75,7,12,13,22;14,39,30,73,4,54;45,17,97,95,68,81;83,83,23,24,91,41;8,74,92,26,36,89;67,67,70,16,9,16;91,90,100,68,21,26;1,53,62,21,64,25;59,72,2,61,16,66;24,42,73,57,21,54;69,71,17,9,99,54;48,56,17,28,23,58;2,86,96,65,77,44;33,82,62,59,56,46;3,41,77,30,100,10;19,15,74,74,38,3;61,16,63,16,18,22") = 6
+
+Test Case 9:
+  highest("48,4,9,19,10,9;0,10,87,20,89,44;32,68,52,13,9,29;80,61,57,27,51,63;74,42,0,78,51,94;62,51,70,83,67,21;75,34,42,48,26,22;5,46,91,83,8,43;1,64,83,67,44,46;83,72,51,100,99,91") = 4
+
+Test Case 10:
+  highest("89,4,51,10,43,60;41,5,56,84,65,24;7,77,87,45,85,78;3,63,22,40,37,32;57,14,82,19,16,7;10,68,21,96,46,46;92,9,16,2,1,62;97,6,54,89,25,74;28,29,99,100,31,13;98,66,42,28,78,42;71,25,99,93,53,43;40,53,40,72,91,73;63,92,10,85,3,71;42,65,18,46,28,41;27,81,82,51,65,26;96,52,12,47,28,11;30,50,39,92,45,74;14,2,7,27,96,52;23,87,58,88,62,6;65,43,2,2,89,55") = 6

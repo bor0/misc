@@ -1,0 +1,64 @@
+Progression
+
+There is an arithmetic progression written on a black-board. Having nothing better to do, you invented a game involving it. 
+Namely, you erase all the even numbers and replace them with the numbers two times smaller. 
+You repeat this procedure until there is no more even numbers on the board. 
+For example, you transform the progression {1, 2, 3, 4, 5, 6} into {1, 1, 3, 2, 5, 3} and then once again into {1, 1, 3, 1, 5, 3}.
+When your friends come over, you ask them to guess the original progression. 
+
+e.g.
+  Lets take progression 6, 5, 4, 3, 2, 1
+  In the first step it becomes 3, 5, 2, 3, 1, 1
+  Then it becomes 3, 5, 1, 3, 1, 1
+
+  This means for the numbers 3, 5, 1, 3, 1, 1 the solution is 6, 5, 4, 3, 2, 1, resulting in a sum of 21
+  
+  
+Input parameters:
+  progression - an array of integers representing the original progression after all the numbers have been brought to odd elements
+
+Constraints:
+  The number of elements in progression is between 4 and 500 inclusive.
+  Each element of progression is between 1 and 1000000 inclusive.
+  All elements of progression are odd.
+  
+
+Return value:
+  The sum of the elements of the original arithmetic progression.
+  When there is more then one solution, return the one that has smaller sum of all the elements.
+  Note that there will always be a solution where each number of the original progression is smaller than 1000000.
+Class Name:
+  Progression
+
+Method signature:
+  public int reverse(int[] progression)
+
+Test Case 1:
+  reverse({1, 1, 3, 1, 5, 3}) = 21
+
+Test Case 2:
+  reverse({1, 1, 1, 1, 1, 1}) = 6
+
+Test Case 3:
+  reverse({3, 3, 3, 3}) = 12
+
+Test Case 4:
+  reverse({3, 5, 1, 3, 1, 1}) = 21
+
+Test Case 5:
+  reverse({21, 27, 33, 39, 45, 51}) = 216
+
+Test Case 6:
+  reverse({37, 15, 23, 1, 9, 1}) = 117
+
+Test Case 7:
+  reverse({1019, 1077, 1135, 1193, 1251, 1309, 1367, 1425, 1483, 1541}) = 12800
+
+Test Case 8:
+  reverse({1103, 2067, 241, 1789, 825, 1511, 343, 1233, 547, 955, 51, 677, 269, 399, 65, 121}) = 18616
+
+Test Case 9:
+  reverse({5, 5, 5, 5, 5}) = 25
+
+Test Case 10:
+  reverse({5, 1, 11, 7, 17}) = 55

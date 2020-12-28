@@ -1,0 +1,93 @@
+Humanitarian Action
+
+After a natural disaster some villages need humanitarian help.
+We are dropping aid with the helicopter on designated area, which is given by a map.
+The map contains '#' for a non accessible land and ' ' for accessible.
+Then numbers from '0' to '9' for the villages.
+
+We need to find out which village takes the humanitarian aid.
+People from the village can only travel in strait directions (up, down, left or right), 
+they can't move diagonally and they also can't pass the non accessible areas (marked with '#').
+Also, people can't go outside the mapped area.
+One aid is taken always by the closest accessible village.
+If the aid cannot be taken we need to mark it with '*'.
+If the aid is taken by more than one village, we mark it with '?'.
+Otherwise we mark it with the village character
+
+e.g.  
+
+  #######
+  #1#2#3#
+  #######
+  #4#5# #
+  ### # #
+  #7#8#9#
+  #######
+  ###0### 
+  #######
+
+If we drop the aid on coordinate 1,1 it will be taken by the village '1'.
+If we drop the aid on coordinate  3,4 it can be taken by both '5' or '8'. Therefore we mark it as '?'
+The upper left coordinate 0,0 is a non accessible land, so if we drop aid there it will be marked as '*'
+
+e.g. 
+######
+#1 2 #
+######
+coordinate 0,1 is '*', coordinate 1,1 is '1', coordinate 2,1 is '?', coordinate 3,1 is '2', coordinate 4,1 is '2'
+
+Given a map and dropout coordinates, return the markings for each aid
+
+Input parameters:
+  map, string array representing the area line by line.
+  dropouts, string in a format "xcoord,ycoord;xcoord,ycoord", e.g. "1,1;2,1;3,1"
+    xcoord is the horizontal coordinate
+    ycoord is the vertical coordinate
+  
+Constraints:
+  map will contain between 1 and 20 lines
+  each line of map will have between 1 and 20 characters
+  map will contain only '#', ' ', and '0' - '9' characters
+  no number will be present more than once in the map
+  not all '0' to '9' numbers will be present on the map
+  dropouts will be between 3 and 100 characters long
+  dropouts is in the format "xcoord,ycoord;xcoord,ycoord"
+  xcoord and ycoord are between 0 and 19 inclusive, and they will be always somewhere within the map.
+
+Return value:
+  A string representing the taken aid.
+Class Name:
+  HumanitarianAction
+
+Method signature:
+  public String taken(String[] map, String dropouts)
+
+Test Case 1:
+  taken({"#######","#1#2#3#","#######","#4#5#6#","#######","#7#8#9#","#######","###0###","#######"}, "0,0;1,1") = "*1"
+
+Test Case 2:
+  taken({"#######","#1#2#3#","#######","#4#5# #","### # #","#7#8#9#","#######","###0###","#######"}, "1,1;3,3") = "15"
+
+Test Case 3:
+  taken({"#######","#1#2#3#","#######","#4#5# #","### # #","#7#8#9#","#######","###0###","#######"}, "3,4;5,4") = "?9"
+
+Test Case 4:
+  taken({"#####","#1 2#","#####"}, "0,0;1,1;2,1;3,1") = "*1?2"
+
+Test Case 5:
+  taken({"######","#1 2 #","######"}, "0,0;1,1;2,1;3,1;4,1") = "*1?22"
+
+Test Case 6:
+  taken({"1234"}, "0,0;0,0;3,0;0,0") = "1141"
+
+Test Case 7:
+  taken({"12  34"}, "0,0;0,0;3,0;2,0") = "1132"
+
+Test Case 8:
+  taken({"12   34","    5  "}, "0,0;0,0;3,0;2,0") = "11?2"
+
+Test Case 9:
+  taken({"#####","#1#2#","#   #","#####"}, "2,2;3,2") = "?2"
+
+Test Case 10:
+  taken({"#####","#1# #","#   #","#####"}, "2,2;3,2") = "11"

@@ -1,0 +1,60 @@
+Photographer
+
+A photographer gets a bunch of pictures with a specific resolution (denoted as horizontal x vertical in pixels). 
+Help him get the info about which picture is the biggest in terms of megapixels.
+
+You are given an array of strings each in format "hxv" where h is the horizontal resolution and v is the vertical 
+resolution, both in pixels (example 1280x1024). Return a string representing the picture with the biggest 
+resolution in megapixels, rounded half up on one decimal place.
+
+For example, if the picture has a resolution of 1280*1024, that means that the total amount of pixels is 1310720 
+or "1.3" megapixels.
+
+Note: 1 Megapixel = 1000000 (10^6) pixels.
+  
+Input parameters:
+  pics - array of strings representing the pictures
+  
+Constraints:
+  pics will contain between 1 and 50 elements inclusive
+  each element of pics will be of the format "hxv"
+  both h and v can be between 1 and 10000 inclusive
+  each input string will be of the correct format
+
+Return value:
+  String - The biggest resolution in megapixels, rounded half up on one decimal place
+Class Name:
+  Photographer
+
+Method signature:
+  public String getResolution(String[] pics)
+
+Test Case 1:
+  getResolution({"1024x768","1280x1024","800x600"}) = "1.3"
+
+Test Case 2:
+  getResolution({"2019x1888","3830x1196","675x1462","658x1604","1595x2227","3949x4864"}) = "19.2"
+
+Test Case 3:
+  getResolution({"4088x3533","2174x4898"}) = "14.4"
+
+Test Case 4:
+  getResolution({"1x1"}) = "0.0"
+
+Test Case 5:
+  getResolution({"1000x1000"}) = "1.0"
+
+Test Case 6:
+  getResolution({"1050x106","1307x2909","1198x2879"}) = "3.8"
+
+Test Case 7:
+  getResolution({"3420x4466","588x42","2748x4567","36x2664","1429x4777","248x1584"}) = "15.3"
+
+Test Case 8:
+  getResolution({"1295x2028","1489x3417"}) = "5.1"
+
+Test Case 9:
+  getResolution({"1855x4141","710x967","746x4709","2435x709","211x231"}) = "7.7"
+
+Test Case 10:
+  getResolution({"4286x2293","2383x2661","1875x3772","813x3243","622x1027"}) = "9.8"

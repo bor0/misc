@@ -1,0 +1,66 @@
+TrainRoute
+
+We have a train schedule given in a format.
+STATION HH:MM STATION HH:MM ... STATION HH:MM
+E.g. "A 09:00 B 10:03 C 11:07 D 12:13 E 14:20"
+
+As the train travels, the stations receive updates for changes in the arrival times.
+E.g. "C 11:09 C 11:08 A 09:01"
+Station C is listed twice in the real-time updates, and the second occurrence is the valid one.
+In this example, the train was supposed to be late 2 minutes at station C, but was then little 
+bit faster and was only 1 minute late.
+
+Return the actual arrival times of the train.
+E.g. "A 09:01 B 10:03 C 11:08 D 12:13 E 14:20"
+  
+Input parameters:
+  - plannedSchedule - String, the planned schedule.
+  - updates - String, the updates to the schedule.
+  
+Constraints:
+  - plannedSchedule will contain between 2 and 25 stations, inclusive.
+  - Each station will be represented with: one letter station id and the time in 
+    HH:MM format. (24 hour format).
+  - The times of the stations will be in ascending order.
+  - updates will contain between 0 and 50 stations.
+  - updates will not change the order of the stations.
+  
+Return value:
+ String, the schedule for the train after the updates. The format should be the same as in the 
+         planned schedule. Only the time should be updated. 
+
+Class Name:
+  TrainRoute
+
+Method signature:
+  public String findActualSchedule(String plannedSchedule, String updates)
+
+Test Case 1:
+  findActualSchedule("A 09:00 B 10:03 C 11:07 D 12:13 E 14:20", "C 11:09 C 11:08 A 09:01") = "A 09:01 B 10:03 C 11:08 D 12:13 E 14:20"
+
+Test Case 2:
+  findActualSchedule("A 09:00 B 10:03 C 11:07 D 12:13 E 14:20", "A 09:11 A 09:05 E 14:30 E 14:40") = "A 09:05 B 10:03 C 11:07 D 12:13 E 14:40"
+
+Test Case 3:
+  findActualSchedule("A 09:00 B 10:03 C 11:07 D 12:13 E 14:20", "B 10:30 C 11:20") = "A 09:00 B 10:30 C 11:20 D 12:13 E 14:20"
+
+Test Case 4:
+  findActualSchedule("Z 05:00 Y 06:00 X 07:00", "") = "Z 05:00 Y 06:00 X 07:00"
+
+Test Case 5:
+  findActualSchedule("Z 05:00 Y 06:00 X 07:00", "Z 05:30 Y 06:40 Y 06:30 Y 06:20") = "Z 05:30 Y 06:20 X 07:00"
+
+Test Case 6:
+  findActualSchedule("Z 05:00 Y 06:00 X 07:00", "X 07:01") = "Z 05:00 Y 06:00 X 07:01"
+
+Test Case 7:
+  findActualSchedule("M 07:30 N 08:30 O 09:30 P 10:30 Q 11:30", "M 07:31 N 08:31 O 09:31 P 10:31 Q 11:31") = "M 07:31 N 08:31 O 09:31 P 10:31 Q 11:31"
+
+Test Case 8:
+  findActualSchedule("M 07:30 N 08:30 O 09:30 P 10:30 Q 11:30", "M 07:35 Q 11:33 M 07:32") = "M 07:32 N 08:30 O 09:30 P 10:30 Q 11:33"
+
+Test Case 9:
+  findActualSchedule("M 07:30 N 08:30 O 09:30 P 10:30 Q 11:30", "Q 11:40 Q 11:44 Q 11:40 M 07:33") = "M 07:33 N 08:30 O 09:30 P 10:30 Q 11:40"
+
+Test Case 10:
+  findActualSchedule("A 00:01 B 23:50", "A 00:30") = "A 00:30 B 23:50"

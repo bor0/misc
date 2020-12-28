@@ -1,0 +1,69 @@
+BinaryGame
+
+Now that the lizard Kroki has a nickname thanks to his friend the lizard Guki, he would
+like to thank Guki somehow.
+
+Kroki knows that Guki loves binary numbers so he is going to give him a problem with
+binary numbers to solve. The problem is: 
+Given a binary number binaryNumber as a String, Guki needs to split binaryNumber into three 
+consecutive binary numbers. Then he should calculate the product of them. Because he can split 
+binaryNumber in many ways he wants to find a way to maximize the product after the split. Help 
+Guki and return the maximal product he can get converted to decimal.  
+
+e.g. 
+  binaryNumber = "10011011"
+  The result is 72 because he can split binaryNumber like this 
+  100|110|11 -> 100*110*11= 4*6*3=72
+  which yields the best result.
+  
+e.g.
+  binaryNumber="101010"
+  The result is 8 and the optimal splitting strategy is:
+  10|10|10=2*2*2=8
+
+Note: some of the numbers may have leading zeroes.
+
+Input parameters:
+  binaryNumber - the binary number given as a String
+  
+Constraints:
+  binaryNumber will contain between 3 and 30 characters inclusive
+  each character of binaryNumber will be either '0' or '1'
+
+Return value:
+  int - The largest possible product
+Class Name:
+  BinaryGame
+
+Method signature:
+  public int getMaxProduct(String binaryNumber)
+
+Test Case 1:
+  getMaxProduct("111") = 1
+
+Test Case 2:
+  getMaxProduct("1100") = 0
+
+Test Case 3:
+  getMaxProduct("101010") = 8
+
+Test Case 4:
+  getMaxProduct("10011011") = 72
+
+Test Case 5:
+  getMaxProduct("00110011") = 12
+
+Test Case 6:
+  getMaxProduct("10101010") = 40
+
+Test Case 7:
+  getMaxProduct("1000011") = 16
+
+Test Case 8:
+  getMaxProduct("111000111") = 168
+
+Test Case 9:
+  getMaxProduct("111001110011111100111111001111") = 942335856
+
+Test Case 10:
+  getMaxProduct("100000000000000000000000000011") = 134217728

@@ -1,0 +1,52 @@
+SumOfPowers
+
+Consider the following polynomial expression:
+
+f(N) = 1^2 + 2^3 + 3^4 + ... + N^(N+1)
+
+You will be given the number N, and your task is to find the last digit of f(N).
+
+Input parameters:
+  N - integer, the number of terms in the expression  
+
+Constraints:
+  N will be between 1 and 1000000 inclusive.
+  
+Return value:
+ int, the last digit of the given polynomial expression.
+
+Class Name:
+  SumOfPowers
+
+Method signature:
+  public int lastDigit(int N)
+
+Test Case 1:
+  lastDigit(1) = 1
+
+Test Case 2:
+  lastDigit(2) = 9
+
+Test Case 3:
+  lastDigit(3) = 0
+
+Test Case 4:
+  lastDigit(4) = 4
+
+Test Case 5:
+  lastDigit(5) = 9
+
+Test Case 6:
+  lastDigit(6) = 5
+
+Test Case 7:
+  lastDigit(7) = 6
+
+Test Case 8:
+  lastDigit(10) = 5
+
+Test Case 9:
+  lastDigit(100) = 0
+
+Test Case 10:
+  lastDigit(1000000) = 0

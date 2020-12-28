@@ -1,0 +1,69 @@
+Broken Calculator
+
+As your final exam is approaching you have decided it is definitely time to start studying. 
+However, you have a problem with your calculator. You really need it, but it does't work as it should. 
+
+The only operations you can perform with it are addition, substraction, multiplication and division. 
+And even these operations work on one operand only. 
+For example, if you type in the number 42 and then press '+', the calculator gives you a result of 84. 
+In other words, both the operands are always the same. 
+
+So, since studying is out of the question, you have decided to play a little game with your roommate. 
+Your roomate types in a number on the calculator, and then performs a number of operations, resulting in a new number. 
+
+He then tells you both the initial number, and the result. Your goal is to guess the sequence of operations you roomate performed. 
+In case there is more then one solution return the shortest one (the one with smallest number of steps)
+In case there is still more than one solution, return the one which is lexicographically first.
+The lexicographical order of the operators is '*', '+', '-', '/'
+
+e.g.
+  starting value 42 and result value 168 should return "++" (addition, twice)
+  starting value 42 and result value 0 should return "-" (one substraction is the shortest solution)
+
+Given two numbers, starting and result, calculate the shortest way of operations to achieve the result value.
+  
+Input parameters:
+  starting - the initial value entered in the calculator
+  result - the result after a sequence of operations
+
+Constraints:
+  starting and result are both between 0 and one billion (10^9) inclusive.
+  starting and result are chosen in such a way that there is at least one solution. 
+
+Return value:
+  a shortest, lexicographically first string containing the performed operations
+Class Name:
+  BrokenCalculator
+
+Method signature:
+  public String operations(int starting, int result)
+
+Test Case 1:
+  operations(5, 5) = ""
+
+Test Case 2:
+  operations(42, 168) = "++"
+
+Test Case 3:
+  operations(42, 1) = "/"
+
+Test Case 4:
+  operations(5, 625) = "**"
+
+Test Case 5:
+  operations(3, 36) = "+*"
+
+Test Case 6:
+  operations(1, 256) = "+***"
+
+Test Case 7:
+  operations(7, 392) = "+*+"
+
+Test Case 8:
+  operations(17, 8) = "/+*+"
+
+Test Case 9:
+  operations(7, 256) = "/+***"
+
+Test Case 10:
+  operations(3, 256) = "/+***"

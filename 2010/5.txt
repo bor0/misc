@@ -1,0 +1,57 @@
+Multiply
+
+For a given number N, to get to value of A to the power of N, you need to use multiplication.
+Find the smallest amount of multiplications to get A^N. 
+
+Example: 
+If N=12 you can do the following:
+A x A = A^2
+A^2 x A^2 = A^4
+A^4 x A^4 = A^8
+A^4 x A^8 = A^12
+Therefore we used 4 multiplications instead of 11 (AxAxAxAxAxAxAxAxAxAxAxA).
+
+Input parameters:
+  N - integer, the power of A.
+
+Constraints:
+  N will be between 2 and 200 inclusive.
+
+Return value:
+ int, minimum number of multiplications.
+
+Class Name:
+  Multiply
+
+Method signature:
+  public int minMultiply(int N)
+
+Test Case 1:
+  minMultiply(15) = 5
+
+Test Case 2:
+  minMultiply(16) = 4
+
+Test Case 3:
+  minMultiply(17) = 5
+
+Test Case 4:
+  minMultiply(18) = 5
+
+Test Case 5:
+  minMultiply(19) = 6
+
+Test Case 6:
+  minMultiply(20) = 5
+
+Test Case 7:
+  minMultiply(21) = 6
+
+Test Case 8:
+  minMultiply(22) = 6
+
+Test Case 9:
+  minMultiply(23) = 6
+
+Test Case 10:
+  minMultiply(24) = 5

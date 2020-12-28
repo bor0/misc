@@ -1,0 +1,61 @@
+LastCharacter
+
+A long string is composed by concatenating N times the string "s".
+From the resulting String all the characters at odd positions are removed.
+Then from the string that remains, again all the characters at odd positions are removed.
+The process continues until there is only one character left.
+
+Your task is to find this last character.
+
+Example: The string "LASTONE" is written 2 times
+----------------------------- L A S T O N E L A S T O N E - A - T - N - L - S - O - E ----------------------------- A T N L S O E - T - L - O - --------------- T L O - L - ------- L
+
+And the last character is L.
+
+Input parameters:
+  s - String, the string that will be concatenated to itself to form the resulting string. 
+  N - integer, a number denoting how many times the string s is concatenated.
+
+Constraints:
+  Each character of s will be capital English letter, 'A' through 'Z'.
+  The length of the string s will be between 2 and 100 inclusive.  
+  N will be between 2 and 1000000 (one million) inclusive.
+
+Return value:
+ String, of length 1, which contains only the last remaining character.  
+
+Class Name:
+  LastCharacter
+
+Method signature:
+  public String findLast(String s, int N)
+
+Test Case 1:
+  findLast("LASTONE", 2) = "L"
+
+Test Case 2:
+  findLast("LAST", 3) = "T"
+
+Test Case 3:
+  findLast("ABC", 10) = "A"
+
+Test Case 4:
+  findLast("ERASER", 5) = "S"
+
+Test Case 5:
+  findLast("REMOVEODD", 7) = "V"
+
+Test Case 6:
+  findLast("CONCATENATION", 4) = "T"
+
+Test Case 7:
+  findLast("LASTMANSTANDING", 20) = "L"
+
+Test Case 8:
+  findLast("IAMTHEWINNER", 6) = "T"
+
+Test Case 9:
+  findLast("ODD", 7) = "O"
+
+Test Case 10:
+  findLast("THELASTCHARACTER", 13) = "R"

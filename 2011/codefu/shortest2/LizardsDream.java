@@ -1,0 +1,1 @@
+public class LizardsDream{public int getCount(int[]C,int M,int K,int S){s=S;k=K+1;B=C;p=new LizardsDream();p.M=M;r(p);return D;}LizardsDream p=null,t;int Z,v=-1,g,M,s,k,D=0,B[];void r(LizardsDream n){for(t=n,g=0;t.p!=null;t=t.p){Z=t.v;if(n.M==0)g+=B[Z];}if(n.v-Z+1<=k){if(g>=s)D++;for(int i=n.v;i<B.length-1;){t=new LizardsDream();t.p=n;t.v=++i;t.M=n.M-1;r(t);}}}}

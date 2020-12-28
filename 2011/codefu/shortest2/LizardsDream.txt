@@ -1,0 +1,73 @@
+LizardsDream
+
+One night Guki had a dream. It was one of those dreams,you just don't want to wake up from.
+He dreamt, he was in heaven and, there, waiting for him were N lizard chicks(female lizards :D)
+standing in a line. Just as he thought of running to them and taking them all home, the lizard
+god appeared. The god said: "You can only take exactly M females where the leftmost and
+rightmost female from the ones you pick may not be more than K units appart in the line.
+Also the sum of their beauties must be greater than or equal to S." Guki wants to know in 
+how many ways can he do that, but he got confused and summoned you in his dream, to help him.
+So help him :). You are given int[] beauty, M, K and S. Calculate the number of ways in which 
+you can pick females while satisfying the given conditions.
+ 
+Input parameters:
+  beauty - array of integers, the beauties of each of the N females
+  M - integer, the exact number of females he must pick
+  K - integer, the maximum distance between the leftmost and rightmost female you pick
+  S - integer, the least sum of beauties of females you pick
+
+e.g.
+beauty={1,2,3,1}, M=2, K=2, S=4
+This means: we have 4 females with beauties 1,2,3,1. We need to count the number of ways
+to select 2 of them, whose sum of beauties will be greater than or equan to 4 and the distance 
+between the leftmost and rightmost one we select will not be more than 2 units. For example the 
+ones with index 0 and 1 are 1 unit apart (since 1-0=1). Female with index 1 and 3 are 2 units 
+apart(3-1=2). So in this example we can select the pairs of females (0,2),(1,2),(2,3) since their 
+sums of beauties are greater than or equal to 4. So the result is 3 (3 different ways to select 
+the females).
+
+Constraints:
+  beauty will contain N elements where N is between 5 and 50 elements inclusive
+  each element of beauty will be between 1 and 100 inclusive
+  K will be between 1 and 15 inclusive
+  M will be between 2 and K + 1 inclusive
+  S will be between 1 and 5000 inclusive
+  K will be less than N
+  
+Return value:
+ int, the number of different ways to pick the females.
+Class Name:
+  LizardsDream
+
+Method signature:
+  public int getCount(int[] beauty, int M, int K, int S)
+
+Test Case 1:
+  getCount({3,1,2}, 2, 2, 4) = 2
+
+Test Case 2:
+  getCount({1,2,3,1}, 2, 1, 1) = 3
+
+Test Case 3:
+  getCount({1,2,3,1}, 3, 3, 1) = 4
+
+Test Case 4:
+  getCount({1,1,1,1,1,1,1,1,1,1}, 3, 2, 3) = 8
+
+Test Case 5:
+  getCount({1,2,3,1}, 2, 2, 1) = 5
+
+Test Case 6:
+  getCount({1,2,3,1}, 2, 2, 4) = 3
+
+Test Case 7:
+  getCount({1,2,3,1}, 2, 2, 5) = 1
+
+Test Case 8:
+  getCount({1,5,4,2,2}, 2, 2, 1) = 7
+
+Test Case 9:
+  getCount({1,5,4,2,2}, 2, 2, 7) = 2
+
+Test Case 10:
+  getCount({1,1,1,1,1,1,1,1,1,1}, 3, 3, 2) = 22

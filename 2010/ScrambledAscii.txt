@@ -1,0 +1,65 @@
+Scrambled Ascii 
+
+In the ASCII standard, every printable character has an integer value. For example, the character 'a' has an ASCII value of 97, the character 'A' the value 65, etc. 
+Both the lowercase and the uppercase letters have consecutive values. 
+However, we think that although this property is practical, it is no fun. So, we have decided that in our version of ScrambledAscii, these rules do not apply. 
+Every letter has a randomly chosen and unique ascii value. 
+Given the values of the lowercase letters and a string, calculate the "weight" of each word in the string. Weight is a sum of all character values of the word.
+
+e.g. 
+  Given character values 
+  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26} 
+  means 'a' has value 1, 'b' has value 2 and 'd' has value 4
+  word "a" has weight 1, word "abd" has weight 7 (1 + 2 + 4).
+  a sentence "a ab abcd dddd" has weights "1 3 10 16"
+  
+Input parameters:
+  sentence - the sentence for which you find the value of each word
+  charValues - the numerical values of the characters
+
+Constraints:
+  charValues will always have exactly 26 elements
+  Every element of charValues will be between 1 and 100 inclusive
+  Sentence will consist of lowercase letters only, separated into words by blank spaces.
+  There can be no more then one space character between two words
+  There will be no spaces at the beginning or end of the sentence
+  The length of sentence will be between 1 and 100 characters inclusive
+
+Return value:
+  The sentence with word weights.
+  The return value is of the same format as the sentence, where each word is replaced by its weight.
+Class Name:
+  ScrambledAscii
+
+Method signature:
+  public String weights(int[] charValues, String sentence)
+
+Test Case 1:
+  weights({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26}, "a ab abcd dddd") = "1 3 10 16"
+
+Test Case 2:
+  weights({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26}, "abc") = "6"
+
+Test Case 3:
+  weights({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26}, "a b c d") = "1 2 3 4"
+
+Test Case 4:
+  weights({94, 45, 26, 30, 87, 11, 65, 40, 24, 38, 25, 19, 34, 70, 21, 73, 7, 37, 56, 9, 92, 86, 90, 5, 22, 29}, "lvhopgj dfy") = "342 63"
+
+Test Case 5:
+  weights({49, 35, 37, 38, 3, 57, 81, 6, 93, 39, 79, 53, 97, 72, 24, 91, 15, 64, 16, 2, 40, 28, 36, 52, 73, 45}, "ge mp l") = "84 188 53"
+
+Test Case 6:
+  weights({81, 54, 42, 73, 70, 22, 2, 59, 11, 90, 93, 72, 91, 79, 66, 36, 94, 98, 24, 87, 62, 10, 13, 92, 43, 33}, "vam iqtrhqqmo yr epzpuq") = "182 694 141 331"
+
+Test Case 7:
+  weights({97, 4, 33, 55, 75, 41, 92, 56, 82, 27, 53, 7, 73, 68, 60, 98, 80, 2, 77, 57, 18, 17, 96, 37, 34, 47}, "z vxae feab mn vyl tbst mw ejjlgt rltb") = "47 226 217 141 58 195 169 285 70"
+
+Test Case 8:
+  weights({72, 81, 4, 8, 76, 77, 75, 92, 25, 26, 94, 70, 44, 30, 0, 64, 6, 15, 97, 80, 88, 41, 10, 7, 99, 39}, "dyk zwengr oxewdnztzxxocilmh huq yk ehsk kkjzhdgk bx") = "201 245 538 186 193 359 522 88"
+
+Test Case 9:
+  weights({16, 68, 19, 35, 45, 18, 22, 52, 79, 51, 21, 69, 48, 82, 42, 89, 24, 64, 56, 40, 9, 7, 23, 57, 39, 74}, "a b c d e f g h i j k l m n o p q r s t u v w x y z") = "16 68 19 35 45 18 22 52 79 51 21 69 48 82 42 89 24 64 56 40 9 7 23 57 39 74"
+
+Test Case 10:
+  weights({3, 29, 83, 30, 71, 28, 24, 47, 17, 60, 41, 81, 23, 85, 92, 76, 22, 42, 35, 46, 63, 59, 98, 26, 53, 9}, "kqqznzekroqjug xodthgi jvuq ms bad qhai md pdiwgb hzcbcrax") = "603 282 204 58 62 89 53 274 322"

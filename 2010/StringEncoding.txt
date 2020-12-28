@@ -1,0 +1,59 @@
+StringEncoding
+
+Given an input String, your task is to encode that String according to the following rule.
+
+Every consecutive appearance of a character is replaced with: 
+the character itself, 
+followed by a number representing how many times the character is repeated.
+
+If the consecutive sequence a characters is of length 1,
+than the number is not present in the encoded String.
+ 
+Example: If the input String is "abbccdddd".
+We can split the String into 4 substrings: "a", "bb", "ccc" and "dddd".
+The encoded String is: "ab2c3d4". (there is no '1' after the 'a' character)
+
+Input parameters:
+  s - String, the String that has to be encoded. 
+  
+Constraints:
+  The length of the String s will be between 1 and 1000 inclusive.
+  
+Return value:
+ String, the encoded String.
+
+Class Name:
+  StringEncoding
+
+Method signature:
+  public String encode(String s)
+
+Test Case 1:
+  encode("abbcccdddd") = "ab2c3d4"
+
+Test Case 2:
+  encode("aaabbcbbaaa") = "a3b2cb2a3"
+
+Test Case 3:
+  encode("juhuuuuu") = "juhu5"
+
+Test Case 4:
+  encode("ttt") = "t3"
+
+Test Case 5:
+  encode("abbcccdeeeeeezxxyyy") = "ab2c3de6zx2y3"
+
+Test Case 6:
+  encode("encodeme") = "encodeme"
+
+Test Case 7:
+  encode("processsecretmessage") = "proces3ecretmes2age"
+
+Test Case 8:
+  encode("onetwothree") = "onetwothre2"
+
+Test Case 9:
+  encode("tennineeight") = "ten2ine2ight"
+
+Test Case 10:
+  encode("zzzzzzzzzzabbcccdeeeeeexyzxyz") = "z10ab2c3de6xyzxyz"

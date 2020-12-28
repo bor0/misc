@@ -1,0 +1,56 @@
+LizardNicknames
+
+The lizard Guki would like to find a nickname for his friend,the lizard Kroki.
+He has a list of the most often used nicknames in Lizardland given in names[]. Guki knows
+that Kroki prefers longer names to shorter ones. Help Guki find a nickname for Kroki.
+If two or more names have the same length return the one that comes first alphabetically.
+
+e.g. 
+  Given strings: "darko" ,"cvete", "ace".
+  Here, both "darko" and "cvete" are the longest strings, but "cvete" comes earlier
+  alphabetically so you should return "cvete"
+  
+Input parameters:
+  names - set of strings
+  
+Constraints:
+  names will contain between 1 and 50 elements inclusive
+  each element of number will contain  between 1 and 20 lowercase letters [a-z]
+
+Return value:
+  String - The longest,aphabetically first name.
+Class Name:
+  LizardNicknames
+
+Method signature:
+  public String getBestName(String[] names)
+
+Test Case 1:
+  getBestName({"marko","pero","ana"}) = "marko"
+
+Test Case 2:
+  getBestName({"marko","pero","ana","darko"}) = "darko"
+
+Test Case 3:
+  getBestName({"stanko","igor","nikola","koljo","perica"}) = "nikola"
+
+Test Case 4:
+  getBestName({"stojan"}) = "stojan"
+
+Test Case 5:
+  getBestName({"ace","ace","ace"}) = "ace"
+
+Test Case 6:
+  getBestName({"mace","dare","alex","afro"}) = "afro"
+
+Test Case 7:
+  getBestName({"b","a","c","e","d"}) = "a"
+
+Test Case 8:
+  getBestName({"ovoj","ili","onoj"}) = "onoj"
+
+Test Case 9:
+  getBestName({"edenprilicnogolemnik","pomalnik","malnik","mini"}) = "edenprilicnogolemnik"
+
+Test Case 10:
+  getBestName({"ba","ba","cb","ae","d"}) = "ae"

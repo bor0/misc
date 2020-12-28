@@ -1,0 +1,1 @@
+public class LizardNicknames{public String getBestName(String[]n){java.util.Arrays.sort(n);for(String i:n)if(n[0].length()<i.length())n[0]=i;return n[0];}}

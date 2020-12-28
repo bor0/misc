@@ -1,0 +1,56 @@
+SumItUp
+
+For a given positive number N, calculate the sum of its digits.
+If the sum is less then 10, return that value. If not, (i.e. the sum is greater or equal to 10) 
+repeat the previous step until you have a number with only one digit.
+
+Example:
+N = 1598
+- first iteration (1598): 1+ 5 + 8 + 9 = 23
+- second iteration (23): 2 + 3 = 5
+So, if N is 1598, the function should return 5.  
+
+Input parameters:
+  N - integer, the starting number
+  
+Constraints:
+  N will be between 1 and 10000, inclusive. 
+  
+Return value:
+ int, the sum that contains only one digit. 
+
+Class Name:
+  SumItUp
+
+Method signature:
+  public int sum(int N)
+
+Test Case 1:
+  sum(1598) = 5
+
+Test Case 2:
+  sum(1) = 1
+
+Test Case 3:
+  sum(2) = 2
+
+Test Case 4:
+  sum(10) = 1
+
+Test Case 5:
+  sum(11) = 2
+
+Test Case 6:
+  sum(12) = 3
+
+Test Case 7:
+  sum(100) = 1
+
+Test Case 8:
+  sum(999) = 9
+
+Test Case 9:
+  sum(9999) = 9
+
+Test Case 10:
+  sum(10000) = 1

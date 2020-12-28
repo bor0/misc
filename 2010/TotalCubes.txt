@@ -1,0 +1,52 @@
+TotalCubes
+
+Find how many total cubes are there in the range from A to B, inclusive.
+
+An integer Y is total cube if it can be expressed as: Y = X*X*X, where X is also integer.
+The first total cubes are: 1, 8, 27, 64 ...
+
+Input parameters:
+  A, B - integer, the lower and the upper bounds.  
+
+Constraints:
+  A, B will have between 1 and 1000000 inclusive.
+  A will be less or equal to B (A<=B)
+  
+Return value:
+ int, the number of total cubes in the given range.
+
+Class Name:
+  TotalCubes
+
+Method signature:
+  public int howMany(int A, int B)
+
+Test Case 1:
+  howMany(1, 1) = 1
+
+Test Case 2:
+  howMany(1, 5) = 1
+
+Test Case 3:
+  howMany(5, 8) = 1
+
+Test Case 4:
+  howMany(1, 8) = 2
+
+Test Case 5:
+  howMany(1, 30) = 3
+
+Test Case 6:
+  howMany(10, 50) = 1
+
+Test Case 7:
+  howMany(100, 1000) = 6
+
+Test Case 8:
+  howMany(200, 500) = 2
+
+Test Case 9:
+  howMany(1000, 10000) = 12
+
+Test Case 10:
+  howMany(900000, 1000000) = 4

@@ -1,0 +1,11 @@
+				EN				MK
+Simple			I see you		Jas te gledam
+Past			I saw you		Jas te vidov
+Perfect			I have seen you	Jas te imam videno
+Perfect (old)	I am seen you	Jas sum te videl
+
+				EN				MK
+Simple			We meet			Se srekjavame
+Past			We met			Se sretnavme
+Perfect			We have met		Se imame sretnato
+Perfect (old)	We are met		Nie sme (se) sretnale

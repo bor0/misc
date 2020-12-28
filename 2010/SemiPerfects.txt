@@ -1,0 +1,72 @@
+Semi Perfects
+
+Every prime number has it's ordinal number. For example, the number 73 is the 21st prime number, and it's mirror, the number 37 is the 12th prime number.
+This property makes the numbers 73 and 37 perfect. However, there are a very few perfect numbers. 
+
+There are far more prime numbers, whose ordinal number is a palindrome. 
+We will call them semi-perfect. For example, the prime number 547 is semi-perfect, because it is the 101-st prime number. 
+Given two integers, start and end, find all the semi-perfect integers in the interval [start, end].
+
+Remember, number 2 is the 1st prime number (1 is not a prime number)
+
+e.g. 
+  Given start - 2 and end - 10, we have the following prime numbers in the range
+  2, 3, 5, 7
+  And their respective ordinal positions are 
+  1, 2, 3, 4
+  All of them are palindroms (normally as they are one digits), so the result is 4. 
+
+e.g.
+  Given start - 120 and end 150 the following prime numbers are in the range
+  127, 131, 137, 139, 149
+  and their ordinal positions are 
+  31, 32, 33, 34, 35
+  The only one which is palindrom is 33 (prime number 137), so the result is 1
+
+  
+Input parameters:
+  start - the start of the interval
+  end - the end of the interval
+
+Constraints:
+  start and end will be between 1 and 5000 inclusive.
+  end is bigger or equal than start
+
+
+Return value:
+  the count of semi-perfect numbers between start and end (inclusive)
+Class Name:
+  SemiPerfects
+
+Method signature:
+  public int count(int start, int end)
+
+Test Case 1:
+  count(120, 150) = 1
+
+Test Case 2:
+  count(1, 1) = 0
+
+Test Case 3:
+  count(1, 50) = 10
+
+Test Case 4:
+  count(100, 200) = 2
+
+Test Case 5:
+  count(563, 590) = 0
+
+Test Case 6:
+  count(2363, 2733) = 5
+
+Test Case 7:
+  count(1037, 4227) = 40
+
+Test Case 8:
+  count(875, 1601) = 11
+
+Test Case 9:
+  count(191, 1530) = 20
+
+Test Case 10:
+  count(1, 5000) = 75

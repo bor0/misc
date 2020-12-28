@@ -1,0 +1,66 @@
+ArraySum
+
+We are generating a one dimensional array in the following way:
+
+We start with 1 and each following element is formed as a sum of all previous elements.
+If the sum has 2 or more digits, we write them as separate elements. 
+Each element in the array is a number between 0 and 9 inclusive.
+
+An example how the array is being generated:
+
+1
+1,1
+1,1,2
+1,1,2,4
+1,1,2,4,8
+
+Now the sum of all previous elements is 16, so we add two new elements, 1 and 6
+1,1,2,4,8,1,6
+1,1,2,4,8,1,6,2,3
+1,1,2,4,8,1,6,2,3,2,8
+
+If the first digit is at position 0, find the digit at position N.
+
+Input parameters:
+ N - int, position in the array
+
+Constraints:
+ N will be between 0 and 100000000 (one hundred million) inclusive.
+
+Return value:
+ int - the element at position N
+Class Name:
+  ArraySum
+
+Method signature:
+  public int findDigit(int N)
+
+Test Case 1:
+  findDigit(0) = 1
+
+Test Case 2:
+  findDigit(2) = 2
+
+Test Case 3:
+  findDigit(4) = 8
+
+Test Case 4:
+  findDigit(6) = 6
+
+Test Case 5:
+  findDigit(8) = 3
+
+Test Case 6:
+  findDigit(10) = 8
+
+Test Case 7:
+  findDigit(73) = 7
+
+Test Case 8:
+  findDigit(40) = 7
+
+Test Case 9:
+  findDigit(11) = 3
+
+Test Case 10:
+  findDigit(5633960) = 2

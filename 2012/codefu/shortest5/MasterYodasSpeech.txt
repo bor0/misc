@@ -1,0 +1,69 @@
+MasterYodasSpeech
+
+"To fight this Lord Sidious, strong enough, you are not" - Yoda to Obi-Wan Kenobi, Star Wars Episode III
+
+Even though Master Yoda is a brilliant Jedi Master, his communication skills still need some work. Your 
+Jedi Knight colleagues have heard that you have received training in the ancient art of computer 
+programming and are now asking you for help. You will need to create a program that will take Master 
+Yoda’s speech and transform it to human-readable form. Namely, your program needs to split Master Yoda’s 
+sentence into parts delimited by comma characters and then construct a new sentence where the parts are in 
+inverted order. The new sentence should not contain any commas, its first letter should be capitalized and 
+all other letters should be lowercase. The new sentence should also not contain any whitespace characters 
+before the first word or after the last word, nor multiple consecutive whitespace characters.
+
+For example, this program would transform the quote above into “You are not strong enough to fight this 
+lord sidious”
+
+Note that “You are not” and “strong enough” belonged to different parts of Master Yoda’s sentence, therefore 
+they are separated by a single empty space in the result. 
+
+
+Input parameters:
+  sentence – a string containing the sentence spoken by Master Yoda
+  
+Constraints:
+  sentence will be no more than 1000 characters long.
+  Each character in sentence will be a comma, a empty space or lowercase (‘a’ - ‘z’) or uppercase letter (‘A’ - ‘Z’).
+  sentence will not contain consecutive empty spaces.
+  After every comma character, there will be no empty space characters.
+  Any two words will be separated either by a single empty space, or a comma and a single empty space.
+  At least one uppercase or lowercase letter will be present between any two comma characters.
+  The first and last characters in sentence will not be empty spaces or commas.
+
+Return value:
+  string - The human-readable version of Master Yoda’s sentence, containing no commas and with only the first letter capitalized.
+Class Name:
+  MasterYodasSpeech
+
+Method signature:
+  public String translateYoda(String sentence)
+
+Test Case 1:
+  translateYoda("To fight this Lord Sidious,strong enough,you are not") = "You are not strong enough to fight this lord sidious"
+
+Test Case 2:
+  translateYoda("Good relations with the Wookies,I have") = "I have good relations with the wookies"
+
+Test Case 3:
+  translateYoda("Wars not make one great") = "Wars not make one great"
+
+Test Case 4:
+  translateYoda("The shadow of greed,that is") = "That is the shadow of greed"
+
+Test Case 5:
+  translateYoda("If into the security recordings you go,only pain will you find") = "Only pain will you find if into the security recordings you go"
+
+Test Case 6:
+  translateYoda("Destroy the Sith,we must") = "We must destroy the sith"
+
+Test Case 7:
+  translateYoda("Twisted by the dark side,young Skywalker has become") = "Young skywalker has become twisted by the dark side"
+
+Test Case 8:
+  translateYoda("Judge me by my size,do you") = "Do you judge me by my size"
+
+Test Case 9:
+  translateYoda("Master Qui Gon,more to say,have you") = "Have you more to say master qui gon"
+
+Test Case 10:
+  translateYoda("Much anger in him,there is,like his father") = "Like his father there is much anger in him"

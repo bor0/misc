@@ -1,0 +1,53 @@
+HexPalindroms
+
+Palindrome is a string which is symmetrical when read from both start and end.
+Given a range of numbers, return the count of them which are palindromes when written in hexadecimal form.
+
+For example, range [2580, 2590] has one palindrome hexadecimal number 2586 or hex "a1a". 
+
+Input parameters:
+  start - start of the range (inclusive)
+  end - end of the range (inclusive)
+  
+Constraints:
+  start is between 1 and 100000 inclusive
+  end is between 1 and 100000 inclusive
+  end is equal or greater than start
+
+Return value:
+  int - The count of palindrome hexadecimal numbers from the given range
+Class Name:
+  HexPalindroms
+
+Method signature:
+  public int getHexPalindromes(int start, int end)
+
+Test Case 1:
+  getHexPalindromes(1, 1) = 1
+
+Test Case 2:
+  getHexPalindromes(1, 10) = 10
+
+Test Case 3:
+  getHexPalindromes(1, 15) = 15
+
+Test Case 4:
+  getHexPalindromes(1, 16) = 15
+
+Test Case 5:
+  getHexPalindromes(1, 100) = 20
+
+Test Case 6:
+  getHexPalindromes(32, 100) = 4
+
+Test Case 7:
+  getHexPalindromes(232, 435) = 14
+
+Test Case 8:
+  getHexPalindromes(482, 1023) = 33
+
+Test Case 9:
+  getHexPalindromes(80000, 90000) = 39
+
+Test Case 10:
+  getHexPalindromes(1, 100000) = 645

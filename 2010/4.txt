@@ -1,0 +1,82 @@
+Whoohoo
+
+Peter is taken to a fun park. There, he loves the field with the moving tracks. 
+Everytime when he steps on a track he goes "Whoohoo". However, he is limited in time to enjoy
+this field, so you need to help him to get the maximum joy possible.
+
+The field is represented as a square 2d array consisting of plain ground (marked with '.') 
+and tracks moving in a specific direction. These tracks can move Peter to the right (marked 
+with 'R'), left('L'), up('U') or down('D'). A single move from one cell to another takes one
+unit of time. Peter starts from position [0,0], and he has maxTime time units to get to 
+position [n-1][n-1], where n is the size of the array. Given the field map and the maximum 
+time allowed, return the maximum count of Whoohoos that Peter will shout. That is, the track 
+visit count.
+
+If no solution is possible, return -1. That is if Peter cannot get to position [n-1][n-1] in 
+the specified maximum time. 
+
+Example:
+Given the field:
+
+.R.      
+..D
+...
+
+that is {".R.","..D","..."} and maxTime=4. Peter goes right, shouting one Whoohoo on the 'R' 
+field. Then, he is taken to the right automatically, steps down, shouts Whoohoo again, 
+and gets to the end of the field. The (x,y,time) steps of this route are: (0,0,0), (0,1,1), (0,2,2),
+(1,2,3), (2,2,4). If maxTime is 6, then he can go back to one of the tracks and get an additional 
+Whoohoo. 
+
+note: One track can be visited none or more times. If a track forces Peter to get out
+of the field, he will not visit it.
+
+Input parameters:
+  map - String[], the field map.
+  maxTime - int, the maximum time allowed for Peter to stay in the field.
+
+Constraints:
+  map will contain from 2 to 10 elements inclusive
+  each element of map will have the same element count as map, forming a square matrix  
+  each element of map will be one of the following characters: '.', 'R', 'L', 'U', 'D'.
+  The start and the end positions are always plain ground (marked with '.')
+  maxTime will be between 1 and 100 inclusive.
+
+Return value:
+ int, the maximum Whoohoos that Peter can achieve.
+
+Class Name:
+  Whoohoo
+
+Method signature:
+  public int getCount(String[] map, int maxTime)
+
+Test Case 1:
+  getCount({"...",".D.","..."}, 16) = 7
+
+Test Case 2:
+  getCount({"....","....","....","...."}, 23) = 0
+
+Test Case 3:
+  getCount({"....L","....R","UDDDL","...R.","L...."}, 19) = 9
+
+Test Case 4:
+  getCount({"....U",".....","U....",".....","....."}, 13) = 2
+
+Test Case 5:
+  getCount({"..U..","U...R","..L..",".R..U","..R.."}, 10) = 3
+
+Test Case 6:
+  getCount({"...D.","D....",".D.DR",".UD.L",".D..."}, 25) = 10
+
+Test Case 7:
+  getCount({".....","DUD.D",".UD..","L..L.",".RD.."}, 8) = 1
+
+Test Case 8:
+  getCount({".D.L",".R..",".D.L","..D."}, 7) = -1
+
+Test Case 9:
+  getCount({".DU.","..U.","D...",".D.."}, 6) = 1
+
+Test Case 10:
+  getCount({"..U",".L.","D.."}, 6) = -1

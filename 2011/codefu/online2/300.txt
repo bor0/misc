@@ -1,0 +1,63 @@
+Positives
+
+Given several numbers, count how many different results bigger or equal than 0 can you produce by only 
+using addition (+) and substraction (-). All the numbers must be used.
+
+e.g. Given {2,3,1}:
+
+2+3+1 = 6
+2+3-1 = 4
+2-3+1 = 0
+2-3-1 = -2 (negative)
+-2+3+1 = 2
+-2+3-1 = 0 (double)
+-2-3+1 = -4 (negative)
+-2-3-1 = - 6 (negative)
+
+
+The result is 4.
+  
+Input parameters:
+  numbers - an array of integers, representing the numbers which will be processed
+  
+Constraints:
+  numbers will have between 1 and 50 elements inclusive
+  each element of numberes will be between 1 and 100 inclusive
+
+Return value:
+  int - the count of the all the possible positive outcomes of the operations
+Class Name:
+  Positives
+
+Method signature:
+  public int getPositiveCount(int[] numbers)
+
+Test Case 1:
+  getPositiveCount({2,3,1}) = 4
+
+Test Case 2:
+  getPositiveCount({3,2,1}) = 4
+
+Test Case 3:
+  getPositiveCount({13,2,17,11,18}) = 14
+
+Test Case 4:
+  getPositiveCount({9,18,19,13,17,2,10,4,11,6}) = 51
+
+Test Case 5:
+  getPositiveCount({18,10,5,8,4,14,19,2,17}) = 47
+
+Test Case 6:
+  getPositiveCount({7,20,11,7}) = 6
+
+Test Case 7:
+  getPositiveCount({12,8,2,6,14,1,14,9}) = 32
+
+Test Case 8:
+  getPositiveCount({14,17,3,15,19,4,18}) = 31
+
+Test Case 9:
+  getPositiveCount({2,11}) = 2
+
+Test Case 10:
+  getPositiveCount({16,4,15,5,13,1,16,10,17}) = 44

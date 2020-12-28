@@ -1,0 +1,61 @@
+SplitVowels
+
+Given a sentence, we want to rewrite all words by moving all their vowels at the end of the words.
+
+e.g.
+ "Hello World"
+would become
+ "Hlleo Wrldo"
+
+Each sentence will consist of one or more words, with blank characters separating the words.
+There may be multiple consecutive blank characters, also at the beginning or end of the sentence, and they must be preserved.
+In the process of moving vowels, all characters must retain their case.
+The order of vowels is important, they should have the same order as in the original word.
+
+Vowels are the characters: 'A', 'E', 'I', 'O', 'U', 'Y', 'a', 'e', 'i', 'o', 'u', 'y'.
+IMPORTANT: 'Y' is also counted as a vowel.
+
+Input parameters:
+  sentence - Sentence of words.
+  
+Constraints:
+  sentence will be between 2 and 1000 characters long.
+  sentence will consist of a blanks ' ', upper 'A' to 'Z' and small letter characters 'a' to 'z' inclusive.
+
+Return:
+  The sentence with split vowels.
+Class Name:
+  SplitVowels
+
+Method signature:
+  public String split(String sentence)
+
+Test Case 1:
+  split("Hello World") = "Hlleo Wrldo"
+
+Test Case 2:
+  split("Heeelo") = "Hleeeo"
+
+Test Case 3:
+  split("a") = "a"
+
+Test Case 4:
+  split("   a   ") = "   a   "
+
+Test Case 5:
+  split("aaaaaa") = "aaaaaa"
+
+Test Case 6:
+  split("xxxxxx") = "xxxxxx"
+
+Test Case 7:
+  split("a            axa") = "a            xaa"
+
+Test Case 8:
+  split("o oo o") = "o oo o"
+
+Test Case 9:
+  split("This is a long sentence") = "Thsi si a lngo sntnceee"
+
+Test Case 10:
+  split("  Aaron   Spelling    ") = "  rnAao   Spllngei    "

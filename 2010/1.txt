@@ -1,0 +1,61 @@
+Deuce
+
+Deuce is a simple game with cards in which the winner is the one who gets the Two Clubs card 
+(marked "2C"). The gameplay is simple. The cards in order are given one by one to the players. 
+Each player gets one card in a turn. If all players have a card infront of them, they flip it 
+and check if they have the Two Clubs. If not, these cards are put aside and another turn 
+begins. The game ends when the Two Club is found, when there are no more cards to deal or if 
+there are less cards available in the deck than the number of players.
+
+You are given a string representing the cards as they are the deck and the total number of 
+players. Each card is represented by 2 consecutive characters: the card number (1-9,A for 10, J,Q,K)
+and the card sign (C for Clubs, D for Diamonds, H for Hearts and S for Spades). Return the player 
+number who wins the game, or -1 if none of the players gets the Two Clubs card. If there are n 
+players, their numbers are 0, 1, 2, ..., n-1.
+
+Input parameters:
+  cards - String, the cards as they are sorted before the game starts.
+  numPlayers - int, the total number of players in the game.
+
+Constraints:
+  cards will consist of exactly 104 characters.
+  numPlayers will be between 2 and 10 inclusive.
+
+Return value:
+ int, the winner of the game (zero based)
+
+Class Name:
+  Deuce
+
+Method signature:
+  public int getWinner(String cards, int numPlayers)
+
+Test Case 1:
+  getWinner("8S8D4D1SJCQC2C4S6H4C6DJS2S1C6CQD7H2DASQH9SJD5H2HAD3H3S4H9DKC1D7SJH3C5DAH5CAC7C6SQS1H8H9C5S3DKDKH8CKS9H7D", 6) = 0
+
+Test Case 2:
+  getWinner("7HJH3S1D5D1S8DQC8HQSKH9D6C1C4SQH2S9S5C4C2H7C8C5H6SKDJC7DQD5S3D6D9CJS3H2D3CAS7SAC2CKS9H4HADJD4DAHKC8S1H6H", 3) = 1
+
+Test Case 3:
+  getWinner("7CACQH8H4H5CKCQSJH5SJS2D9CQD8D2CASQC6H7H1C2S9SAH8S3H6D1H7S3D4S9D1SKSJC3CJD7D2H5D4CKH6S8C5H1D4DADKD3S9H6C", 9) = 6
+
+Test Case 4:
+  getWinner("QD8CQCJD5H9H7DJCAH4C8H1C8SJSKCKS2S4DKH1S9D3C9C7H5D9S8D2H7CAC6C6SKD1H6HQH2D3S4SQSJH3D3HAD5C7S5S1DAS6D2C4H", 6) = -1
+
+Test Case 5:
+  getWinner("2CAH4C6C5H1H2S7H3S9H2D9S1D4SKS7S1C9CKH2H6SQSKC3DJH6D9DQDKDJSQCJD8DAD3C6H8S5D5S3H7D4D7C8H4HJCAS8CAC5CQH1S", 9) = 0
+
+Test Case 6:
+  getWinner("8S3S7D9H3CQHACQD1D8D8HKSJS6D7S5H9D5SAS6S2H4DKHJDJH2SQS4SQC3D4C7C9CJC1CKDKC1S1H9S7H2D4H2CAD8C6H5C6CAH3H5D", 4) = 3
+
+Test Case 7:
+  getWinner("6SKS3D1D3CKC1H5HJD1S2CAHQS3H2S3S4S9D4C9H1C7C7S6H5C8H6DKH8S5D9C4DQHJSJHACKD8CAS7D8D9SQC5S2DJC2H7HAD4HQD6C", 3) = 1
+
+Test Case 8:
+  getWinner("7SAD7D9D6HQS3S5DQC4D1S2H1H3C4C2C1D5C9SJS9H6D8D8HJCJD7C6S1C2S5HKD5S6C2D7HQDKHAS8SQHKS3D3H4H8C9CJHAC4SKCAH", 8) = 7
+
+Test Case 9:
+  getWinner("8H5C1C9D3S4DKC9C6SQH9SQS7SACKH4H1D3DASKS6C8C1H7D7C9H2C8DQD4SJC3C6DQCAH5S5D2D2HJH7HJSADKDJD1S4C8S6H5H2S3H", 5) = 1
+
+Test Case 10:
+  getWinner("5D3C2H8DQCJD7S2CQHQD8H1H3S7DKD2SQSKC5SAC7HJC3DKS9CAS4CKH1S8C6C9H2DAD9S6S5C4D4S7CJH6D1DAHJS4H3H8S9D1C6H5H", 7) = 0

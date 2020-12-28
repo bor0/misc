@@ -1,0 +1,1 @@
+public class BinaryGame{String g;int a(int i,int j){return Integer.valueOf(g.substring(i,j),2);}public int getMaxProduct(String b){int i=0,m=0,j,l=b.length(),n;for(g=b;i<l;)for(j=++i+1;j<l;)if((n=a(0,i)*a(i,j)*a(j++,l))>m)m=n;return m;}}

@@ -1,0 +1,59 @@
+AlternativePermutation
+
+Given a permutation of numbers from 0 to n, return the alternative permutation described as:
+the number at position i in the newly created permutation is the position of the element i in the original permutation.
+
+Example:
+Given "1 4 2 0 3"
+0 is at position 3
+1 is at position 0
+2 is at position 2
+3 is at position 4
+4 is at position 1
+so the result is "3 0 2 4 1"
+
+Input parameters:
+  permutation - the original permutation in string format
+  
+Constraints:
+  permutation will be string formed of the permuted numbers from 0 to n
+  there will be exactly one blank space between each pair of numbers in permutation
+  n will be between 1 and 15 inclusive.
+
+Return value:
+  String - The alternative permutation as described above.
+Class Name:
+  AlternativePermutation
+
+Method signature:
+  public String getAlternative(String permutation)
+
+Test Case 1:
+  getAlternative("9 7 3 4 5 0 10 2 6 1 8") = "5 9 7 2 3 4 8 1 10 0 6"
+
+Test Case 2:
+  getAlternative("5 4 3 1 6 2 0") = "6 3 5 2 1 0 4"
+
+Test Case 3:
+  getAlternative("2 0 3 1 4 5") = "1 3 0 2 4 5"
+
+Test Case 4:
+  getAlternative("0 1") = "0 1"
+
+Test Case 5:
+  getAlternative("7 10 12 11 0 1 8 9 3 5 2 4 6") = "4 5 10 8 11 9 12 0 6 7 1 3 2"
+
+Test Case 6:
+  getAlternative("4 1 3 5 2 0") = "5 1 4 2 0 3"
+
+Test Case 7:
+  getAlternative("2 7 5 0 4 6 3 1") = "3 7 0 6 4 2 5 1"
+
+Test Case 8:
+  getAlternative("0 1 2") = "0 1 2"
+
+Test Case 9:
+  getAlternative("9 3 5 10 4 0 6 1 7 8 2") = "5 7 10 1 4 2 6 8 9 0 3"
+
+Test Case 10:
+  getAlternative("2 1 0") = "2 1 0"

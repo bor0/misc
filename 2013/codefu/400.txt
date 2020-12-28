@@ -1,0 +1,65 @@
+Clean the Bits
+
+The input consists of two strings containing the characters '1' and '0'. 
+In each step, a character must be removed from the beginning (from the left side) of one of those strings. 
+Characters must be removed alternatively i.e. if in the last turn we removed '1', 
+this turn we must remove '0', and so on. 
+
+We always start by removing the character '1' first.
+
+The output should be a string that represents the order of removals. 
+If a character from the first string is removed, then '1' is appended on the output string, 
+and if the removal is from the second string, then '2' should be appended.
+
+If there are several possible answers, return the lexicographically smallest string.
+
+Example:
+If the input arrays are "001110" and "101100",
+then the result will be "222121121211".
+
+Input parameters:
+  firstArray - the first array
+  secondArray - the second array
+  
+Constraints
+  firstArray and secondArray will be between 1 and 50 characters inclusive.
+  firstArray and secondArray will only contain the characters '1' and '0'.
+  There will always be at least one solution to remove all characters by alternating '1' and '0'.
+  
+Return value:
+  String representing the order of the removal.
+Class Name:
+  BitCleanup
+
+Method signature:
+  public String cleanBits(String firstArray, String secondArray)
+
+Test Case 1:
+  cleanBits("1", "0") = "12"
+
+Test Case 2:
+  cleanBits("10", "10") = "1122"
+
+Test Case 3:
+  cleanBits("11", "00") = "1212"
+
+Test Case 4:
+  cleanBits("00", "11") = "2121"
+
+Test Case 5:
+  cleanBits("0101", "1010") = "21111222"
+
+Test Case 6:
+  cleanBits("0010", "1011") = "22212111"
+
+Test Case 7:
+  cleanBits("001110", "101100") = "222121121211"
+
+Test Case 8:
+  cleanBits("010100", "110011") = "211122122121"
+
+Test Case 9:
+  cleanBits("111010", "100010") = "221212111122"
+
+Test Case 10:
+  cleanBits("1001010100101011", "1011100101101000") = "11211111122121112212222122221212"

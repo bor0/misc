@@ -1,0 +1,62 @@
+HighestCharacter
+
+Given a set of strings we need to find the string that has the highest ascii value character.
+If more than one string has the highest character, then return the one among them that has the highest next value character.
+Continue until one string has highest character.
+If there is no such one string, and multiple strings have the same characters, then return thed one which comes lexicographically first.
+The strings don't have duplicate characters, all their characters appear only once in them
+
+e.g. 
+  Given a set "a", "b", "d", "abxyz", "abcxyz"
+  The strings "abxyz" and "abcxyz" have the highest ascii charactes "z"
+  They also have the next highest "y" and the next highest "x"
+  But then the string "abcxyz" has the next highest characters "c", so the result is "abcxyz"
+
+Return the string with the highest ascii characters
+
+Input parameters:
+  strings - set of strings
+  
+Constraints:
+  strings will contain between 1 and 50 elements inclusive
+  each string in strings will be between 1 and 20 characters long
+  all the characters that are used are [a-z]
+  no character will appear twice in the same string
+
+Return value:
+  The highest character string
+Class Name:
+  HighestCharacter
+
+Method signature:
+  public String highest(String[] strings)
+
+Test Case 1:
+  highest({"a"}) = "a"
+
+Test Case 2:
+  highest({"a","b"}) = "b"
+
+Test Case 3:
+  highest({"b","a"}) = "b"
+
+Test Case 4:
+  highest({"a","b","c","d","e"}) = "e"
+
+Test Case 5:
+  highest({"e","a","b","c","d","e"}) = "e"
+
+Test Case 6:
+  highest({"ab","ba"}) = "ab"
+
+Test Case 7:
+  highest({"ba","ab"}) = "ab"
+
+Test Case 8:
+  highest({"helo","world"}) = "world"
+
+Test Case 9:
+  highest({"abehd","laser","elsopcn","bnopsd","xczsw","jhsozwe","asdf"}) = "xczsw"
+
+Test Case 10:
+  highest({"a","b","d","abxyz","abcxyz"}) = "abcxyz"

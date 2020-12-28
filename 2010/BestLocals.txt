@@ -1,0 +1,66 @@
+BestLocals
+
+The HR department of a company started interviewing people. The boss just told them one
+principle: from each area of the state, choose the best candidate. The outcome of the
+interviews is a list of the persons names and points that each of them has
+achieved. These lists are sorted by the areas from which the persons came from. Given
+the starting and end index of the area, return the name of the best candidate (that is
+the candidate with most points). In case that there one two or more candidates with the
+same maximum points, return the first one of them in the list.
+
+You are given two arrays: int []points and String []names. Each element od points[i]
+are the points achieved by the candidate with name names[i]. Start and end are the
+inclusive indexes of the candidates living in one area. 
+
+Input parameters:
+  points - array of integers, the candidates's points
+  names - array of strings, the candidates's names
+  start - the start index of an area
+  end - the end index of an area
+
+Constraints:
+  points will have between 2 and 50 elements inclusive
+  each element of points will have between 1 and 50 inclusive
+  names will have the same element count as points
+  each element of names will be between 1 and 10 characters inclusive
+  start will be between 0 and (points.length - 2)
+  end will be between (start + 1) and (points.length - 1)
+  
+Return value:
+ String, the chosen candidates name
+
+Class Name:
+  BestLocals
+
+Method signature:
+  public String getLocalBest(int[] points, String[] names, int start, int end)
+
+Test Case 1:
+  getLocalBest({31,35,24,34,17,7}, {"o","UjN","CL","wAxFh","t","itX"}, 1, 5) = "UjN"
+
+Test Case 2:
+  getLocalBest({47,18,43,9,50}, {"B","Y","if","Lft","UXe"}, 0, 2) = "B"
+
+Test Case 3:
+  getLocalBest({31,35,27,34,3,29,42,15,10,25,46}, {"W","JJAbu","mQIc","urmQf","lgwx","kXv","rCCjl","tQinL","CgOr","UyZe","pikH"}, 3, 6) = "rCCjl"
+
+Test Case 4:
+  getLocalBest({38,16,9,22,17,21,47,14,31,30,17,44}, {"eFrU","dgUoz","gdhYR","rwVg","Hw","WZHa","cqwEy","ZUXZL","FS","gGX","Gv","l"}, 4, 5) = "WZHa"
+
+Test Case 5:
+  getLocalBest({41,6,27,8,21,11,16,47,15,36,26,30}, {"A","ziMN","SmUv","N","dHKGH","ctW","Idys","AfU","f","wQfD","j","b"}, 1, 11) = "AfU"
+
+Test Case 6:
+  getLocalBest({36,17,19,12,26,12,24,16,20,39,12,36}, {"Qau","y","fyMc","rJ","u","c","Wjrtw","eb","GRGY","kEwWi","AyNYi","AvuA"}, 6, 10) = "kEwWi"
+
+Test Case 7:
+  getLocalBest({46,11,18,41,13,27,33}, {"VIs","Hfj","S","h","AwoB","BL","VE"}, 0, 2) = "VIs"
+
+Test Case 8:
+  getLocalBest({33,50,37,32,4,32,27,1,5,48,28,17}, {"ZwJ","RHt","CvlC","LZGn","KyeBP","ccnjr","c","m","SnHQ","NiS","bu","peW"}, 0, 9) = "RHt"
+
+Test Case 9:
+  getLocalBest({46,23,2,23,50,43,28,27}, {"Kh","peKbn","gihhg","AgM","OjRO","wdxyi","g","W"}, 4, 6) = "OjRO"
+
+Test Case 10:
+  getLocalBest({22,39,9,5,46,6,25,18,5,30}, {"jhVwj","cdEM","VlG","bfTs","bo","ln","wYpFl","rXoqE","nlIg","mJyZ"}, 0, 3) = "cdEM"

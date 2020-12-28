@@ -1,0 +1,62 @@
+FibonacciBits
+
+Lets say that a that there is a Fibonacci function f(x) that returns true if the number 
+of ones ('1') in a binary representation of x is a digit in the fibonacci sequence (1,1,2,3,5,8...). 
+
+For a given start value and end value, determine the count of numbers that return true.
+
+Example: 
+If the start number is 14 and the end number is 17:
+f(14) = true (1110 so we have 3 'ones')
+f(15) = false (1111 so we have 4 'ones')
+f(16) = true (10000 so we have 1 'one')
+f(17) = true (10001 so we have 2 'ones')
+
+so the result is 3.
+
+Input parameters:
+  S - integer, the start value
+  E - integer, the end value
+
+Constraints:
+  - S,E will be between 0 and 2^31 inclusive.
+  - S will be less than or equal to E
+
+Return value:
+ int, amount of number that return true for f(x)
+
+Class Name:
+  FibonacciBits
+
+Method signature:
+  public int modernFibonacci(int S, int E)
+
+Test Case 1:
+  modernFibonacci(1, 10) = 10
+
+Test Case 2:
+  modernFibonacci(4, 4) = 1
+
+Test Case 3:
+  modernFibonacci(10, 20) = 10
+
+Test Case 4:
+  modernFibonacci(21, 25) = 4
+
+Test Case 5:
+  modernFibonacci(10, 30) = 16
+
+Test Case 6:
+  modernFibonacci(1, 636) = 328
+
+Test Case 7:
+  modernFibonacci(222, 11584) = 3990
+
+Test Case 8:
+  modernFibonacci(529, 149104) = 38606
+
+Test Case 9:
+  modernFibonacci(21, 368412) = 85516
+
+Test Case 10:
+  modernFibonacci(401, 239671) = 57613
