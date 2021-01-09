@@ -12,7 +12,7 @@ if T v2 v3 -> v2'
 
     v3 -> v3'
 ----------------- (E-IfFalse)
-if T v2 v3 -> v3'
+if F v2 v3 -> v3'
 
          v1 -> v1'
 --------------------------- (E-If)
@@ -22,18 +22,21 @@ if v1 v2 v3 -> if v1' v2 v3
 ------------------- (E-Succ)
 succ v1 -> succ v1'
 
+----------- (E-PredZero)
+pred O -> O
+
 ------------------ (E-PredSucc)
-pred (succ k) -> k
+pred (succ v) -> v
 
      v1 -> v1'
 ------------------- (E-Pred)
 pred v1 -> pred v1'
 
---------------- (E-IsZeroZero)
-is-zero 'O -> T
+-------------- (E-IsZeroZero)
+is-zero O -> T
 
 --------------------- (E-IsZeroSucc)
-is-zero (succ v) -> T
+is-zero (succ v) -> F
 
         v1 -> v1'
 ------------------------- (E-IsZero)
@@ -84,17 +87,17 @@ t1 : TBool, t2 : T, t3 : T
 -------------------------- (T-If)
      if t1 t2 t3 : T
 
-  t1 : TNat
--------------- (T-Succ)
-succ t1 : TNat
+  t : TNat
+------------- (T-Succ)
+succ t : TNat
 
-  t1 : TNat
--------------- (T-Pred)
-pred t1 : TNat
+  t : TNat
+------------- (T-Pred)
+pred t : TNat
 
-    t1 : TNat
------------------- (T-IsZero)
-is-zero t1 : TBool
+    t : TNat
+----------------- (T-IsZero)
+is-zero t : TBool
 
 |#
 (define (type-of expr)
