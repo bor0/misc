@@ -2,6 +2,8 @@
 -- Writing it in Haskell is different though - we play more at the value level.
 import qualified Data.Map as M
 
+type Context = M.Map Char Integer
+
 data Aexp =
   ANum Integer
   | AId Char
@@ -26,8 +28,6 @@ data Command =
   | CIfElse Bexp Command Command
   | CWhile Bexp Command
   deriving (Show)
-
-type Context = M.Map Char Integer
 
 aeval :: Context -> Aexp -> Integer
 aeval ctx (AId v)        = ctx M.! v -- element may not exist
@@ -68,3 +68,21 @@ fact_X =
   in CSeq l1 (CSeq l2 l3)
 
 fact_n n = eval (M.fromList [('X', n)]) fact_X
+
+-- This will make fact_X more readable, but what about a proof?
+-- TODO: Use QuickCheck or something as a "proof"
+instance Semigroup Command where
+  a <> b = CSeq a b
+
+instance Monoid Command where
+  mempty = CSkip
+
+fact_X' = mempty
+  `mappend` CAss 'Z' (AId 'X')
+  `mappend` CAss 'Y' (ANum 1)
+  `mappend` CWhile (BNot (BEq (AId 'Z') (ANum 0))) (mempty
+     `mappend` CAss 'Y' (AMult (AId 'Y') (AId 'Z'))
+     `mappend` CAss 'Z' (AMinus (AId 'Z') (ANum 1)
+  ))
+
+fact_n' n = eval (M.fromList [('X', n)]) fact_X
