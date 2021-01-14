@@ -53,6 +53,11 @@ eval ctx (CWhile b c)      = if beval ctx b
                              then let ctx' = eval ctx c in eval ctx' (CWhile b c)
                              else ctx
 
+hoare :: Context -> Bexp -> Command -> Bexp -> Bool
+hoare ctx boolPre cmd boolPost =
+  beval ctx boolPre &&
+  beval (eval ctx cmd) boolPost
+
 -- Calculate factorial of X
 fact_X =
   -- Z := X
@@ -66,6 +71,12 @@ fact_X =
      -- Z := Z - 1
       l5 = CAss 'Z' (AMinus (AId 'Z') (ANum 1))
   in CSeq l1 (CSeq l2 l3)
+
+fact_Proof = hoare
+  (M.fromList [('X', 5)])
+  (BEq (ANum 5) (AId 'X'))
+  fact_X
+  (BEq (ANum 120) (AId 'Y'))
 
 fact_n n = eval (M.fromList [('X', n)]) fact_X
 
