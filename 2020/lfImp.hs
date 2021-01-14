@@ -53,6 +53,7 @@ eval ctx (CWhile b c)      = if beval ctx b
                              then let ctx' = eval ctx c in eval ctx' (CWhile b c)
                              else ctx
 
+-- TODO: Bring this at the object level?
 hoare :: Context -> Bexp -> Command -> Bexp -> Bool
 hoare ctx boolPre cmd boolPost =
   beval ctx boolPre &&
