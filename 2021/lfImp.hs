@@ -2,6 +2,7 @@
 -- Writing it in Haskell is different though - we play more at the value level.
 import qualified Data.Map as M
 import Data.Maybe (fromJust)
+import Data.Either
 
 type Context = M.Map Char Integer
 
@@ -28,6 +29,7 @@ data Command =
   | CSeq Command Command
   | CIfElse Bexp Command Command
   | CWhile Bexp Command
+  | CAssert Bexp Command Bexp
   deriving (Show)
 
 aeval :: Context -> Aexp -> Integer
@@ -53,6 +55,31 @@ eval ctx (CIfElse b c1 c2) = eval ctx $ if beval ctx b then c1 else c2
 eval ctx (CWhile b c)      = if beval ctx b
                              then let ctx' = eval ctx c in eval ctx' (CWhile b c)
                              else ctx
+eval ctx _                 = error "Undefined: maybe try other eval functions"
+
+eval' :: Context -> Command -> Either String Context
+eval' ctx CSkip             = Right ctx
+eval' ctx (CAss c v)        = Right $ M.insert c (aeval ctx v) ctx
+eval' ctx (CSeq c1 c2)      = let ctx' = eval' ctx c1 in whenRight ctx' (\ctx'' -> eval' ctx'' c2)
+eval' ctx (CIfElse b c1 c2) = eval' ctx $ if beval ctx b then c1 else c2
+eval' ctx (CWhile b c)      = if beval ctx b
+                              then let ctx' = eval' ctx c in whenRight ctx' (\ctx'' -> eval' ctx'' c)
+                              else Right ctx
+eval' ctx (CAssert b1 c b2) =
+  if beval ctx b1
+  then whenRight (eval' ctx c)
+       (\ctx'' -> if beval ctx'' b2
+                  then Right ctx''
+                  else Left "Post-condition does not match!")
+  else Left "Pre-condition does not match!"
+
+whenRight :: Either a t -> (t -> Either a b) -> Either a b
+whenRight (Right x) f = f x
+whenRight (Left x)  _ = Left x
+
+whenLeft :: Either t b -> (t -> Either a b) -> Either a b
+whenLeft (Left x) f   = f x
+whenLeft (Right x)  _ = Right x
 
 -- Calculate factorial of X
 fact_X =
