@@ -1,6 +1,7 @@
 -- I implemented `Imp.v` from Logical Foundations at the type level in Coq.
 -- Writing it in Haskell is different though - we play more at the value level.
 import qualified Data.Map as M
+import Data.Maybe (fromJust)
 
 type Context = M.Map Char Integer
 
@@ -10,7 +11,7 @@ data Aexp =
   | APlus Aexp Aexp
   | AMinus Aexp Aexp
   | AMult Aexp Aexp
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Bexp =
   BTrue
@@ -19,7 +20,7 @@ data Bexp =
   | BLe Aexp Aexp
   | BNot Bexp
   | BAnd Bexp Bexp
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Command =
   CSkip
@@ -53,12 +54,6 @@ eval ctx (CWhile b c)      = if beval ctx b
                              then let ctx' = eval ctx c in eval ctx' (CWhile b c)
                              else ctx
 
--- TODO: Bring this at the object level?
-hoare :: Context -> Bexp -> Command -> Bexp -> Bool
-hoare ctx boolPre cmd boolPost =
-  beval ctx boolPre &&
-  beval (eval ctx cmd) boolPost
-
 -- Calculate factorial of X
 fact_X =
   -- Z := X
@@ -73,28 +68,46 @@ fact_X =
       l5 = CAss 'Z' (AMinus (AId 'Z') (ANum 1))
   in CSeq l1 (CSeq l2 l3)
 
-fact_Proof = hoare
+assert :: Context -> Bexp -> Command -> Bexp -> Bool
+assert ctx boolPre cmd boolPost =
+  beval ctx boolPre &&
+  beval (eval ctx cmd) boolPost
+
+fact_Proof = assert
   (M.fromList [('X', 5)])
   (BEq (ANum 5) (AId 'X'))
   fact_X
   (BEq (ANum 120) (AId 'Y'))
 
-fact_n n = eval (M.fromList [('X', n)]) fact_X
+data HoareTriple =
+  HoareTriple Bexp Command Bexp
+  deriving (Show)
 
--- This will make fact_X more readable, but what about a proof?
--- TODO: Use QuickCheck or something as a "proof"
-instance Semigroup Command where
-  a <> b = CSeq a b
+-- Q[E/V] is the result of replacing in Q all occurrences of V by E
+substAssignment :: Bexp -> Aexp -> Char -> Bexp
+substAssignment q@(BEq (AId x) y) e v
+  | x == v    = BEq e y
+  | otherwise = q
+substAssignment q@(BEq x (AId y)) e v
+  | y == v    = BEq e (AId y)
+  | otherwise = q
+substAssignment q _ _ = q
 
-instance Monoid Command where
-  mempty = CSkip
+hoareAssignment :: Command -> Bexp -> Maybe HoareTriple
+hoareAssignment (CAss v e) q = Just $ HoareTriple (substAssignment q e v) (CAss v e) q
+hoareAssginment _ _ = Nothing
 
-fact_X' = mempty
-  `mappend` CAss 'Z' (AId 'X')
-  `mappend` CAss 'Y' (ANum 1)
-  `mappend` CWhile (BNot (BEq (AId 'Z') (ANum 0))) (mempty
-     `mappend` CAss 'Y' (AMult (AId 'Y') (AId 'Z'))
-     `mappend` CAss 'Z' (AMinus (AId 'Z') (ANum 1)
-  ))
+eg1 = hoareAssignment (CAss 'X' (ANum 3)) (BEq (AId 'X') (ANum 3))
 
-fact_n' n = eval (M.fromList [('X', n)]) fact_X
+hoareSkip :: Command -> Bexp -> Maybe HoareTriple
+hoareSkip (CSkip) q = Just $ HoareTriple q CSkip q
+hoareSkip _ _ = Nothing
+
+eg2 = hoareSkip CSkip (BEq (AId 'X') (ANum 3))
+
+hoareSequence :: HoareTriple -> HoareTriple -> Maybe HoareTriple
+hoareSequence (HoareTriple p c1 q1) (HoareTriple q2 c2 r)
+    | q1 == q2  = Just $ HoareTriple p (CSeq c1 c2) r
+    | otherwise = Nothing
+
+eg3 = hoareSequence (fromJust eg1) (fromJust eg2)
