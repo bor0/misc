@@ -134,7 +134,7 @@ eg2 = hoareSkip CSkip (BEq (AId 'X') (ANum 3))
 
 hoareSequence :: HoareTriple -> HoareTriple -> Maybe HoareTriple
 hoareSequence (HoareTriple p c1 q1) (HoareTriple q2 c2 r)
-    | q1 == q2  = Just $ HoareTriple p (CSeq c1 c2) r
-    | otherwise = Nothing
+  | q1 == q2  = Just $ HoareTriple p (CSeq c1 c2) r
+  | otherwise = Nothing
 
 eg3 = hoareSequence (fromJust eg1) (fromJust eg2)
