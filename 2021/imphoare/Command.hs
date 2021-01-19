@@ -16,11 +16,11 @@ data Command =
   | CAssert Bexp Command Bexp
 
 instance Show Command where
-  show CSkip = ";"
-  show (CAss x y) = [x] ++ " := " ++ show y ++ ";"
-  show (CSeq x y) = show x ++ ";" ++ show y ++ ";"
+  show CSkip           = ";"
+  show (CAss x y)      = [x] ++ " := " ++ show y ++ ";"
+  show (CSeq x y)      = show x ++ ";" ++ show y ++ ";"
   show (CIfElse x y z) = "(If (" ++ show x ++ ") Then (" ++ show y ++ ") Else (" ++ show z ++ "));"
-  show (CWhile x y) = "(While (" ++ show x ++ ") Do {" ++ show y ++ "});"
+  show (CWhile x y)    = "(While (" ++ show x ++ ") Do {" ++ show y ++ "});"
   show (CAssert x y z) = "(Assert {" ++ show x ++ "} (" ++ show y ++ ") {" ++ show z ++ "});"
 
 aeval :: Context -> Aexp -> Integer

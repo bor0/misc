@@ -9,11 +9,11 @@ data Aexp =
   deriving (Eq)
 
 instance Show Aexp where
-  show (ANum x) = show x
-  show (AId x)  = [x]
-  show (APlus x y) = show x ++ " + " ++ show y
+  show (ANum x)     = show x
+  show (AId x)      = [x]
+  show (APlus x y)  = show x ++ " + " ++ show y
   show (AMinus x y) = show x ++ " - " ++ show y
-  show (AMult x y) = show x ++ " * " ++ show y
+  show (AMult x y)  = show x ++ " * " ++ show y
 
 aoptimize :: Aexp -> Aexp
 aoptimize (APlus (ANum a1) (ANum a2))  = ANum (a1 + a2)

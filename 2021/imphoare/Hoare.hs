@@ -13,12 +13,12 @@ instance Show HoareTriple where
 -- | Hoare skip rule
 hoareSkip :: Command -> Bexp -> Maybe HoareTriple
 hoareSkip CSkip q = Just $ HoareTriple q CSkip q
-hoareSkip _ _ = Nothing
+hoareSkip _ _     = Nothing
 
 -- | Hoare assignment rule
 hoareAssignment :: Command -> Bexp -> Maybe HoareTriple
 hoareAssignment (CAss v e) q = Just $ HoareTriple (substAssignment (boptimize q) (aoptimize e) v) (CAss v e) q
-hoareAssginment _ _ = Nothing
+hoareAssginment _ _          = Nothing
 
 -- Q[E/V] is the result of replacing in Q all occurrences of V by E
 substAssignment :: Bexp -> Aexp -> Char -> Bexp
@@ -34,7 +34,7 @@ substAssignment q _ _ = q
 hoareSequence :: HoareTriple -> HoareTriple -> Maybe HoareTriple
 hoareSequence (HoareTriple p c1 q1) (HoareTriple q2 c2 r)
   | boptimize q1 == boptimize q2 = Just $ HoareTriple p (CSeq c1 c2) r
-  | otherwise = Nothing
+  | otherwise                    = Nothing
 
 -- | Hoare conditional rule
 hoareConditional :: HoareTriple -> HoareTriple -> Maybe HoareTriple
@@ -46,12 +46,12 @@ hoareConditional (HoareTriple (BAnd p1 b1) c1 q1) (HoareTriple (BAnd (BNot p2) b
   | boptimize b1 == boptimize b2 &&
     boptimize p1 == boptimize p2 &&
     boptimize q1 == boptimize q2 = Just $ HoareTriple p1 (CIfElse b1 c1 c2) q1
-  | otherwise = Nothing
+  | otherwise                    = Nothing
 hoareConditional _ _ = Nothing
 
 -- | Hoare while rule
 hoareWhile :: HoareTriple -> Maybe HoareTriple
 hoareWhile (HoareTriple (BAnd p1 b) c p2)
-  | p1 == p2 = Just $ HoareTriple p1 (CWhile b c) (BAnd (BNot b) p2)
+  | p1 == p2  = Just $ HoareTriple p1 (CWhile b c) (BAnd (BNot b) p2)
   | otherwise = Nothing
 hoareWhile _ = Nothing

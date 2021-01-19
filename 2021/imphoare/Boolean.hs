@@ -12,11 +12,11 @@ data Bexp =
   deriving (Eq)
 
 instance Show Bexp where
-  show BTrue  = "TRUE"
-  show BFalse = "FALSE"
-  show (BEq x y) = show x ++ " = " ++ show y
-  show (BLe x y) = show x ++ " <= " ++ show y
-  show (BNot x) = "! (" ++ show x ++ ")"
+  show BTrue      = "TRUE"
+  show BFalse     = "FALSE"
+  show (BEq x y)  = show x ++ " = " ++ show y
+  show (BLe x y)  = show x ++ " <= " ++ show y
+  show (BNot x)   = "! (" ++ show x ++ ")"
   show (BAnd x y) = show x ++ " && " ++ show y
 
 boptimize :: Bexp -> Bexp
