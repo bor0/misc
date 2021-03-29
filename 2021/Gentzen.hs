@@ -1,3 +1,5 @@
+module Gentzen where
+
 data PropCalc =
   P | Q | R
   | Not PropCalc
