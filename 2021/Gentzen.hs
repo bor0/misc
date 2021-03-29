@@ -11,9 +11,9 @@ data Pos = GoLeft | GoRight
 type Path = [Pos]
 
 apply :: Path -> (PropCalc -> PropCalc) -> PropCalc -> PropCalc
-apply [] f P = P
-apply [] f Q = Q
-apply [] f R = R
+apply [] f P = f P
+apply [] f Q = f Q
+apply [] f R = f R
 apply [] f (Not x) = f (Not x)
 apply [] f (And x y) = f (And x y)
 apply [] f (Or x y) = f (Or x y)
