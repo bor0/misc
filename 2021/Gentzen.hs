@@ -6,15 +6,18 @@ data PropCalc =
   | Imp PropCalc PropCalc
   deriving (Show, Eq)
 
-data Pos = GoLeft | GoRight | Go
+data Pos = GoLeft | GoRight
 
 type Path = [Pos]
 
 apply :: Path -> (PropCalc -> PropCalc) -> PropCalc -> PropCalc
-apply [Go] f (Not x) = f (Not x)
-apply [Go] f (And x y) = f (And x y)
-apply [Go] f (Or x y) = f (Or x y)
-apply [Go] f (Imp x y) = f (Imp x y)
+apply [] f P = P
+apply [] f Q = Q
+apply [] f R = R
+apply [] f (Not x) = f (Not x)
+apply [] f (And x y) = f (And x y)
+apply [] f (Or x y) = f (Or x y)
+apply [] f (Imp x y) = f (Imp x y)
 apply (GoLeft:xs) f (Not x) = Not (apply xs f x)
 apply (GoLeft:xs) f (And x y) = And (apply xs f x) y
 apply (GoLeft:xs) f (Or x y) = Or (apply xs f x) y
@@ -115,4 +118,4 @@ eg3 = ruleCarryOver (\x -> ruleCarryOver (\y -> ruleJoin x y) Q) P
 (~P -> ~P)
 (P \/ ~P)
 -}
-eg4 = ruleSwitcheroo $ apply [GoLeft,Go] ruleDoubleTildeElim $ ruleContra eg1
+eg4 = ruleSwitcheroo $ apply [GoLeft] ruleDoubleTildeElim $ ruleContra eg1
