@@ -47,7 +47,6 @@ ruleDoubleTildeIntro x = Not (Not x)
 -- Not elim
 ruleDoubleTildeElim :: PropCalc a -> PropCalc a
 ruleDoubleTildeElim (Not (Not x)) = x
-ruleDoubleTildeElim (And (Not (Not x)) y) = And x y
 ruleDoubleTildeElim x = x
 
 -- Imp intro
