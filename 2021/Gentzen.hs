@@ -1,5 +1,7 @@
 module Gentzen where
 
+import Common
+
 data VarEg = P | Q | R deriving (Show)
 
 data PropCalc a =
@@ -10,21 +12,17 @@ data PropCalc a =
   | Imp (PropCalc a) (PropCalc a)
   deriving (Show, Eq)
 
-data Pos = GoLeft | GoRight
-
-type Path = [Pos]
-
-apply :: Path -> (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
-apply [] f x = f x
-apply (GoLeft:xs) f (Not x) = Not (apply xs f x)
-apply (GoLeft:xs) f (And x y) = And (apply xs f x) y
-apply (GoLeft:xs) f (Or x y) = Or (apply xs f x) y
-apply (GoLeft:xs) f (Imp x y) = Imp (apply xs f x) y
-apply (GoRight:xs) f (Not x) = Not (apply xs f x)
-apply (GoRight:xs) f (And x y) = And x (apply xs f y)
-apply (GoRight:xs) f (Or x y) = Or x (apply xs f y)
-apply (GoRight:xs) f (Imp x y) = Imp x (apply xs f y)
-apply _ _ x = x
+applyPropRule :: Path -> (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
+applyPropRule [] f x = f x
+applyPropRule (GoLeft:xs) f (Not x) = Not (applyPropRule xs f x)
+applyPropRule (GoLeft:xs) f (And x y) = And (applyPropRule xs f x) y
+applyPropRule (GoLeft:xs) f (Or x y) = Or (applyPropRule xs f x) y
+applyPropRule (GoLeft:xs) f (Imp x y) = Imp (applyPropRule xs f x) y
+applyPropRule (GoRight:xs) f (Not x) = Not (applyPropRule xs f x)
+applyPropRule (GoRight:xs) f (And x y) = And x (applyPropRule xs f y)
+applyPropRule (GoRight:xs) f (Or x y) = Or x (applyPropRule xs f y)
+applyPropRule (GoRight:xs) f (Imp x y) = Imp x (applyPropRule xs f y)
+applyPropRule _ _ x = x
 
 -- And intro
 ruleJoin :: PropCalc a -> PropCalc a -> PropCalc a
@@ -115,4 +113,4 @@ eg3 = ruleCarryOver (\x -> ruleCarryOver (\y -> ruleJoin x y) (PropVar Q)) (Prop
 (~P -> ~P)
 (P \/ ~P)
 -}
-eg4 = ruleSwitcheroo $ apply [GoLeft] ruleDoubleTildeElim $ ruleContra eg1
+eg4 = ruleSwitcheroo $ applyPropRule [GoLeft] ruleDoubleTildeElim $ ruleContra eg1
