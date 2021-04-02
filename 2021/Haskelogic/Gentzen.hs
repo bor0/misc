@@ -2,7 +2,7 @@ module Gentzen where
 
 import Common
 
-data VarEg = P | Q | R deriving (Show)
+data VarEg = P | Q | R deriving (Show, Eq)
 
 data PropCalc a =
   PropVar a
