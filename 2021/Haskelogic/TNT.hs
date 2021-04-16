@@ -27,12 +27,23 @@ applyFOLRule (_:xs) f (PropVar (ForAll x y)) = PropVar (ForAll x (applyFOLRule x
 applyFOLRule (_:xs) f (PropVar (Exists x y)) = PropVar (Exists x (applyFOLRule xs f y))
 applyFOLRule (_:xs) f (Not x)                = Not (applyFOLRule xs f x)
 applyFOLRule (GoLeft:xs) f (And x y)         = And (applyFOLRule xs f x) y
-applyFOLRule (GoRight:xs) f (And x y)        = And x (applyFOLRule xs f y)
-applyFOLRule (GoLeft:xs) f (Or x y)          = Or (applyFOLRule xs f x) y
-applyFOLRule (GoRight:xs) f (Or x y)         = Or x (applyFOLRule xs f y)
 applyFOLRule (GoLeft:xs) f (Imp x y)         = Imp (applyFOLRule xs f x) y
+applyFOLRule (GoLeft:xs) f (Or x y)          = Or (applyFOLRule xs f x) y
+applyFOLRule (GoRight:xs) f (And x y)        = And x (applyFOLRule xs f y)
 applyFOLRule (GoRight:xs) f (Imp x y)        = Imp x (applyFOLRule xs f y)
+applyFOLRule (GoRight:xs) f (Or x y)         = Or x (applyFOLRule xs f y)
 applyFOLRule _ _ x = x
+
+-- Similar to applyFOLRule, but useful for terms within formulas (used by existence rule)
+applyArithRule :: Path -> (Arith -> Arith) -> Arith -> Arith
+applyArithRule [] f x = f x
+applyArithRule (GoLeft:xs) f (Mult x y) = Mult (applyArithRule xs f x) y
+applyArithRule (GoLeft:xs) f (Plus x y) = Plus (applyArithRule xs f x) y
+applyArithRule (GoLeft:xs) f (S x) = S (applyArithRule xs f x)
+applyArithRule (GoRight:xs) f (Mult x y) = Mult x (applyArithRule xs f y)
+applyArithRule (GoRight:xs) f (Plus x y) = Plus x (applyArithRule xs f y)
+applyArithRule (GoRight:xs) f (S x) = S (applyArithRule xs f x)
+applyArithRule _ _ x = x
 
 -- 2 plus 3 equals 4
 eg1 = PropVar (Eq (Plus (S (S Z)) (S (S (S Z)))) (S (S (S (S Z)))))
@@ -96,7 +107,29 @@ ruleInterchangeR :: PropCalc FOL -> PropCalc FOL
 ruleInterchangeR (Not (PropVar (Exists x y))) = PropVar (ForAll x (Not y))
 ruleInterchangeR x = x
 
-ruleExistence = undefined -- TODO
+-- Rule of existence: Suppose a term X appears in a formula. X can be replaced by a variable.
+-- E.g. forall a, ~ (S a = 0) <-> exists b, forall a, ~ (S a = b)
+-- The first path is at the logic level, and the second path is at the equational level
+ruleExistenceR :: PropCalc FOL -> Vars -> Path -> Path -> PropCalc FOL
+ruleExistenceR formula var path1 path2 = PropVar (Exists var $ applyFOLRule path1 (\formula' -> ruleExistenceHelper GoRight formula' var path2) formula)
+
+ruleExistenceL :: PropCalc FOL -> Vars -> Path -> Path -> PropCalc FOL
+ruleExistenceL formula var path1 path2 = PropVar (Exists var $ applyFOLRule path1 (\formula' -> ruleExistenceHelper GoLeft formula' var path2) formula)
+
+ruleExistenceHelper :: Pos -> PropCalc FOL -> Vars -> Path -> PropCalc FOL
+ruleExistenceHelper pos (PropVar (Eq a b)) var path =
+  if pos == GoRight
+  then PropVar (Eq a (replace path b var))
+  else PropVar (Eq (replace path a var) b)
+  where
+  -- replace path in x with var
+  replace path x var = applyArithRule path (\_ -> Var var) (Var var)
+ruleExistenceHelper pos (PropVar (ForAll x y)) var path = PropVar (ForAll x (ruleExistenceHelper pos y var path))
+ruleExistenceHelper pos (PropVar (Exists x y)) var path = PropVar (Exists x (ruleExistenceHelper pos y var path))
+ruleExistenceHelper _ x _ _ = x
+
+eg6 = ruleExistenceR axiom1 B [GoLeft,GoLeft] []
+eg6' = ruleExistenceL axiom1 B [GoLeft,GoLeft] []
 
 -- Rule of symmetry: a = b == b == a
 ruleSymmetry :: PropCalc FOL -> PropCalc FOL
