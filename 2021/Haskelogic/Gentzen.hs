@@ -12,66 +12,74 @@ data PropCalc a =
   | Imp (PropCalc a) (PropCalc a)
   deriving (Show, Eq)
 
-applyPropRule :: Path -> (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
-applyPropRule [] f x = f x
-applyPropRule (GoLeft:xs) f (Not x) = Not (applyPropRule xs f x)
-applyPropRule (GoLeft:xs) f (And x y) = And (applyPropRule xs f x) y
-applyPropRule (GoLeft:xs) f (Or x y) = Or (applyPropRule xs f x) y
-applyPropRule (GoLeft:xs) f (Imp x y) = Imp (applyPropRule xs f x) y
-applyPropRule (GoRight:xs) f (Not x) = Not (applyPropRule xs f x)
-applyPropRule (GoRight:xs) f (And x y) = And x (applyPropRule xs f y)
-applyPropRule (GoRight:xs) f (Or x y) = Or x (applyPropRule xs f y)
-applyPropRule (GoRight:xs) f (Imp x y) = Imp x (applyPropRule xs f y)
-applyPropRule _ _ x = x
+applyPropRule :: Path -> (Proof (PropCalc a) -> Proof (PropCalc a)) -> Proof (PropCalc a) -> Proof (PropCalc a)
+applyPropRule xs f (Proof x) = Proof $ go xs (\x -> fromProof $ f (Proof x)) x
+  where
+  go :: Path -> (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
+  go [] f x = f x
+  go (GoLeft:xs) f (Not x) = Not (go xs f x)
+  go (GoLeft:xs) f (And x y) = And (go xs f x) y
+  go (GoLeft:xs) f (Or x y) = Or (go xs f x) y
+  go (GoLeft:xs) f (Imp x y) = Imp (go xs f x) y
+  go (GoRight:xs) f (Not x) = Not (go xs f x)
+  go (GoRight:xs) f (And x y) = And x (go xs f y)
+  go (GoRight:xs) f (Or x y) = Or x (go xs f y)
+  go (GoRight:xs) f (Imp x y) = Imp x (go xs f y)
+  go _ _ x = x
+
+proofP = Proof $ PropVar P
+proofQ = Proof $ PropVar Q
+proofR = Proof $ PropVar R
 
 -- And intro
-ruleJoin :: PropCalc a -> PropCalc a -> PropCalc a
-ruleJoin x y = And x y
+ruleJoin :: Proof (PropCalc a) -> Proof (PropCalc a) -> Proof (PropCalc a)
+ruleJoin (Proof x) (Proof y) = Proof $ And x y
 
 -- And elim l
-ruleSepL :: PropCalc a -> PropCalc a
-ruleSepL (And x y) = x
+ruleSepL :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleSepL (Proof (And x y)) = Proof x
 ruleSepL x = x
 
 -- And elim r
-ruleSepR :: PropCalc a -> PropCalc a
-ruleSepR (And x y) = y
+ruleSepR :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleSepR (Proof (And x y)) = Proof y
 ruleSepR x = x
 
 -- Not intro
-ruleDoubleTildeIntro :: PropCalc a -> PropCalc a
-ruleDoubleTildeIntro x = Not (Not x)
+ruleDoubleTildeIntro :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleDoubleTildeIntro (Proof x) = Proof $ Not (Not x)
 
 -- Not elim
-ruleDoubleTildeElim :: PropCalc a -> PropCalc a
-ruleDoubleTildeElim (Not (Not x)) = x
+ruleDoubleTildeElim :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleDoubleTildeElim (Proof (Not (Not x))) = Proof x
 ruleDoubleTildeElim x = x
 
 -- Imp intro accepts a rule and an assumption (simply a well-formed formula, not necessarily proven)
-ruleCarryOver :: (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
-ruleCarryOver f x = Imp x (f x)
+-- Our data types are constructed such that all formulas are well-formed
+ruleCarryOver :: (Proof (PropCalc a) -> Proof (PropCalc a)) -> PropCalc a -> Proof (PropCalc a)
+ruleCarryOver f x = Proof $ Imp x $ fromProof (f (Proof x))
 
 -- Imp elim
-ruleDetachment :: (Eq a) => PropCalc a -> PropCalc a -> PropCalc a
-ruleDetachment x (Imp x' y) | x == x' = y
+ruleDetachment :: (Eq a) => Proof (PropCalc a) -> Proof (PropCalc a) -> Proof (PropCalc a)
+ruleDetachment (Proof x) (Proof (Imp x' y)) | x == x' = Proof y
 ruleDetachment _ _ = error "Not applicable"
 
 -- Contrapositive
-ruleContra :: PropCalc a -> PropCalc a
-ruleContra (Imp (Not y) (Not x)) = Imp x y
-ruleContra (Imp x y) = Imp (Not y) (Not x)
+ruleContra :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleContra (Proof (Imp (Not y) (Not x))) = Proof $ Imp x y
+ruleContra (Proof (Imp x y)) = Proof $ Imp (Not y) (Not x)
 ruleContra x = x
 
 -- DeMorgan's rule
-ruleDeMorgan :: PropCalc a -> PropCalc a
-ruleDeMorgan (And (Not x) (Not y)) = Not (Or x y)
-ruleDeMorgan (Not (Or x y)) = And (Not x) (Not y)
+ruleDeMorgan :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleDeMorgan (Proof (And (Not x) (Not y))) = Proof $ Not (Or x y)
+ruleDeMorgan (Proof (Not (Or x y))) = Proof $ And (Not x) (Not y)
 ruleDeMorgan x = x
 
 -- Switcheroo
-ruleSwitcheroo :: PropCalc a -> PropCalc a
-ruleSwitcheroo (Or x y) = Imp (Not x) y
-ruleSwitcheroo (Imp (Not x) y) = Or x y
+ruleSwitcheroo :: Proof (PropCalc a) -> Proof (PropCalc a)
+ruleSwitcheroo (Proof (Or x y)) = Proof $ Imp (Not x) y
+ruleSwitcheroo (Proof (Imp (Not x) y)) = Proof $ Or x y
 ruleSwitcheroo x = x
 
 {-
@@ -91,7 +99,7 @@ eg1 = ruleCarryOver ruleDoubleTildeIntro (PropVar P)
 ]
 ((P/\Q)->(Q/\P))
 -}
-eg2 = ruleCarryOver (\pq -> ruleJoin (ruleSepR pq) (ruleSepL pq)) (ruleJoin (PropVar P) (PropVar Q))
+eg2 = ruleCarryOver (\pq -> ruleJoin (ruleSepR pq) (ruleSepL pq)) (And (PropVar P) (PropVar Q))
 
 {-
 [
