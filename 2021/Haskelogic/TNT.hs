@@ -45,6 +45,20 @@ applyArithRule (GoRight:xs) f (Plus x y) = Plus x (applyArithRule xs f y)
 applyArithRule (GoRight:xs) f (S x) = S (applyArithRule xs f x)
 applyArithRule _ _ x = x
 
+-- Substitution on equational level
+substPropCalc :: PropCalc FOL -> Vars -> Arith -> PropCalc FOL
+substPropCalc (PropVar (Eq a b)) v e = PropVar (Eq (substArith a v e) (substArith b v e))
+substPropCalc (PropVar (ForAll x y)) v e = PropVar (ForAll x (substPropCalc y v e))
+substPropCalc (PropVar (Exists x y)) v e = PropVar (Exists x (substPropCalc y v e))
+
+-- Substitution function for arithmetical formulas
+substArith :: Arith -> Vars -> Arith -> Arith
+substArith (Var q) v e | q == v = e
+substArith (S q) v e = S (substArith q v e)
+substArith (Plus a b) v e = Plus (substArith a v e) (substArith b v e)
+substArith (Mult a b) v e = Mult (substArith a v e) (substArith b v e)
+substArith x v e = x
+
 -- 2 plus 3 equals 4
 eg1 = PropVar (Eq (Plus (S (S Z)) (S (S (S Z)))) (S (S (S (S Z)))))
 
@@ -68,13 +82,6 @@ axiom4 = PropVar (ForAll A (PropVar (Eq (Mult (Var A) Z) Z)))
 
 -- forall a, forall b, a * Sb = (a * b + a)
 axiom5 = PropVar (ForAll A (PropVar (ForAll B (PropVar (Eq (Mult (Var A) (S (Var B))) (Plus (Mult (Var A) (Var B)) (Var A)))))))
-
-substArith :: Arith -> Vars -> Arith -> Arith
-substArith (Var q) v e | q == v = e
-substArith (S q) v e = S (substArith q v e)
-substArith (Plus a b) v e = Plus (substArith a v e) (substArith b v e)
-substArith (Mult a b) v e = Mult (substArith a v e) (substArith b v e)
-substArith x v e = x
 
 -- Rule of specification: if forall u:x is a theorem, then so is x.
 ruleSpec :: PropCalc FOL -> Vars -> Arith -> PropCalc FOL
@@ -155,7 +162,28 @@ ruleDropS :: PropCalc FOL -> PropCalc FOL
 ruleDropS (PropVar (Eq (S a) (S b))) = PropVar (Eq a b)
 ruleDropS x = x
 
-ruleInduction = undefined -- TODO
+-- Rule of induction: P(0) /\ (P(n) -> P(n+1)) -> P(n)
+ruleInduction :: PropCalc FOL -> PropCalc FOL -> PropCalc FOL
+ruleInduction base ih@(PropVar (ForAll x (Imp y z))) =
+  let base' = substPropCalc y x Z
+      conc  = substPropCalc y x (S (Var x)) in
+  if base' == base && conc == z
+  then PropVar (ForAll x y)
+  else error "Cannot prove"
+ruleInduction _ _ = error "Not applicable"
+
+egIndBase = PropVar (Eq (Plus Z Z) Z)
+egIndHyp  = PropVar (ForAll A (Imp (PropVar (Eq (Plus Z (Var A)) (Var A))) (PropVar (Eq (Plus Z (S (Var A))) (S (Var A))))))
+egInd     = ruleInduction egIndBase egIndHyp
+
+{-
+> egConc
+PropVar (ForAll A (PropVar (Eq (Plus Z (Var A)) (Var A))))
+> axiom2
+PropVar (ForAll A (PropVar (Eq (Plus (Var A) Z) (Var A))))
+> applyFOLRule [GoRight] ruleSymmetry axiom2
+PropVar (ForAll A (PropVar (Eq (Var A) (Plus (Var A) Z))))
+-}
 
 step1 = ruleSpec axiom3 A (S Z)
 step2 = ruleSpec step1 B Z
@@ -169,3 +197,4 @@ step2_3 = applyFOLRule [GoRight, GoRight] ruleDoubleTildeIntro step2_2 -- apply 
 
 step3_1 = applyFOLRule [GoLeft] ruleAddS TNT.eg3
 step3_2 = applyFOLRule [GoLeft] ruleSymmetry step3_1
+step3_3 = applyFOLRule [GoLeft] ruleDropS step3_2
