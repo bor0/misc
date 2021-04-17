@@ -45,7 +45,7 @@ applyArithRule (GoRight:xs) f (Plus x y) = Plus x (applyArithRule xs f y)
 applyArithRule (GoRight:xs) f (S x) = S (applyArithRule xs f x)
 applyArithRule _ _ x = x
 
--- Substitution on equational level
+-- Substitution on equational level for a specific variable with arithmetical expression
 substPropCalc :: PropCalc FOL -> Vars -> Arith -> PropCalc FOL
 substPropCalc (PropVar (Eq a b)) v e = PropVar (Eq (substArith a v e) (substArith b v e))
 substPropCalc (PropVar (ForAll x y)) v e = PropVar (ForAll x (substPropCalc y v e))
@@ -172,12 +172,30 @@ ruleInduction base ih@(PropVar (ForAll x (Imp y z))) =
   else error "Cannot prove"
 ruleInduction _ _ = error "Not applicable"
 
-egIndBase = PropVar (Eq (Plus Z Z) Z)
-egIndHyp  = PropVar (ForAll A (Imp (PropVar (Eq (Plus Z (Var A)) (Var A))) (PropVar (Eq (Plus Z (S (Var A))) (S (Var A))))))
+-- Proof using induction:
+
+-- Part 1:
+-- PropVar (Eq (Plus Z Z) Z)
+egIndBase = ruleSpec (ruleSpec axiom2 B Z) A Z
+
+-- Part 2:
+-- PropVar (ForAll A (Imp (PropVar (Eq (Plus Z (Var A)) (Var A))) (PropVar (Eq (Plus Z (S (Var A))) (S (Var A))))))
+egIndHyp_1 = axiom3
+egIndHyp_2 = ruleSpec egIndHyp_1 A Z
+egIndHyp_3 = ruleSpec egIndHyp_2 B (Var A)
+egIndHyp_4 = ruleCarryOver impRule (PropVar (Eq (Plus Z (Var A)) (Var A)))
+  where
+  impRule formula = substPropCalc (ruleAddS formula) A (Var A)
+egIndHyp_5 = applyFOLRule [GoRight] rule egIndHyp_4
+  where
+  rule formula = ruleTransitivity egIndHyp_3 formula
+egIndHyp  = ruleGeneralize egIndHyp_5 A
+
+-- Proof
 egInd     = ruleInduction egIndBase egIndHyp
 
 {-
-> egConc
+> egInd
 PropVar (ForAll A (PropVar (Eq (Plus Z (Var A)) (Var A))))
 > axiom2
 PropVar (ForAll A (PropVar (Eq (Plus (Var A) Z) (Var A))))

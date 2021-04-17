@@ -47,7 +47,7 @@ ruleDoubleTildeElim :: PropCalc a -> PropCalc a
 ruleDoubleTildeElim (Not (Not x)) = x
 ruleDoubleTildeElim x = x
 
--- Imp intro
+-- Imp intro accepts a rule and an assumption (simply a well-formed formula, not necessarily proven)
 ruleCarryOver :: (PropCalc a -> PropCalc a) -> PropCalc a -> PropCalc a
 ruleCarryOver f x = Imp x (f x)
 
