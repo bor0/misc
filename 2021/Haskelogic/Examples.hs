@@ -47,7 +47,7 @@ eg3 = ruleCarryOver (\x -> ruleCarryOver (\y -> ruleJoin x y) (PropVar Q)) (Prop
 (~P -> ~P)
 (P \/ ~P)
 -}
-⊢ (P)∨(¬P)
+-- ⊢ (P)∨(¬P)
 eg4 = ruleSwitcheroo $ applyPropRule [GoLeft] ruleDoubleTildeElim $ ruleContra eg1
 
 -- TNT
