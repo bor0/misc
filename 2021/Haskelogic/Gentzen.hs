@@ -27,10 +27,6 @@ applyPropRule xs f (Proof x) = Proof $ go xs (\x -> fromProof $ f (Proof x)) x
   go (GoRight:xs) f (Imp x y) = Imp x (go xs f y)
   go _ _ x = x
 
-proofP = Proof $ PropVar P
-proofQ = Proof $ PropVar Q
-proofR = Proof $ PropVar R
-
 -- And intro
 ruleJoin :: Proof (PropCalc a) -> Proof (PropCalc a) -> Proof (PropCalc a)
 ruleJoin (Proof x) (Proof y) = Proof $ And x y
