@@ -10,7 +10,14 @@ data PropCalc a =
   | And (PropCalc a) (PropCalc a)
   | Or (PropCalc a) (PropCalc a)
   | Imp (PropCalc a) (PropCalc a)
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance (Show a) => Show (PropCalc a) where
+  show (PropVar a) = show a
+  show (Not a)     = "¬" ++ show a
+  show (And a b)   = "(" ++ show a ++ ")∧(" ++ show b ++ ")"
+  show (Or a b)    = "(" ++ show a ++ ")∨(" ++ show b ++ ")"
+  show (Imp a b)   = "(" ++ show a ++ ")→(" ++ show b ++ ")"
 
 applyPropRule :: Path -> (Proof (PropCalc a) -> Proof (PropCalc a)) -> Proof (PropCalc a) -> Proof (PropCalc a)
 applyPropRule xs f (Proof x) = Proof $ go xs (\x -> fromProof $ f (Proof x)) x
@@ -77,44 +84,3 @@ ruleSwitcheroo :: Proof (PropCalc a) -> Proof (PropCalc a)
 ruleSwitcheroo (Proof (Or x y)) = Proof $ Imp (Not x) y
 ruleSwitcheroo (Proof (Imp (Not x) y)) = Proof $ Or x y
 ruleSwitcheroo x = x
-
-{-
-[ {push into fantasy}
-  P {premise}
-  ~~P {outcome}
-] {pop out of fantasy}
--}
-eg1 = ruleCarryOver ruleDoubleTildeIntro (PropVar P)
-
-{-
-[
-  (P/\Q)
-  P
-  Q
-  (Q/\P)
-]
-((P/\Q)->(Q/\P))
--}
-eg2 = ruleCarryOver (\pq -> ruleJoin (ruleSepR pq) (ruleSepL pq)) (And (PropVar P) (PropVar Q))
-
-{-
-[
-  P
-  [
-    Q
-    P
-    (P/\Q)
-  ]
-  (Q->(P/\Q))
-]
-(P->(Q->(P/\Q)))
--}
-eg3 = ruleCarryOver (\x -> ruleCarryOver (\y -> ruleJoin x y) (PropVar Q)) (PropVar P)
-
-{-
-(P -> ~~P)
-~~~P -> ~P
-(~P -> ~P)
-(P \/ ~P)
--}
-eg4 = ruleSwitcheroo $ applyPropRule [GoLeft] ruleDoubleTildeElim $ ruleContra eg1

@@ -12,13 +12,25 @@ data Arith =
   | S Arith
   | Plus Arith Arith
   | Mult Arith Arith
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show Arith where
+  show (Var a)    = show a
+  show Z          = "0"
+  show (S a)      = "S(" ++ show a ++ ")"
+  show (Plus a b) = "(" ++ show a ++ ")+(" ++ show b ++ ")"
+  show (Mult a b) = "(" ++ show a ++ ")*(" ++ show b ++ ")"
 
 data FOL =
   Eq Arith Arith
   | ForAll Vars (PropCalc FOL)
   | Exists Vars (PropCalc FOL)
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show FOL where
+  show (Eq a b) = "(" ++ show a ++ ")=(" ++ show b ++ ")"
+  show (ForAll x y) = "∀" ++ show x ++ "." ++ show y
+  show (Exists x y) = "∃" ++ show x ++ "." ++ show y
 
 -- Might be useful for some rules that may require drilling, like `ruleInterchangeL`
 applyFOLRule :: Path -> (Proof (PropCalc FOL) -> Proof (PropCalc FOL)) -> Proof (PropCalc FOL) -> Proof (PropCalc FOL)
@@ -65,15 +77,6 @@ substArith (Plus a b) v e = Plus (substArith a v e) (substArith b v e)
 substArith (Mult a b) v e = Mult (substArith a v e) (substArith b v e)
 substArith x v e = x
 
--- 2 plus 3 equals 4 (wff)
-eg1 = PropVar (Eq (Plus (S (S Z)) (S (S (S Z)))) (S (S (S (S Z)))))
-
--- 2 plus 2 is not equal to 3 (wff)
-eg2 = Not (PropVar (Eq (Plus (S (S Z)) (S (S Z))) (S (S (S Z)))))
-
--- if 1 equals to 0, then 0 equals to 1 (wff)
-eg3 = Imp (PropVar (Eq (S Z) Z)) (PropVar (Eq Z (S Z)))
-
 -- forall a, not (S a = 0)
 axiom1 = Proof $ PropVar (ForAll A (Not (PropVar (Eq (S (Var A)) Z))))
 
@@ -98,9 +101,6 @@ ruleSpec (Proof f) v e = Proof $ go f v e
   go (PropVar (ForAll x (PropVar (ForAll y z)))) v e = PropVar (ForAll y (go (PropVar (ForAll x z)) v e))
   go x _ _ = x
 
--- 0 * 0 = 0
-eg5 = ruleSpec axiom4 A Z
-
 boundVars :: PropCalc FOL -> [Vars]
 boundVars (PropVar (ForAll s e)) = s : boundVars e
 boundVars (PropVar (Exists s e)) = s : boundVars e
@@ -110,8 +110,6 @@ boundVars _ = []
 ruleGeneralize :: Proof (PropCalc FOL) -> Vars -> Proof (PropCalc FOL)
 ruleGeneralize (Proof formula) v | v `notElem` boundVars formula = Proof $ PropVar (ForAll v formula)
 ruleGeneralize x _ = x
-
-eg5' = ruleGeneralize eg5 A
 
 -- Rule of interchange: forall x !y -> ! exists x, y
 ruleInterchangeL :: Proof (PropCalc FOL) -> Proof (PropCalc FOL)
@@ -148,9 +146,6 @@ ruleExistenceHelper pos (Proof a) var path = Proof $ go pos a var path
   go pos (PropVar (ForAll x y)) var path = PropVar (ForAll x (go pos y var path))
   go pos (PropVar (Exists x y)) var path = PropVar (Exists x (go pos y var path))
   go _ x _ _ = x
-
-eg6 = ruleExistenceR axiom1 B [GoLeft,GoLeft] []
-eg6' = ruleExistenceL axiom1 B [GoLeft,GoLeft] []
 
 -- Rule of symmetry: a = b == b == a
 ruleSymmetry :: Proof (PropCalc FOL) -> Proof (PropCalc FOL)
@@ -190,49 +185,3 @@ ruleInduction base (Proof ih@(PropVar (ForAll x (Imp y z)))) =
   then Proof $ PropVar (ForAll x y)
   else error "Cannot prove"
 ruleInduction _ _ = error "Not applicable"
-
--- Proof using induction:
-
--- Part 1:
--- PropVar (Eq (Plus Z Z) Z)
-egIndBase = ruleSpec (ruleSpec axiom2 B Z) A Z
-
--- Part 2:
--- PropVar (ForAll A (Imp (PropVar (Eq (Plus Z (Var A)) (Var A))) (PropVar (Eq (Plus Z (S (Var A))) (S (Var A))))))
-egIndHyp_1 = axiom3
-egIndHyp_2 = ruleSpec egIndHyp_1 A Z
-egIndHyp_3 = ruleSpec egIndHyp_2 B (Var A)
-egIndHyp_4 = ruleCarryOver impRule (PropVar (Eq (Plus Z (Var A)) (Var A)))
-  where
-  impRule formula = substPropCalc (ruleAddS formula) A (Var A)
-egIndHyp_5 = applyFOLRule [GoRight] rule egIndHyp_4
-  where
-  rule formula = ruleTransitivity egIndHyp_3 formula
-egIndHyp  = ruleGeneralize egIndHyp_5 A
-
--- Proof
-egInd     = ruleInduction egIndBase egIndHyp
-
-{-
-> egInd
-Proof (PropVar (ForAll A (PropVar (Eq (Plus Z (Var A)) (Var A)))))
-> axiom2
-Proof (PropVar (ForAll A (PropVar (Eq (Plus (Var A) Z) (Var A)))))
-> applyFOLRule [GoRight] ruleSymmetry axiom2
-Proof (PropVar (ForAll A (PropVar (Eq (Var A) (Plus (Var A) Z)))))
--}
-
-step1 = ruleSpec axiom3 A (S Z)
-step2 = ruleSpec step1 B Z
-step1' = ruleSpec axiom2 A (S Z)
-step2' = ruleAddS step1'
-step3 = ruleTransitivity step2 step2'
-
-step2_1 = applyFOLRule [] ruleInterchangeL axiom1
-step2_2 = applyFOLRule [GoRight, GoRight] ruleSymmetry step2_1
-step2_3 = applyFOLRule [GoRight, GoRight] ruleDoubleTildeIntro step2_2 -- apply from Gentzen
-
-step3_1 = ruleCarryOver ruleSymmetry (PropVar (Eq (S Z) Z))
-step3_2 = applyFOLRule [GoLeft] ruleAddS step3_1
-step3_3 = applyFOLRule [GoLeft] ruleSymmetry step3_1
-step3_4 = applyFOLRule [GoLeft] ruleDropS step3_3
