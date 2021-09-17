@@ -2,6 +2,8 @@ Misc playground
 ===============
 In this repository you will find a lot of stuff which I've been practicing throughout the years. I have a bunch of other stuff on my other computers, so as soon as I sort them I will be posting them here.
 
+Here's a list of interesting stuff that I have read or am reading.
+
 # Technical books
 
 1. Gentle Introduction to Dependent Types with Idris [#](https://www.amazon.com/dp/1723139416)
@@ -43,7 +45,6 @@ In this repository you will find a lot of stuff which I've been practicing throu
 1. A Mathematician's Lament [#](https://www.maa.org/external_archive/devlin/LockhartsLament.pdf)
 1. The Laws of Simplicity [#](https://www.amazon.com/dp/0262134721)
 1. Redesigning Leadership [#](https://www.amazon.com/dp/0262015889)
-1. How to think like Sherlock Holmes [#](https://www.amazon.com/dp/014312434X)
 1. Propositions as Types [#](http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf)
 1. The Alchemist [#](https://www.amazon.com/dp/0061122416)
 1. Bobby Fischer Teaches Chess [#](https://www.amazon.com/dp/0553263153)
