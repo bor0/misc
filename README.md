@@ -19,7 +19,6 @@ Here's a list of interesting stuff that I have read or am reading.
 1. Competetive Programmer's Handbook [#](https://www.amazon.com/dp/3319725467)
 1. Software Foundations Vol. 1: Logic [#](https://softwarefoundations.cis.upenn.edu/lf-current/toc.html)
 1. Metamath [#](https://www.amazon.com/dp/1411637240)
-1. Types and Programming Languages [#](https://www.amazon.com/dp/0262162091)
 1. Gödel, Escher, Bach [#](https://www.amazon.com/dp/0465026567)
 1. Naive Set Theory [#](https://www.amazon.com/dp/1614271313)
 
@@ -34,18 +33,16 @@ Here's a list of interesting stuff that I have read or am reading.
 1. McCarthy's LISP [#](http://www-formal.stanford.edu/jmc/recursive.pdf)
 1. Hoare logic [#](https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf)
 1. LambdaPi tutorial [#](https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf)
-1. Int. Type Theory [#](https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf)
 1. How to write a great research paper [#](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/How-to-write-a-great-research-paper.pdf)
 1. How to write proofs: a quick guide [#](https://deopurkar.github.io/teaching/algebra1/cheng.pdf)
 1. Mathematics and Faith [#](https://web.math.princeton.edu/~nelson/papers/faith.pdf)
-1. Programming Paradigms for Dummies [#](https://www.info.ucl.ac.be/~pvr/VanRoyChapter.pdf)
+1. Propositions as Types [#](http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf)
 
 # Misc. reads
 
 1. A Mathematician's Lament [#](https://www.maa.org/external_archive/devlin/LockhartsLament.pdf)
 1. The Laws of Simplicity [#](https://www.amazon.com/dp/0262134721)
 1. Redesigning Leadership [#](https://www.amazon.com/dp/0262015889)
-1. Propositions as Types [#](http://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf)
 1. The Alchemist [#](https://www.amazon.com/dp/0061122416)
 1. Bobby Fischer Teaches Chess [#](https://www.amazon.com/dp/0553263153)
 1. The Queen's Gambit [#](https://www.amazon.com/dp/1400030609)
