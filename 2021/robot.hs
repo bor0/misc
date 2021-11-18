@@ -1,3 +1,6 @@
+import Data.List (minimumBy)
+import Data.Function (on)
+
 type Coordinate = (Int, Int)
 data Command = GoUp | GoDown | GoLeft | GoRight | Drop deriving (Show)
 
@@ -22,3 +25,31 @@ getCommands' :: [Coordinate] -> [Command]
 getCommands' coords = snd $ foldl go ((0, 0), []) coords
   where
   go (from, acc) to = (to, acc ++ getCommandsForPath from to)
+
+-- Given a coordinate and a list of coordinates, find the nearest one
+findNextPoint :: Coordinate -> [Coordinate] -> Coordinate
+findNextPoint point coords = fst $ minimumBy (compare `on` snd) distances
+  where
+  distance (x1, y1) (x2, y2) = sqrt ((fromIntegral x2 - fromIntegral x1)^2 + (fromIntegral y2 - fromIntegral y1)^2)
+  distances = map (\point' -> (point', distance point point')) coords
+
+-- Sort all coordinates according to `findNextPoint`
+-- Since we're using `filter` to remove found points, this assumes that there are no duplicate coordinates.
+sortCoordinates :: [Coordinate] -> [Coordinate]
+sortCoordinates coords = tail $ go (0, 0) coords
+  where
+  go point []     = [point]
+  go point coords =
+    let newPoint = findNextPoint point coords
+        in point : go newPoint (filter (/= newPoint) coords)
+
+-- Same as getCommands', but more performant in some cases.
+runRobot :: [Coordinate] -> [Command]
+runRobot = (getCommands' . sortCoordinates)
+
+{-
+> getCommands' [(3, 3), (2, 2)]
+[GoDown,GoDown,GoDown,GoRight,GoRight,GoRight,Drop,GoLeft,GoUp,Drop]
+> runRobot [(3, 3), (2, 2)]
+[GoDown,GoDown,GoRight,GoRight,Drop,GoDown,GoRight,Drop]
+-}
