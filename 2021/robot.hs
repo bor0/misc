@@ -1,4 +1,4 @@
-import Data.List (minimumBy)
+import Data.List (minimumBy, delete)
 import Data.Function (on)
 
 type Coordinate = (Int, Int)
@@ -34,18 +34,19 @@ findNextPoint point coords = fst $ minimumBy (compare `on` snd) distances
   distances = map (\point' -> (point', distance point point')) coords
 
 -- Sort all coordinates according to `findNextPoint`
--- Since we're using `filter` to remove found points, this assumes that there are no duplicate coordinates.
 sortCoordinates :: [Coordinate] -> [Coordinate]
 sortCoordinates coords = tail $ go (0, 0) coords
   where
   go point []     = [point]
   go point coords =
     let newPoint = findNextPoint point coords
-        in point : go newPoint (filter (/= newPoint) coords)
+        in point : go newPoint (delete newPoint coords)
 
--- Same as getCommands', but more performant in some cases.
+-- Same as getCommands', but more performant in some cases, and less performant in others.
+-- let coords = [(0,3),(2,2)] in length (runRobot coords) > length (getCommands' coords)
+-- let coords = [(0,3),(2,5)] in length (runRobot coords) < length (getCommands' coords)
 runRobot :: [Coordinate] -> [Command]
-runRobot = (getCommands' . sortCoordinates)
+runRobot = getCommands' . sortCoordinates
 
 {-
 > getCommands' [(3, 3), (2, 2)]
