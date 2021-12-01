@@ -1,0 +1,32 @@
+\documentclass{article}
+
+\usepackage{etoolbox}
+
+\begin{document}
+
+\newcounter{mycounter}
+\setcounter{mycounter}{0}
+
+\newread\file
+\openin\file=input
+\read\file to\prevline
+\loop
+    \read\file to \fileline
+
+    \ifeof\file
+      Done reading the file.
+    \else
+
+    Previous line was \prevline current one is \fileline
+    \ifnumcomp{\prevline}{<}{\fileline}{thus increasing\stepcounter{mycounter}}{thus no increase}
+    \edef\prevline{\fileline}
+\repeat
+\closein\file
+
+\hrulefill
+
+Total increases: \arabic{mycounter}
+
+built with \LaTeX \ on \today
+
+\end{document}
