@@ -19,6 +19,7 @@
 
     Previous line was \prevline current one is \fileline
     \ifnumcomp{\prevline}{<}{\fileline}{thus increasing\stepcounter{mycounter}}{thus no increase}
+    % Use `edef` rather than `def` since otherwise this will just serve as a reference
     \edef\prevline{\fileline}
 \repeat
 \closein\file
