@@ -1,11 +1,6 @@
 #lang racket
 
-(define (read-numbers)
-  (begin
-    (define numbers "")
-    (for ([line (file->lines "input")])
-      (set! numbers line))
-    (map string->number (string-split numbers ","))))
+(define (read-numbers) (filter number? (map string->number (string-split (string-replace (file->string "input") "\n" "") ","))))
 
 (define (populate l)
   (foldr (lambda (elem acc) (if (eq? elem 0) (cons 6 (cons 8 acc)) (cons (- elem 1) acc))) '() l))
