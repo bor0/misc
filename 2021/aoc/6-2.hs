@@ -3,9 +3,9 @@ import System.IO
 import Data.Map (fromListWith, toList, Map)
 import qualified Data.Map as Map
 
-calculate :: Map Int Int -> Map Int Int
-calculate xs =
-  let newMap    = Map.mapKeys (\x -> x - 1) xs
+populate :: Map Int Int -> Map Int Int
+populate theMap =
+  let newMap    = Map.mapKeys (\x -> x - 1) theMap
       count     = Map.findWithDefault 0 (-1) newMap
       newMap'   = Map.delete (-1) newMap
       newMap''  = Map.insertWith (+) 6 count newMap'
@@ -15,7 +15,7 @@ calculate xs =
 start :: Int -> [Int] -> Map Int Int
 start n xs = go n $ Map.fromList $ frequency xs
   where
-  go n xs = iterate calculate xs !! n
+  go n xs = iterate populate xs !! n
   frequency xs = toList (fromListWith (+) [(x, 1) | x <- xs])
 
 count = Map.foldl (+) 0
