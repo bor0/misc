@@ -1,41 +1,59 @@
 -- Construction of terms
 -- Get these for free in Lisp due to symbolic calculation, or Haskell due to algebraic data structures)
-function op_imp(x, y)
-  return { x = x, y = y, op = "imp" }
+
+-- Construct imp
+function term_imp(x, y)
+  return { x = x, y = y, type = "imp" }
 end
 
-function op_and(x, y)
-  return { x = x, y = y, op = "and" }
+-- Construct and
+function term_and(x, y)
+  return { x = x, y = y, type = "and" }
 end
 
-function op_proof(x)
-  return { x = x, op = "proof" }
+-- Construct a proof for a term (don't use directly)
+function term_proof(x)
+  return { x = x, type = "proof" }
+end
+
+-- Given a proof, return its term
+function from_proof(x)
+  if type(x) ~= "table" or x.type ~= "proof" then
+    return nil
+  end
+  return x.x
 end
 
 -- Rules
 -- Gotta go wild on the `if` checks due to lack of pattern matching
 function rule_join(x, y)
-  if type(x) ~= "table" or type(y) ~= "table" or x.op ~= "proof" or y.op ~= "proof" then
+  if type(x) ~= "table" or type(y) ~= "table" or x.type ~= "proof" or y.type ~= "proof" then
     return nil
   end
 
-  return op_proof(op_and(x.x, y.x))
+  return term_proof(term_and(from_proof(x), from_proof(y)))
 end
 
+-- This rule accepts a proof that A&B, and returns A. i.e. A&B |- A
 function rule_sep_l(x)
-  if type(x) ~= "table" or x.op ~= "proof" or x.x.op ~= "and" then
+  if type(x) ~= "table" or x.type ~= "proof" or from_proof(x).type ~= "and" then
     return nil
   end
 
-  return op_proof(x.x.x)
+  return term_proof(from_proof(x).x)
 end
 
-function rule_fantasy(x, f)
-  local prfx = op_proof(x)
+-- This rule accepts a term x, and returns a proof of the form |- x -> f(x).
+function rule_impintro(x, f)
+  if type(x) ~= "table" and x.type ~= "imp" and x.type ~= "and" then
+    return nil
+  end
+
+  local prfx = term_proof(x)
   local res  = f(prfx)
 
   if res ~= null then
-    return op_proof(op_imp(x, res.x))
+    return term_proof(term_imp(x, from_proof(res)))
   end
 
   return nil
@@ -48,26 +66,24 @@ function pp(x)
     return x
   end
 
-  if x.op == "proof" then
+  if x.type == "proof" then
     return "|- " .. pp(x.x)
   end
 
-  if x.op == "and" then
+  if x.type == "and" then
     return "(" .. pp(x.x) .. ") & (" .. pp(x.y) .. ")"
   end
 
-  if x.op == "imp" then
+  if x.type == "imp" then
     return "(" .. pp(x.x) .. ") -> (" .. pp(x.y) .. ")"
   end
 end
 
-prfA = op_proof("A") -- axiom
-prfB = op_proof("B") -- axiom
-prf = rule_join(prfA, prfB)
-print(pp(prf))
+prf1 = rule_impintro(term_and("A", "B"), function(x) return x end)
+print(pp(prf1))
 
-prf = rule_fantasy(op_and("A", "B"), function(x) return x end) -- no axioms
-print(pp(prf))
+prf2 = rule_impintro(term_and("A", "B"), rule_sep_l)
+print(pp(prf2))
 
-prf = rule_fantasy(op_and("A", "B"), rule_sep_l)
-print(pp(prf))
+prf3 = rule_join(prf1, prf2)
+print(pp(prf3))
