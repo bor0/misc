@@ -3,15 +3,9 @@ with open('input') as f:
 
 L = [ int(x) for x in L ]
 
-def additi(x):
-    return int(x*(x-1)/2)
+def calc_fuel(el1, el2):
+    d = abs(el1 - el2)
+    return d + int(d*(d-1)/2)
 
-mini = float('inf')
-for el1 in L:
-    suma=0
-    for el2 in L:
-        if el1 == el2: continue
-        suma += abs(el1 - el2) + additi(abs(el1-el2))
-    mini = min(suma, mini)
-
-print(mini)
+sums = [ sum( [ calc_fuel(el1, el2) for el2 in L if el1 != el2 ] ) for el1 in L ]
+print(min(sums))
