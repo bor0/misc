@@ -1,7 +1,7 @@
 with open('input') as f:
-    L = f.read().split('\n')
-    L = [ [ int(x) for x in a ] for a in L ]
-    L = filter(lambda x: x, L) # empty elements
+  L = f.read().split('\n')
+  L = [ [ int(x) for x in a ] for a in L ]
+  L = filter(lambda x: x, L) # empty elements
 
 def increase_all(L):
   return [ [ x+1 for x in l ] for l in L ]
