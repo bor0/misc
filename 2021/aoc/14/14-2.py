@@ -40,7 +40,6 @@ def step(template, rules, count):
   pairs = get_pairs_from_template(template)
   letters = get_letters_from_template(template)
 
-  print(letters)
   # Subsequent steps
   for i in range(0, count):
     letters = get_letters_from_pairs(pairs, rules, letters)
