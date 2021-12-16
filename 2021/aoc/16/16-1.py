@@ -38,6 +38,7 @@ def parse_operator_packet(bits, version, type_id):
 
   return { 'data': packets, 'size': i, 'version': version, 'type_id': type_id }
 
+# this parsing function does not take subpackets length into consideration, it just reads everything
 def parse_packet(bits):
   if len(bits) < 6: return { 'data': None, 'size': len(bits) }
 
