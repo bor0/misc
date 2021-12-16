@@ -2,6 +2,9 @@ def hex_to_binary(h):
   mapa = { '0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'A': '1010', 'B': '1011', 'C': '1100', 'D': '1101', 'E': '1110', 'F': '1111' }
   return ''.join([ mapa[i] for i in h ])
 
+def mkpacket(data, remaining = '', version = None, type_id = None):
+  return { 'data': data, 'remaining': remaining, 'version': version, 'type_id': type_id }
+
 def parse_literal_packet(bits, version, type_id):
   i = 0
   packets = []
@@ -11,101 +14,98 @@ def parse_literal_packet(bits, version, type_id):
     if bits[5*i] == '0': break
     i += 1
 
-  return { 'data': ''.join(packets), 'size': 5*(i+1), 'version': version, 'type_id': type_id }
+  return mkpacket(''.join(packets), bits[5*(i+1):], version, type_id)
 
 def parse_operator_packet(bits, version, type_id):
-  if len(bits) < 6: return { 'data': None, 'size': len(bits), 'version': version, 'type_id': type_id }
-
+  if len(bits) < 6: return mkpacket('')
+  # length of subpackets
   if bits[0] == '0':
-    length = 15
-    mode = 'bitlen'
-  else:
-    length = 11
-    mode = 'packetlen'
+    subpackets_len = int(bits[1:16], 2)
 
-  length += 1 # for the length bit
+    remaining = bits[16:]
+    data = _parse_packet(remaining[:subpackets_len], [])
 
-  if bits[1:length + 1] == '': return { 'data': None, 'size': length, 'version': version, 'type_id': type_id }
+    packets = data['data']
+    remaining = remaining[subpackets_len:]
+  # number of subpackets
+  elif bits[0] == '1':
+    subpackets_num = int(bits[1:12], 2)
 
-  mode_length = int(bits[1:length], 2)
-  read_bits = length + mode_length
+    packets = []
+    remaining = bits[12:]
 
-  packets = []
+    while len(packets) != subpackets_num:
+      data = _parse_packet(remaining, [], True)
 
-  if mode == 'bitlen':
-    bits = bits[length:length+mode_length]
-    i = 0
-    while True:
-      data = parse_packet(bits[i:])
-      if not data or not data['data']: break
-      packets.append(data['data'])
-      i += data['size']
-    i = length + mode_length
-  else:
-    i = length
-    while len(packets) != mode_length:
-      data = parse_packet(bits[i:], True)
-      if not data or not data['data']: break
-      packets.append(data['data'])
-      i += data['size']
+      remaining = data['remaining']
+      data = data['data']
 
-  return { 'data': packets, 'size': i, 'version': version, 'type_id': type_id }
+      packets.append(data)
+  
+  return mkpacket(packets, remaining, version, type_id)
 
-def parse_packet(bits, single=False):
-  if len(bits) < 6: return { 'data': None, 'size': len(bits) }
+def _parse_packet(bits, acc=[], single=False):
+  if len(bits) < 6: return mkpacket(acc)
 
-  version = bits[0:3]
-  type_id = bits[3:6]
-
-  read_bits = len(version) + len(type_id)
+  version   = bits[0:3]
+  type_id   = bits[3:6]
+  remaining = bits[6:]
 
   if type_id == '100':
-    data = parse_literal_packet(bits[6:], version, type_id)
-    read_bits += data['size']
+    data = parse_literal_packet(remaining, version, type_id)
   else:
-    data = parse_operator_packet(bits[6:], version, type_id)
-    read_bits += data['size']
+    data = parse_operator_packet(remaining, version, type_id)
 
-  if single and isinstance(data, list) and len(data) > 1:
-    data = data[0]
+  remaining = data['remaining']
 
-  return { 'data': data, 'size': read_bits, 'version': version, 'type_id': type_id }
+  if single:
+    return mkpacket(data, remaining, version, type_id)
 
-def eval_packets(packets,depth=0):
-  if not isinstance(packets, dict): return int(packets,2)
+  return _parse_packet(remaining, acc + [data], single)
+
+def smooth(packets):
+  if isinstance(packets, list):
+    return [ smooth(p) for p in packets ]
+
+  if not isinstance(packets, dict):
+    return packets
+
+  del packets['remaining']
+
+  smooth(packets['data'])
+  return packets
+
+def parse_packet(bits):
+  packets = _parse_packet(bits)
+  packets = smooth(packets)
+  return packets['data'][0]
+
+def eval_packets(packets):
+  if isinstance(packets, str): return int(packets, 2)
 
   while True:
     if packets == None: break
 
-    if isinstance(packets, dict):
-#      print(depth*' ' + 'operator is ' + str(int(packets['type_id'],2)))
-#      print(depth*' ', end='')
-#      print(packets['data'])
+    if isinstance(packets['data'], list): data = [ eval_packets(p) for p in packets['data'] ]
+    else: data = eval_packets(packets['data'])
 
-      if isinstance(packets['data'], list): data = [ eval_packets(p,depth+1) for p in packets['data'] ]
-      else: data = eval_packets(packets['data'],depth+1)
-#      print(depth*' ', end='')
-#      print(packets['type_id'],data)
-      if not isinstance(data, list): return data
-      if len(data)==1: return data[0]
+    if isinstance(data, list) and len(data) == 1: return data[0]
 
-#      print(data)
-      if packets['type_id'] == '000': return data[0]+data[1]
-      if packets['type_id'] == '001': return data[0]*data[1]
-      if packets['type_id'] == '010': return min(data)
-      if packets['type_id'] == '011': return max(data)
-      if packets['type_id'] == '100': return data
-      if packets['type_id'] == '101':
-        if data[0] > data[1]: return 1
-        return 0
-      if packets['type_id'] == '110':
-        if data[0] < data[1]: return 1
-        return 0
-      if packets['type_id'] == '111':
-        if data[0] == data[1]: return 1
-        return 0
-
-    if isinstance(packets, str): return int(packets,2)
+    if isinstance(data, list): print(len(data))
+    if packets['type_id'] == '000': return sum(data)
+    if packets['type_id'] == '001': return reduce(lambda x, y: x * y, data)
+    if packets['type_id'] == '010': return min(data)
+    if packets['type_id'] == '011': return max(data)
+    if packets['type_id'] == '100': return data
+    if packets['type_id'] == '101':
+      if data[0] > data[1]: return 1
+      return 0
+    if packets['type_id'] == '110':
+      if data[0] < data[1]: return 1
+      return 0
+    if packets['type_id'] == '111':
+      if data[0] == data[1]: return 1
+      return 0
 
     packets = packets['data']
 
@@ -128,5 +128,5 @@ programs = [
 
 for p in programs:
   data = parse_packet(hex_to_binary(p))
-  #print(data)
+#  print(data)
   print(eval_packets(data))
