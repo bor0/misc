@@ -1,3 +1,5 @@
+from queue import PriorityQueue
+
 with open('input') as f:
   L = f.read().split('\n')
   L = [ [ int(x) for x in a ] for a in L ]
@@ -8,24 +10,96 @@ def get_risk_wrap(L, i, j, leni, lenj):
   if value > 9: value = value % 9
   return value
 
-leni = len(L)
-lenj = len(L[0])
+def get_neighbors(L, i, j, leni, lenj):
+  neighbors = []
 
-# Initialize cost
-cost = [ [ float('inf') for a in b*5 ] for b in L*5 ]
-cost[0][0] = 0
+  if i - 1 >= 0: neighbors.append((i-1,j))
+  if j - 1 >= 0: neighbors.append((i,j-1))
+  if i + 1 < leni: neighbors.append((i+1,j))
+  if j + 1 < lenj: neighbors.append((i,j+1))
 
-for i in range(1, leni*5):
-  cost[i][0] = get_risk_wrap(L, i, 0, leni, lenj) + cost[i-1][0]
+  return neighbors
 
-for j in range(1, lenj*5):
-  cost[0][j] = get_risk_wrap(L, 0, j, leni, lenj) + cost[0][j-1]
+def ultra_slow(L):
+  leni = len(L)
+  lenj = len(L[0])
+  
+  # Dijkstra starts here
+  start_node = (0, 0)
+  
+  # Initialize cost
+  # Default to infinity from start_node to each
+  cost = { (i, j): float('inf') for i in range(0, leni*5) for j in range(0, lenj*5) }
+  cost[start_node] = 0
+  
+  # Set of nodes to process and processed nodes
+  nodes = set([start_node])
+  processed = set()
+  
+  while nodes:
+    # Check the node hasn't been processed yet
+    (i, j) = node = nodes.pop()
+    if node in processed: continue
+    processed.add(node)
+    print(len(processed))
+  
+    # Get neighbors
+    neighbors = get_neighbors(L, i, j, leni*5, lenj*5)
+  
+    for (i, j) in neighbors:
+      # Get current calculated distance and edge value
+      cur = cost[node] + get_risk_wrap(L, i, j, leni, lenj)
+      # Check and set if it's smaller than the current minimum
+      cost[(i, j)] = min(cur, cost[(i, j)])
+  
+    # Add neighbors for processing
+    nodes = nodes.union(neighbors)
+  
+  return cost[(leni*5-1, lenj*5-1)]
 
-# Process cost
-for i in range(1, leni*5):
-  for j in range(1, lenj*5):
-    cost[i][j] = get_risk_wrap(L, i, j, leni, lenj) + min(cost[i-1][j], cost[i][j-1])
+# Priority queue makes it faster!
+def ultra_fast(L):
+  leni = len(L)
+  lenj = len(L[0])
+  
+  # Dijkstra starts here
+  start_node = (0, 0)
+  
+  # Initialize cost
+  # Default to infinity from start_node to each
+  cost = { (i, j): float('inf') for i in range(0, leni*5) for j in range(0, lenj*5) }
+  cost[start_node] = 0
+  
+  # Set of nodes to process and processed nodes
+  nodes = PriorityQueue()
+  nodes.put((0, start_node))
+  processed = set()
+  
+  while not nodes.empty():
+    # Check the node hasn't been processed yet
+    (_, (i, j)) = (_, node) = nodes.get()
 
-print(cost[leni*5-1][lenj*5-1])
+    if node in processed: continue
+    processed.add(node)
+  
+    # Get neighbors
+    neighbors = get_neighbors(L, i, j, leni*5, lenj*5)
+  
+    for neighbor in neighbors:
+      (di, dj) = neighbor
+      # Get current calculated distance and edge value
+      new_cost = cost[node] + get_risk_wrap(L, di, dj, leni, lenj)
+      old_cost = cost[neighbor]
+      # Check and set if it's smaller than the current minimum
+      if new_cost < old_cost:
+        cost[neighbor] = new_cost
+        # Add neighbors for processing
+        nodes.put((new_cost, neighbor))
 
-#TODO: extra 9 on the final answer?
+  #for node in processed: print(node)
+  #for (i, j), v in cost.iteritems():
+  #  print("%d,%d->%f" % (i, j, v))
+  
+  return cost[(leni*5-1, lenj*5-1)]
+
+print(ultra_fast(L))
