@@ -30,7 +30,6 @@ fn listmap(x : List<i32>) -> List<i32> {
     }
 }
 
-
 #[derive(Debug)]
 enum BTree<'a, T> {
     Leaf(T),
@@ -46,8 +45,32 @@ fn treeeg() {
     println!("{:?}", z);
 }
 
+#[derive(Debug)]
+enum BTree2<T> {
+    Leaf(T),
+    Node(T, Box<BTree2<T>>, Box<BTree2<T>>),
+}
+
+fn tree2eg() {
+    let x : BTree2<i32> = BTree2::Leaf(1);
+    println!("{:?}", x);
+    let y : BTree2<i32> = BTree2::Leaf(3);
+    println!("{:?}", y);
+    let z = BTree2::Node(2, Box::new(x), Box::new(y));
+    println!("{:?}", z);
+    println!("{:?}", tree2map(z));
+}
+
+fn tree2map(x : BTree2<i32>) -> BTree2<i32> {
+    match x {
+        BTree2::Leaf(x) => BTree2::Leaf(x + 1),
+        BTree2::Node(x, left, right) => BTree2::Node(x + 1, Box::new(tree2map(*left)), Box::new(tree2map(*right)))
+    }
+}
+
 fn main() {
     listeg();
     listeg2();
     treeeg();
+    tree2eg();
 }
