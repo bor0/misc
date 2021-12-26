@@ -5,7 +5,7 @@ An attempt of tackling [AoC 24 2021](https://adventofcode.com/2021/day/24).
 
 I thought I could express the program with a single expression, and then use an optimization function (with some fixed set of rules) to simplify it.
 
-This is what the `run` ([String]->Inputs->State), `calcState` ([String]->State) and `runState` (State->Inputs->State)  output, respectively:
+This is what the `run` ([String]->Inputs->State) (for input 9), `calcState` ([String]->State) and `runState` (State->Inputs->State)  output, respectively:
 
 ```
 State {varW = 1, varX = 0, varY = 0, varZ = 1, inputs = ["B","C","D","E","F","G","H","I","J","K","L","M","N"]}
