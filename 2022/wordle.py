@@ -18,7 +18,7 @@ def find_best(words):
   return words[max(words)]
 
 def update_words(words, word, data):
-  (exists, dark) = ([], [])
+  (exists, dark) = ([], set())
 
   for i in range(0, len(data)):
     letter = word[i]
@@ -29,9 +29,9 @@ def update_words(words, word, data):
       words = [ w for w in words if w[i] != letter and letter in w ]
       exists.append(letter)
     elif data[i] == 'D':
-      dark.append(letter)
+      dark.add(letter)
 
-  (exists, dark) = (Counter(exists), Counter(dark))
+  exists = Counter(exists)
 
   for letter in dark:
     if letter not in exists:
