@@ -62,14 +62,10 @@ while True:
   print("Enter the following word in Wordle: " + word)
   data = input("Enter string value from Wordle (G=Green, O=Orange, D=Dark), or S to skip: ").upper()
 
-  if data == 'S':
-    words = [ w for w in words if w != word ]
-  else:
-    words = update_words(words, word, data)
+  if data == 'S': words = [ w for w in words if w != word ]
+  else: words = update_words(words, word, data)
 
-  if len(words) == 1:
-    quit("Solution: " + words[0])
-  elif len(words) == 0:
-    quit("No solution found.")
+  if len(words) == 1: quit("Solution: " + words[0])
+  elif len(words) == 0: quit("No solution found.")
 
   word = words[0]
