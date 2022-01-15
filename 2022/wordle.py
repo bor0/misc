@@ -41,21 +41,6 @@ def update_words(words, word, data):
 
   return words
 
-"""
-def update_words_functional(words, word, data):
-  processed = list(zip(word, data, range(0, len(data))))
-
-  words = [ word for word in words if all(word[i] == c for (c, d, i) in processed if d == 'G') ] # Process Green
-  words = [ word for word in words if all(word[i] != c and c in word for (c, d, i) in processed if d == 'O') ] # Process Orange
-
-  exists = [ c for (c, d, i) in processed if d == 'G' or d == 'O' ] # Letter exists if it's either Green or Orange
-  dark   = [ c for (c, d, i) in processed if d == 'D' ] # Dark letters don't exist
-
-  words = [ word for word in words if not any(c in word for c in dark if not c in exists) ] # Process Dark
-
-  return words
-"""
-
 word = find_best(words)
 
 while True:
