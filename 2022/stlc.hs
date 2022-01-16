@@ -16,8 +16,8 @@ isTmVar _ = False
 instance Show Term where
   show (TmVar x) = x
   show (TmAbs v ty tm) = "\\" ++ v ++ " -> " ++ show tm
-  show (TmApp tm1 tm2) = if isTmVar tm1 then show tm1 else ("(" ++ show tm1 ++ ")") ++ " " ++
-                         if isTmVar tm2 then show tm2 else ("(" ++ show tm2 ++ ")")
+  show (TmApp tm1 tm2) = (if isTmVar tm1 then show tm1 else "(" ++ show tm1 ++ ")") ++ " " ++
+                         (if isTmVar tm2 then show tm2 else "(" ++ show tm2 ++ ")")
 
 data Type =
    TyVar
