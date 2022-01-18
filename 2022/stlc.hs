@@ -36,12 +36,12 @@ eval x = error $ "No rule applies: " ++ show x
 -- subst VarName in Term to Term
 subst :: VarName -> Term -> Term -> Term
 subst x (TmVar v) newVal
-    | x == v    = newVal
-    | otherwise = TmVar v
+  | x == v    = newVal
+  | otherwise = TmVar v
 subst x (TmAbs y t t1) newVal
-    | x == y                                  = TmAbs y t t1
-    | x /= y && (y `notElem` freeVars newVal) = TmAbs y t (subst x t1 newVal)
-    | otherwise                               = error $ "Cannot substitute '" ++ show x ++ "' in term '" ++ show (TmAbs y t t1) ++ "'"
+  | x == y                                  = TmAbs y t t1
+  | x /= y && (y `notElem` freeVars newVal) = TmAbs y t (subst x t1 newVal)
+  | otherwise                               = error $ "Cannot substitute '" ++ show x ++ "' in term '" ++ show (TmAbs y t t1) ++ "'"
 subst x (TmApp t1 t2) newVal = TmApp (subst x t1 newVal) (subst x t2 newVal)
 
 freeVars :: Term -> [VarName]
@@ -51,22 +51,22 @@ freeVars (TmApp t1 t2) = freeVars t1 ++ freeVars t2
 
 typeOf :: TyEnv -> Term -> Either String Type
 typeOf env (TmVar n) =
-    case getTypeFromEnv env n of
-        Just t -> Right t
-        _      -> error $ "No var found in env: " ++ show n
+  case getTypeFromEnv env n of
+    Just t -> Right t
+    _      -> error $ "No var found in env: " ++ show n
 typeOf env (TmAbs n t1 te) =
-    let newEnv = addType n t1 env
-        t2 = typeOf newEnv te in
-        case t2 of
-            Right t2 -> Right $ TyArr t1 t2
-            _        -> Left "Unsupported type for TmAbs"
+  let newEnv = addType n t1 env
+      t2 = typeOf newEnv te in
+      case t2 of
+        Right t2 -> Right $ TyArr t1 t2
+        _        -> Left "Unsupported type for TmAbs"
 typeOf env (TmApp t1 t2)   =
-    let t1' = typeOf env t1
-        t2' = typeOf env t2 in
-        case t1' of
-           Right (TyArr a b) | Right a == t2' -> Right b
-           Right (TyArr a _)                  -> Left $ "Type mismatch between " ++ show t1' ++ " and " ++ show t2'
-           _                                  -> Left "Unsupported type for TmApp"
+  let t1' = typeOf env t1
+      t2' = typeOf env t2 in
+      case t1' of
+        Right (TyArr a b) | Right a == t2' -> Right b
+        Right (TyArr a _)                  -> Left $ "Type mismatch between " ++ show t1' ++ " and " ++ show t2'
+        _                                  -> Left "Unsupported type for TmApp"
 
 addType :: String -> Type -> TyEnv -> TyEnv
 addType varname b env = (varname, b) : env
@@ -82,6 +82,9 @@ egEval = eval (TmApp lcid (TmVar "x"))
 
 fix = let t1 = TmAbs "x" TyVar (TmApp (TmVar "f") (TmApp (TmVar "x") (TmVar "x"))) in TmAbs "f" TyVar (TmApp t1 t1)
 fixT = getTypeFromEnv egTypeEnv "fix"
+-- In Haskell, `let y = \f -> (\x -> (f (x x))) (\x -> (f (x x)))` does not typecheck
+-- Neither does the following work in Scheme: `(define Y (lambda (f) ((lambda (x) (f (x x))) (lambda (x) (f (x x))))))`
+-- Since Scheme evaluates strictly by default, (x x) runs infinitely. However, this works: `(define Y (lambda (f) ((lambda (x) (f (lambda (a) ((x x) a)))) (lambda (x) (f (lambda (a) ((x x) a)))))))`
 
 egFix = TmApp fix lcid
 egFixEval = eval egFix
