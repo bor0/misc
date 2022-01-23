@@ -22,3 +22,7 @@ append (x::xs) ys = x :: append xs ys
 -- Proof that [1] ++ [2] == [1, 2]
 appendEg2 : append [1] [2] = [1, 2]
 appendEg2 = Refl
+
+total proof_1 : Append xs ys zs -> zs = append xs ys
+proof_1 AppendNil = Refl
+proof_1 (AppendRec prf) = let IH = proof_1 prf in rewrite IH in Refl
