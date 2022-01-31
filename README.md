@@ -6,6 +6,7 @@ Here's a list of interesting stuff that I have read or am reading.
 
 # Technical books
 
+1. Introducing Software Verification with Dafny Language [#](https://www.amazon.com/dp/1484279778)
 1. Gentle Introduction to Dependent Types with Idris [#](https://www.amazon.com/dp/1723139416)
 1. Introducing Blockchain with Lisp [#](https://www.amazon.com/dp/1484269683)
 1. How To Prove It [#](https://www.amazon.com/dp/1108439535)
@@ -21,6 +22,7 @@ Here's a list of interesting stuff that I have read or am reading.
 1. Metamath [#](https://www.amazon.com/dp/1411637240)
 1. Gödel, Escher, Bach [#](https://www.amazon.com/dp/0465026567)
 1. Naive Set Theory [#](https://www.amazon.com/dp/1614271313)
+1. Thinking as Computation [#](https://www.amazon.com/dp/0262016990)
 
 # Tutorials/papers
 
@@ -45,10 +47,14 @@ Here's a list of interesting stuff that I have read or am reading.
 1. Redesigning Leadership [#](https://www.amazon.com/dp/0262015889)
 1. The Alchemist [#](https://www.amazon.com/dp/0061122416)
 1. Bobby Fischer Teaches Chess [#](https://www.amazon.com/dp/0553263153)
+1. The art of learning [#](https://www.amazon.com/dp/0743277465)
 1. The Queen's Gambit [#](https://www.amazon.com/dp/1400030609)
+1. Darkly Dreaming Dexter [#](https://www.amazon.com/dp/0307277887)
 1. Thinking, Fast and Slow [#](https://www.amazon.com/dp/0374533555)
 1. The Lady or the Tiger? [#](https://www.amazon.com/dp/048647027X)
 1. The Gödelian Puzzle Book [#](https://www.amazon.com/dp/0486497054)
 1. What Is the Name of This Book? [#](https://www.amazon.com/dp/0486481980)
+1. On faith, unbelief, and doubt (Metropolitan Benjamin)
+1. Spirit, Soul, Body [#](https://www.amazon.com/dp/9079889431)
 
 Boro Sitnikovski
