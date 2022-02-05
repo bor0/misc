@@ -1,7 +1,7 @@
 #lang racket
 (require racket/hash)
 
-(define (is-variable sym) (string-prefix? (symbol->string sym) "?"))
+(define (is-variable sym) (and (symbol? sym) (string-prefix? (symbol->string sym) "?")))
 (define (merge-hashes? h1 h2)
   (null? (filter identity (hash-values (hash-intersect h1 h2 #:combine/key (lambda (k v1 v2) (not (equal? v1 v2))))))))
 (define (merge-hashes h1 h2)
@@ -20,8 +20,11 @@
                               (hash)))))
     ((equal? (car expr1) (car expr2)) (unify-single-iter (cdr expr1) (cdr expr2) acc)) ; same element keep iterating
     ((and (is-variable (car expr2))
-          (or (not (hash-has-key? acc (car expr2))) (equal? (hash-ref acc (car expr2)) (car expr1)))) ; either var not in hash, or if in hash, same value
+          (or (not (hash-has-key? acc (car expr2))) (equal? (hash-ref acc (car expr2)) (car expr1)))) ; <- either var not in hash, or if in hash, same value
      (unify-single-iter (cdr expr1) (cdr expr2) (hash-set acc (car expr2) (car expr1)))) ; perform variable replacement
+    ((and (is-variable (car expr1))
+          (or (not (hash-has-key? acc (car expr1))) (equal? (hash-ref acc (car expr1)) (car expr2)))) ; -> either var not in hash, or if in hash, same value
+     (unify-single-iter (cdr expr2) (cdr expr1) (hash-set acc (car expr1) (car expr2)))) ; perform variable replacement
     (else #f)))
 
 (define (unify ctx expr)
