@@ -27,17 +27,18 @@
      (unify-single-iter (cdr expr2) (cdr expr1) (hash-set acc (car expr1) (car expr2)))) ; perform variable replacement
     (else #f)))
 
-(define (unify ctx expr)
-  (if (null? ctx) null
-      (let ([unify-res (unify-single (car ctx) expr)])
+(define (unify db expr)
+  (if (null? db) null
+      (let ([unify-res (unify-single (car db) expr)])
         (if unify-res
-            (cons unify-res (unify (cdr ctx) expr))
-            (unify (cdr ctx) expr)))))
+            (cons unify-res (unify (cdr db) expr))
+            (unify (cdr db) expr)))))
 
-(define ctx '((boro sitnikovski programer)
+(define db '((boro sitnikovski programer)
               (dijana sitnikovska ekonomist)
               (zaklina sitnikovska dete)
-              (hristijan sitnikovski dete)))
+              (hristijan sitnikovski dete)
+              (ev 0)))
 
 (unify-single '(x y z) '(x y z)) ; {}
 (unify-single '(x y z) '(x ?y z)) ; {?y:y}
@@ -51,8 +52,34 @@
 (unify-single '(w (x y) (x y) z) '(w (?x y) (?x y) z)) ; {?x:x}
 (unify-single '(w (x y) (x y) z) '(w (x ?x) (?x y) z)) ; #f
 
-(unify ctx '(?x ?y programer)) ; boro
-(unify ctx '(?x ?y dete)) ; zaki, kiko
-(unify ctx '(?x ?y ekonomist)) ; diksi
-(unify ctx '(?x sitnikovski ?y)) ; boro kiko
-(unify ctx '(?x sitnikovska ?y)) ; zaki diksi
+(unify db '(?x ?y programer)) ; boro
+(unify db '(?x ?y dete)) ; zaki, kiko
+(unify db '(?x ?y ekonomist)) ; diksi
+(unify db '(?x sitnikovski ?y)) ; boro kiko
+(unify db '(?x sitnikovska ?y)) ; zaki diksi
+
+(struct rule (hypothesis conclusion) #:transparent)
+
+(define rule-ev (rule '(ev ?x) '(ev (s (s ?x)))))
+
+(define (subst x y expr)
+  (cond ((null? expr) '())
+        ((equal? x expr) y)
+        ((not (pair? expr)) expr)
+        (else (cons (subst x y (car expr))
+                    (subst x y (cdr expr))))))
+
+(define (replace-vars hash expression)
+  (let ([lst (hash->list hash)])
+    (foldl (lambda (var expr)
+             (subst (car var) (cdr var) expr))
+           expression lst)))
+
+(define (apply-rule db rule)
+  (let ([unified-entries (unify db (rule-hypothesis rule-ev))])
+    (map (lambda (x) (replace-vars x (rule-conclusion rule))) unified-entries)))
+
+(apply-rule db rule-ev)
+(set! db (set->list (set-union db (apply-rule db rule-ev))))
+(apply-rule db rule-ev)
+(set! db (set->list (set-union db (apply-rule db rule-ev))))
