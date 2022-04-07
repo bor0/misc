@@ -14,9 +14,10 @@ $grammar = [
 	'name'    => [ 'alpha name', 'alpha' ],
 ];
 
-function rule_match( $grammar, $str, $rule, $recurse = false ) {
-	$rules = $grammar[ $rule ];
+function rule_match( $grammar, $str, $rule_name, $recurse = false ) {
+	$rules = $grammar[ $rule_name ];
 	foreach ( $rules as $rule ) {
+		$applied = [];
 		$sstr = explode( ' ', $str );
 		$tokens = explode( ' ', $rule );
 		foreach ( $tokens as $token ) {
@@ -32,29 +33,28 @@ function rule_match( $grammar, $str, $rule, $recurse = false ) {
 				}
 			} else {
 				// treat token as a grammar name
-				[ $ssstr, $valid ] = rule_match( $grammar, implode( ' ', $sstr ), $token, true );
+				[ $ssstr, $aapplied, $valid ] = rule_match( $grammar, implode( ' ', $sstr ), $token, true );
 				if ( ! $valid ) {
 					continue 2;
 				}
 				$sstr = $ssstr;
+				$applied = array_merge( $applied, $aapplied );
 			}
 		}
-		if ( $recurse ) {
-			// This is a sub-call, we still have more stuff to parse
-			return [ $sstr, true ];
-		} else if ( empty( $sstr ) ) {
-			// Main call, nothing else to parse, empty string, it works!
-			return [ [], true ];
+		if ( empty( $sstr ) || $recurse ) {
+			$applied[] = $rule_name;
+			// Either the string is fully parsed, or this is a sub-call (we still have more stuff to parse)
+			return [ $sstr, $applied, true ];
 		}
 	}
-	return [ [], false ];
+	return [ [], [], false ];
 }
 
 function grammar_match( $grammar, $str ) {
 	foreach ( $grammar as $name => $rule ) {
-		[ $ssstr, $valid ] = rule_match( $grammar, $str, $name );
+		[ $sstr, $applied, $valid ] = rule_match( $grammar, $str, $name );
 		if ( $valid ) {
-			return $name;
+			return implode( ',', array_reverse( $applied ) );
 		}
 	}
 	return false;
