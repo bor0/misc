@@ -1,0 +1,354 @@
+diff --git a/TASK.md b/TASK.md
+new file mode 100644
+index 0000000..3bdfa53
+--- /dev/null
++++ b/TASK.md
+@@ -0,0 +1,31 @@
++Implement `mult` command in memcached
++-------------------------------------
++
++Tackled this as an exercise after reading the blogpost: https://quuxplusone.github.io/blog/2022/01/06/memcached-interview/
++
++Example:
++
++```
++$ telnet localhost 11211
++Trying ::1...
++Connected to localhost.
++Escape character is '^]'.
++set visitors 0 900 2
++10
++STORED
++get visitors
++VALUE visitors 0 2
++10
++END
++incr visitors 5
++15
++mult visitors 3
++45
++get visitors
++VALUE visitors 0 2
++45
++```
++
++Finished in 30ish minutes.
++
++Boro Sitnikovski, 2022
+diff --git a/memcached.c b/memcached.c
+index 584bff1..13af819 100644
+--- a/memcached.c
++++ b/memcached.c
+@@ -1825,6 +1825,8 @@ void server_stats(ADD_STAT add_stats, conn *c) {
+     APPEND_STAT("incr_hits", "%llu", (unsigned long long)slab_stats.incr_hits);
+     APPEND_STAT("decr_misses", "%llu", (unsigned long long)thread_stats.decr_misses);
+     APPEND_STAT("decr_hits", "%llu", (unsigned long long)slab_stats.decr_hits);
++    APPEND_STAT("mult_misses", "%llu", (unsigned long long)thread_stats.mult_misses);
++    APPEND_STAT("mult_hits", "%llu", (unsigned long long)slab_stats.mult_hits);
+     APPEND_STAT("cas_misses", "%llu", (unsigned long long)thread_stats.cas_misses);
+     APPEND_STAT("cas_hits", "%llu", (unsigned long long)slab_stats.cas_hits);
+     APPEND_STAT("cas_badval", "%llu", (unsigned long long)slab_stats.cas_badval);
+@@ -2212,14 +2214,14 @@ item* limited_get_locked(char *key, size_t nkey, conn *c, bool do_update, uint32
+  *
+  * c     connection requesting the operation
+  * it    item to adjust
+- * incr  true to increment value, false to decrement
++ * oper  operator to process
+  * delta amount to adjust value by
+  * buf   buffer for response string
+  *
+  * returns a response string to send back to the client.
+  */
+ enum delta_result_type do_add_delta(conn *c, const char *key, const size_t nkey,
+-                                    const bool incr, const int64_t delta,
++                                    const char oper, const int64_t delta,
+                                     char *buf, uint64_t *cas,
+                                     const uint32_t hv,
+                                     item **it_ret) {
+@@ -2256,23 +2258,28 @@ enum delta_result_type do_add_delta(conn *c, const char *key, const size_t nkey,
+         return NON_NUMERIC;
+     }
+ 
+-    if (incr) {
++    if (oper == '+') {
+         value += delta;
+         MEMCACHED_COMMAND_INCR(c->sfd, ITEM_key(it), it->nkey, value);
+-    } else {
++    } else if (oper == '-') {
+         if(delta > value) {
+             value = 0;
+         } else {
+             value -= delta;
+         }
+         MEMCACHED_COMMAND_DECR(c->sfd, ITEM_key(it), it->nkey, value);
++    } else if (oper == '*') {
++        value *= delta;
++        MEMCACHED_COMMAND_MULT(c->sfd, ITEM_key(it), it->nkey, value);
+     }
+ 
+     pthread_mutex_lock(&c->thread->stats.mutex);
+-    if (incr) {
++    if (oper == '+') {
+         c->thread->stats.slab_stats[ITEM_clsid(it)].incr_hits++;
+-    } else {
++    } else if (oper == '-') {
+         c->thread->stats.slab_stats[ITEM_clsid(it)].decr_hits++;
++    } else if (oper == '*') {
++        c->thread->stats.slab_stats[ITEM_clsid(it)].mult_hits++;
+     }
+     pthread_mutex_unlock(&c->thread->stats.mutex);
+ 
+diff --git a/memcached.h b/memcached.h
+index 3435677..19de37c 100644
+--- a/memcached.h
++++ b/memcached.h
+@@ -289,7 +289,8 @@ enum delta_result_type {
+     X(cas_hits) \
+     X(cas_badval) \
+     X(incr_hits) \
+-    X(decr_hits)
++    X(decr_hits) \
++    X(mult_hits)
+ 
+ /** Stats stored per slab (and per thread). */
+ struct slab_stats {
+@@ -308,6 +309,7 @@ struct slab_stats {
+     X(delete_misses) \
+     X(incr_misses) \
+     X(decr_misses) \
++    X(mult_misses) \
+     X(cas_misses) \
+     X(meta_cmds) \
+     X(bytes_read) \
+@@ -901,7 +903,7 @@ extern void *ext_storage;
+  */
+ void do_accept_new_conns(const bool do_accept);
+ enum delta_result_type do_add_delta(conn *c, const char *key,
+-                                    const size_t nkey, const bool incr,
++                                    const size_t nkey, const char oper,
+                                     const int64_t delta, char *buf,
+                                     uint64_t *cas, const uint32_t hv,
+                                     item **it_ret);
+@@ -948,7 +950,7 @@ void sidethread_conn_close(conn *c);
+ 
+ /* Lock wrappers for cache functions that are called from main loop. */
+ enum delta_result_type add_delta(conn *c, const char *key,
+-                                 const size_t nkey, bool incr,
++                                 const size_t nkey, char oper,
+                                  const int64_t delta, char *buf,
+                                  uint64_t *cas);
+ void accept_new_conns(const bool do_accept);
+diff --git a/proto_bin.c b/proto_bin.c
+index d8b37c5..6e2891a 100644
+--- a/proto_bin.c
++++ b/proto_bin.c
+@@ -264,6 +264,7 @@ static void complete_incr_bin(conn *c, char *extbuf) {
+     /* Weird magic in add_delta forces me to pad here */
+     char tmpbuf[INCR_MAX_STORAGE_LEN];
+     uint64_t cas = 0;
++    char oper;
+ 
+     assert(c != NULL);
+     protocol_binary_response_incr* rsp = (protocol_binary_response_incr*)c->resp->wbuf;
+@@ -294,7 +295,18 @@ static void complete_incr_bin(conn *c, char *extbuf) {
+     if (c->binary_header.request.cas != 0) {
+         cas = c->binary_header.request.cas;
+     }
+-    switch(add_delta(c, key, nkey, c->cmd == PROTOCOL_BINARY_CMD_INCREMENT,
++    switch(c->cmd) {
++    case PROTOCOL_BINARY_CMD_INCREMENT:
++        oper = '+';
++        break;
++    case PROTOCOL_BINARY_CMD_DECREMENT:
++        oper = '-';
++        break;
++    case PROTOCOL_BINARY_CMD_MULTIPLY:
++        oper = '*';
++        break;
++    }
++    switch(add_delta(c, key, nkey, oper,
+                      req->message.body.delta, tmpbuf,
+                      &cas)) {
+     case OK:
+@@ -342,8 +354,10 @@ static void complete_incr_bin(conn *c, char *extbuf) {
+             pthread_mutex_lock(&c->thread->stats.mutex);
+             if (c->cmd == PROTOCOL_BINARY_CMD_INCREMENT) {
+                 c->thread->stats.incr_misses++;
+-            } else {
++            } else if (c->cmd == PROTOCOL_BINARY_CMD_DECREMENT) {
+                 c->thread->stats.decr_misses++;
++            } else if (c->cmd == PROTOCOL_BINARY_CMD_MULTIPLY) {
++                c->thread->stats.mult_misses++;
+             }
+             pthread_mutex_unlock(&c->thread->stats.mutex);
+ 
+diff --git a/proto_text.c b/proto_text.c
+index 26e8eec..6b3ce3f 100644
+--- a/proto_text.c
++++ b/proto_text.c
+@@ -1696,7 +1696,7 @@ static void process_marithmetic_command(conn *c, token_t *tokens, const size_t n
+     // If no argument supplied, incr or decr by one.
+     of.delta = 1;
+     of.initial = 0; // redundant, for clarity.
+-    bool incr = true; // default mode is to increment.
++    char oper = '\0';
+     bool locked = false;
+     uint32_t hv = 0;
+     item *it = NULL; // item returned by do_add_delta.
+@@ -1732,11 +1732,15 @@ static void process_marithmetic_command(conn *c, token_t *tokens, const size_t n
+             break;
+         case 'I': // Incr (default)
+         case '+':
+-            incr = true;
++            oper = '+';
+             break;
+         case 'D': // Decr.
+         case '-':
+-            incr = false;
++            oper = '-';
++            break;
++        case 'M': // Mult.
++        case '*':
++            oper = '*';
+             break;
+         default:
+             errstr = "CLIENT_ERROR invalid mode for ma M token";
+@@ -1754,7 +1758,7 @@ static void process_marithmetic_command(conn *c, token_t *tokens, const size_t n
+     // return a referenced item if it exists, so we can modify it here, rather
+     // than adding even more parameters to do_add_delta.
+     bool item_created = false;
+-    switch(do_add_delta(c, key, nkey, incr, of.delta, tmpbuf, &of.req_cas_id, hv, &it)) {
++    switch(do_add_delta(c, key, nkey, oper, of.delta, tmpbuf, &of.req_cas_id, hv, &it)) {
+     case OK:
+         if (c->noreply)
+             resp->skip = true;
+@@ -1793,10 +1797,12 @@ static void process_marithmetic_command(conn *c, token_t *tokens, const size_t n
+             }
+         } else {
+             pthread_mutex_lock(&c->thread->stats.mutex);
+-            if (incr) {
++            if (oper == '+') {
+                 c->thread->stats.incr_misses++;
+-            } else {
++            } else if (oper == '-') {
+                 c->thread->stats.decr_misses++;
++            } else if (oper == '*') {
++                c->thread->stats.mult_misses++;
+             }
+             pthread_mutex_unlock(&c->thread->stats.mutex);
+             // won't have a valid it here.
+@@ -2061,7 +2067,7 @@ static void process_touch_command(conn *c, token_t *tokens, const size_t ntokens
+     }
+ }
+ 
+-static void process_arithmetic_command(conn *c, token_t *tokens, const size_t ntokens, const bool incr) {
++static void process_arithmetic_command(conn *c, token_t *tokens, const size_t ntokens, const char oper) {
+     char temp[INCR_MAX_STORAGE_LEN];
+     uint64_t delta;
+     char *key;
+@@ -2084,7 +2090,7 @@ static void process_arithmetic_command(conn *c, token_t *tokens, const size_t nt
+         return;
+     }
+ 
+-    switch(add_delta(c, key, nkey, incr, delta, temp, NULL)) {
++    switch(add_delta(c, key, nkey, oper, delta, temp, NULL)) {
+     case OK:
+         out_string(c, temp);
+         break;
+@@ -2096,10 +2102,12 @@ static void process_arithmetic_command(conn *c, token_t *tokens, const size_t nt
+         break;
+     case DELTA_ITEM_NOT_FOUND:
+         pthread_mutex_lock(&c->thread->stats.mutex);
+-        if (incr) {
++        if (oper == '+') {
+             c->thread->stats.incr_misses++;
+-        } else {
++        } else if (oper == '-') {
+             c->thread->stats.decr_misses++;
++        } else if (oper == '*') {
++            c->thread->stats.mult_misses++;
+         }
+         pthread_mutex_unlock(&c->thread->stats.mutex);
+ 
+@@ -2833,7 +2841,7 @@ void process_command_ascii(conn *c, char *command) {
+         if (strcmp(tokens[COMMAND_TOKEN].value, "incr") == 0) {
+ 
+             WANT_TOKENS_OR(ntokens, 4, 5);
+-            process_arithmetic_command(c, tokens, ntokens, 1);
++            process_arithmetic_command(c, tokens, ntokens, '+');
+         } else {
+             out_string(c, "ERROR");
+         }
+@@ -2845,7 +2853,7 @@ void process_command_ascii(conn *c, char *command) {
+         } else if (strcmp(tokens[COMMAND_TOKEN].value, "decr") == 0) {
+ 
+             WANT_TOKENS_OR(ntokens, 4, 5);
+-            process_arithmetic_command(c, tokens, ntokens, 0);
++            process_arithmetic_command(c, tokens, ntokens, '-');
+ #ifdef MEMCACHED_DEBUG
+         } else if (strcmp(tokens[COMMAND_TOKEN].value, "debugtime") == 0) {
+             WANT_TOKENS_MIN(ntokens, 2);
+@@ -2854,6 +2862,14 @@ void process_command_ascii(conn *c, char *command) {
+         } else {
+             out_string(c, "ERROR");
+         }
++    } else if (first == 'm') {
++        if (strcmp(tokens[COMMAND_TOKEN].value, "mult") == 0) {
++
++            WANT_TOKENS_OR(ntokens, 4, 5);
++            process_arithmetic_command(c, tokens, ntokens, '*');
++        } else {
++            out_string(c, "ERROR");
++        }
+     } else if (first == 't') {
+         if (strcmp(tokens[COMMAND_TOKEN].value, "touch") == 0) {
+ 
+diff --git a/protocol_binary.h b/protocol_binary.h
+index 5f3b778..0366297 100644
+--- a/protocol_binary.h
++++ b/protocol_binary.h
+@@ -131,7 +131,8 @@ extern "C"
+         PROTOCOL_BINARY_CMD_RINCR     = 0x39,
+         PROTOCOL_BINARY_CMD_RINCRQ    = 0x3a,
+         PROTOCOL_BINARY_CMD_RDECR     = 0x3b,
+-        PROTOCOL_BINARY_CMD_RDECRQ    = 0x3c
++        PROTOCOL_BINARY_CMD_RDECRQ    = 0x3c,
++        PROTOCOL_BINARY_CMD_MULTIPLY  = 0x3d,
+         /* End Range operations */
+ 
+     } protocol_binary_command;
+diff --git a/thread.c b/thread.c
+index dc59062..1a1fdf7 100644
+--- a/thread.c
++++ b/thread.c
+@@ -884,7 +884,7 @@ void item_unlink(item *item) {
+  * Does arithmetic on a numeric item value.
+  */
+ enum delta_result_type add_delta(conn *c, const char *key,
+-                                 const size_t nkey, bool incr,
++                                 const size_t nkey, char oper,
+                                  const int64_t delta, char *buf,
+                                  uint64_t *cas) {
+     enum delta_result_type ret;
+@@ -892,7 +892,7 @@ enum delta_result_type add_delta(conn *c, const char *key,
+ 
+     hv = hash(key, nkey);
+     item_lock(hv);
+-    ret = do_add_delta(c, key, nkey, incr, delta, buf, cas, hv, NULL);
++    ret = do_add_delta(c, key, nkey, oper, delta, buf, cas, hv, NULL);
+     item_unlock(hv);
+     return ret;
+ }
+diff --git a/trace.h b/trace.h
+index 94e585d..8f6382a 100644
+--- a/trace.h
++++ b/trace.h
+@@ -26,6 +26,8 @@
+ #define MEMCACHED_COMMAND_TOUCH_ENABLED() (0)
+ #define MEMCACHED_COMMAND_INCR(arg0, arg1, arg2, arg3)
+ #define MEMCACHED_COMMAND_INCR_ENABLED() (0)
++#define MEMCACHED_COMMAND_MULT(arg0, arg1, arg2, arg3)
++#define MEMCACHED_COMMAND_MULT_ENABLED() (0)
+ #define MEMCACHED_COMMAND_PREPEND(arg0, arg1, arg2, arg3, arg4)
+ #define MEMCACHED_COMMAND_PREPEND_ENABLED() (0)
+ #define MEMCACHED_COMMAND_REPLACE(arg0, arg1, arg2, arg3, arg4)
