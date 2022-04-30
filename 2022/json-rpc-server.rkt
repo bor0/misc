@@ -1,4 +1,5 @@
 #lang racket
+(require racket/exn)
 (require json)
 
 (define list '())
@@ -16,9 +17,9 @@
 
 #|
 $ echo '{"method": "add", "params": [42], "id":1}' | nc localhost 1234
-{"error":"error occurred","id":1,"result":false}
+{"error":"...json-rpc-server.rkt:12:14: arity mismatch;\n the expected number of arguments does not match the given number\n  expected: 2\n  given: 1\n","id":1,"result":false}
 $ echo '{"method": "add", "params": [42,], "id":2}' | nc localhost 1234
-{"error":"can't parse json","id":false,"result":false}
+{"error":"string::33: string->jsexpr: bad input starting #\"], \\\"id\\\":2}\"\n","id":false,"result":false}
 $ echo '{"method": "add", "params": [42,23], "id":3}' | nc localhost 1234
 {"error":false,"id":3,"result":65}
 $ echo '{"method": "append", "params": ["a","b"], "id": 4}' | nc localhost 1234
@@ -36,26 +37,28 @@ $ echo '{"method": "get-list", "params": [], "id": 8}' | nc localhost 1234
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; build a JSON response for error
-(define (json-response-error error [id #f]) (jsexpr->string (hash 'result #f 'error error 'id id)))
+(define (json-response-error error id) (jsexpr->string (hash 'result #f 'error error 'id id)))
 
 ; build a JSON response for success
 (define (json-response id result) (jsexpr->string (hash 'result result 'error #f 'id id)))
 
 ; main handler with parsing, evaluating, error handling etc.
 (define (handle in out)
-  ; these handlers handle the case where a JSON parse error occurs, in which case we have no id
-  (with-handlers ([exn:fail:read? (lambda (x) (displayln x) (displayln (json-response-error "can't parse json") out))]
-                  [exn:fail? (lambda (x) (displayln x) (displayln (json-response-error "error occurred") out))])
+  (define id #f) ; set id to false, as an error might occur during parsing stage
+  ; suppress stack trace
+  (parameterize ([error-print-context-length 0])
+  ; add main exception handler
+  (with-handlers
+      ([exn:fail? (lambda (e) (displayln (json-response-error (exn->string e) id) out))])
     (define req (string->jsexpr (read-line in)))
-    (define id (hash-ref req 'id))
-    ; these handlers will return an error that contain the id since we're able to parse everything up until this point
-    (with-handlers ([exn:fail? (lambda (x) (displayln x) (displayln (json-response-error "error occurred" id) out))])
-      (when req
-        (letrec ([raw-procedure (hash-ref req 'method)]
-                 [procedure (hash-ref *function-table* raw-procedure)]
-                 [params (hash-ref req 'params)]
-                 [result (apply procedure params)])
-          (displayln (json-response id result) out))))))
+    (set! id (hash-ref req 'id))
+    (when req
+      (letrec ([raw-procedure (hash-ref req 'method)]
+               [procedure (hash-ref *function-table* raw-procedure)]
+               [params (hash-ref req 'params)]
+               [result (apply procedure params)])
+        (displayln (~a "Called '" raw-procedure "' with params: " params))
+        (displayln (json-response id result) out))))))
 
 ;the remainder of this source file are functions pasted from the Racket documentation
 (define (accept-and-handle listener)
@@ -83,3 +86,4 @@ $ echo '{"method": "get-list", "params": [], "id": 8}' | nc localhost 1234
 
 (displayln "Listening on port 1234")
 (serve 1234)
+(letrec ([loop (lambda () (sleep 1) (loop))]) (loop))
