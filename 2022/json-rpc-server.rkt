@@ -5,14 +5,19 @@
 (define list '())
 
 (define (append a b) (string-append a b))
-(define (get-list) list)
-(define (add-list value) (set! list (cons value list)) #t)
+(define (pop-list)
+  (if (not (null? list))
+      (let ([result (hash 'element (car list) 'remaining (cdr list))])
+        (set! list (cdr list))
+        result)
+      #t))
+(define (push-list value) (set! list (cons value list)) list)
 
 (define *function-table*
   (hash "add" (lambda (a b) (+ a b))
         "append" append
-        "get-list" get-list
-        "add-list" add-list
+        "push-list" push-list
+        "pop-list" pop-list
         ))
 
 #|
@@ -24,41 +29,43 @@ $ echo '{"method": "add", "params": [42,23], "id":3}' | nc localhost 1234
 {"error":false,"id":3,"result":65}
 $ echo '{"method": "append", "params": ["a","b"], "id": 4}' | nc localhost 1234
 {"error":false,"id":4,"result":"ab"}
-$ echo '{"method": "get-list", "params": [], "id": 5}' | nc localhost 1234
-{"error":false,"id":5,"result":[]}
-$ echo '{"method": "add-list", "params": [2], "id": 6}' | nc localhost 1234
-{"error":false,"id":6,"result":true}
-$ echo '{"method": "add-list", "params": [1], "id": 7}' | nc localhost 1234
-{"error":false,"id":7,"result":true}
-$ echo '{"method": "get-list", "params": [], "id": 8}' | nc localhost 1234
-{"error":false,"id":8,"result":[1,2]}
+$ echo '{"method": "push-list", "params": [2], "id": 5}' | nc localhost 1234
+{"error":false,"id":5,"result":[2]}
+$ echo '{"method": "push-list", "params": [1], "id": 6}' | nc localhost 1234
+{"error":false,"id":5,"result":[1,2]}
+$ echo '{"method": "pop-list", "params": [], "id": 7}' | nc localhost 1234
+{"error":false,"id":7,"result":{"element":1,"remaining":[2]}}
 |#
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; build a JSON response for error
-(define (json-response-error error id) (jsexpr->string (hash 'result #f 'error error 'id id)))
+(define (json-response-error id error) (jsexpr->string (hash 'result #f 'error error 'id id)))
 
 ; build a JSON response for success
 (define (json-response id result) (jsexpr->string (hash 'result result 'error #f 'id id)))
 
 ; main handler with parsing, evaluating, error handling etc.
+; an alternative, functional, handler would add two layers of error handling:
+; one without id (when parsing fails) and one with id. this way we can avoid using `set!`
 (define (handle in out)
-  (define id #f) ; set id to false, as an error might occur during parsing stage
-  ; suppress stack trace
-  (parameterize ([error-print-context-length 0])
-  ; add main exception handler
-  (with-handlers
-      ([exn:fail? (lambda (e) (displayln (json-response-error (exn->string e) id) out))])
-    (define req (string->jsexpr (read-line in)))
-    (set! id (hash-ref req 'id))
-    (when req
-      (letrec ([raw-procedure (hash-ref req 'method)]
-               [procedure (hash-ref *function-table* raw-procedure)]
-               [params (hash-ref req 'params)]
-               [result (apply procedure params)])
-        (displayln (~a "Called '" raw-procedure "' with params: " params))
-        (displayln (json-response id result) out))))))
+  (let ([id #f]) ; set id to false, as an error might occur during parsing stage
+    (parameterize ([error-print-context-length 0]) ; suppress stack trace
+      ; add main exception handler
+      (with-handlers
+          ([exn:fail? (lambda (e) (displayln (json-response-error id (exn->string e)) out))])
+        (let ([data (string->jsexpr (read-line in))])
+          (set! id (hash-ref data 'id)) ; at this point we have the actual id
+          (when data
+            (displayln (json-response id (parse-and-evaluate data)) out)))))))
+
+; given a json object, parse its arguments and evaluate data
+(define (parse-and-evaluate data)
+  (letrec
+      ([raw-procedure (hash-ref data 'method)]
+       [procedure (hash-ref *function-table* raw-procedure)]
+       [params (hash-ref data 'params)])
+    (apply procedure params)))
 
 ;the remainder of this source file are functions pasted from the Racket documentation
 (define (accept-and-handle listener)
