@@ -47,7 +47,7 @@ Here's a list of interesting stuff that I have read or am reading.
 1. Redesigning Leadership [#](https://www.amazon.com/dp/0262015889)
 1. The Alchemist [#](https://www.amazon.com/dp/0061122416)
 1. Bobby Fischer Teaches Chess [#](https://www.amazon.com/dp/0553263153)
-1. The art of learning [#](https://www.amazon.com/dp/0743277465)
+1. The Art of Learning [#](https://www.amazon.com/dp/0743277465)
 1. The Queen's Gambit [#](https://www.amazon.com/dp/1400030609)
 1. Darkly Dreaming Dexter [#](https://www.amazon.com/dp/0307277887)
 1. Thinking, Fast and Slow [#](https://www.amazon.com/dp/0374533555)
@@ -56,5 +56,6 @@ Here's a list of interesting stuff that I have read or am reading.
 1. What Is the Name of This Book? [#](https://www.amazon.com/dp/0486481980)
 1. On faith, unbelief, and doubt (Metropolitan Benjamin)
 1. Spirit, Soul, Body [#](https://www.amazon.com/dp/9079889431)
+1. Sophie's World [#](https://www.amazon.com/dp/0374530718)
 
 Boro Sitnikovski
