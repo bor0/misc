@@ -56,6 +56,7 @@ Here's a list of interesting stuff that I have read or am reading.
 1. What Is the Name of This Book? [#](https://www.amazon.com/dp/0486481980)
 1. On faith, unbelief, and doubt (Metropolitan Benjamin)
 1. Spirit, Soul, Body [#](https://www.amazon.com/dp/9079889431)
+1. Philosophy for Everyone [#](https://www.amazon.com/dp/1138672947)
 1. Sophie's World [#](https://www.amazon.com/dp/0374530718)
 
 Boro Sitnikovski
