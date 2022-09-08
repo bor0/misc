@@ -6,25 +6,22 @@ def hash1(i):
 def hash2(i):
   return functools.reduce(lambda a, b: ord(b)%10 * a, i, 1)
 
-def num_to_revbin(n):
-  return bin(n)[2:][::-1]
-
 def calc_bloom(i, hashes, bloom = set()):
   for h in hashes:
-    h_bin = num_to_revbin(h(i))
+    h_bin = bin(h(i))[2:]
     for index in range(0, len(h_bin)):
       if h_bin[index] == '1': bloom.add(index)
 
   return bloom
 
-def in_bloom(i, hashes, bloom):
+def prob_in_bloom(i, hashes, bloom):
   for h in hashes:
     if h(i) in bloom: return False
 
   return True
 
 def printer(i, hashes, bloom):
-  if in_bloom(i, hashes, bloom): print('"%s" probably present in bloom' % i)
+  if prob_in_bloom(i, hashes, bloom): print('"%s" probably present in bloom' % i)
   else: print('"%s" definitely not present in bloom' % i)
 
 bloom = calc_bloom("hello", [hash1, hash2])
