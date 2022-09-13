@@ -6,24 +6,26 @@ def hash1(i):
 def hash2(i):
   return functools.reduce(lambda a, b: ord(b)%10 * a, i, 1)
 
-def calc_bloom(i, hashes, bloom = {}):
+def calc_bloom(i, hashes, bloom = set()):
   for h in hashes:
-    bloom[h(i)] = 1
+    h_bin = bin(h(i))[2:]
+    for index in range(0, len(h_bin)):
+      if h_bin[index] == '1': bloom.add(index)
 
   return bloom
 
-def in_bloom(i, hashes, bloom):
-  probably_present = True
+def prob_in_bloom(i, hashes, bloom):
   for h in hashes:
-    if h(i) not in bloom or bloom[h(i)] != 1: probably_present = False
+    if h(i) in bloom: return False
 
-  return probably_present
+  return True
 
 def printer(i, hashes, bloom):
-  if in_bloom(i, hashes, bloom): print('"%s" probably present in bloom' % i)
+  if prob_in_bloom(i, hashes, bloom): print('"%s" probably present in bloom' % i)
   else: print('"%s" definitely not present in bloom' % i)
 
-bloom = calc_bloom("hello", [hash1, hash2], {})
+bloom = calc_bloom("hello", [hash1, hash2])
 
 printer("hello", [hash1, hash2], bloom)
+printer("helloo", [hash1, hash2], bloom)
 printer("heeey", [hash1, hash2], bloom)
