@@ -19,7 +19,7 @@ $$S = \{
 \{2, 3, 4, 5\}
 \}$$
 
-We are interested in $S' = (A,B) \in S \times S \land A \neq B$, particularly $A$. There will be total of 20 sets.
+We are interested in $S' = (A,B) \in S \times S \land A \neq B$, particularly $A$. Since $|S \times S| = 25$ and $|aSa| = 5$, there will be a total of $25 - 5 = 20$ sets.
 
 There are 10 combinations of spies:
 
