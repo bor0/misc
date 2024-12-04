@@ -1,5 +1,5 @@
--- https://bor0.wordpress.com/2019/03/19/writing-a-lambda-calculus-evaluator-in-haskell/
--- https://bor0.wordpress.com/2019/03/21/writing-a-lambda-calculus-type-checker-in-haskell/
+-- https://refl.blog/2019/03/19/writing-a-lambda-calculus-evaluator-in-haskell/
+-- https://refl.blog/2019/03/21/writing-a-lambda-calculus-type-checker-in-haskell/
 import Data.List ((\\), nub)
 
 type VarName = String

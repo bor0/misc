@@ -72,4 +72,4 @@ To extract members:
 
 Gödel's proof relies on functions. For example, to represent formulas as numbers, we need recursion. More specifically, primitive recursion. Whether we decide to go with Gödel's numbering or the Chinese Remainder Theorem, in any case, we need a [divisibility algorithm](./eucliddiv.md) ($a = qd + r$) which uses _both_ addition and multiplication; this is why the system needs at least both addition and multiplication for it to be affected by the theorems.
 
-However, [recursive functions](https://bor0.wordpress.com/2022/05/30/recursion-from-first-principles/) also rely on addition in their axiomatic definitions.
+However, [recursive functions](https://refl.blog/2022/05/30/recursion-from-first-principles/) also rely on addition in their axiomatic definitions.
