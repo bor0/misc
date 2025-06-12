@@ -42,6 +42,7 @@ Here's a list of interesting stuff that I have read or am reading.
 
 # Misc. reads
 
+1. The Mirrors In Us [#](https://www.lulu.com/shop/boro-sitnikovski/the-mirrors-in-us/paperback/product-dy6rj96.html)
 1. A Mathematician's Lament [#](https://www.maa.org/external_archive/devlin/LockhartsLament.pdf)
 1. The Laws of Simplicity [#](https://www.amazon.com/dp/0262134721)
 1. Redesigning Leadership [#](https://www.amazon.com/dp/0262015889)
