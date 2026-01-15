@@ -1,0 +1,35 @@
+import Options
+from os import unlink, symlink, popen
+from os.path import exists
+
+srcdir = "."
+blddir = "build"
+VERSION = "0.0.1"
+
+def set_options(opt):
+  opt.tool_options("compiler_cc")
+  opt.tool_options("compiler_cxx")
+
+def configure(conf):
+  conf.check_tool("compiler_cc")
+  conf.check_tool("compiler_cxx")
+  conf.check_tool("node_addon")
+
+def build(bld):
+  obj = bld.new_task_gen("cxx", "shlib", "node_addon")
+  obj.target = "gfsfile"
+
+  obj.includes = [ "mongo-c-driver/src" ]
+
+  obj.cxxflags = [ "-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE", "-O3", "-Wall" ]
+  obj.cflags = [ "-fPIC", "--std=c99", "-Wswitch" ]
+
+  obj.source = "src/gfsfile.cpp mongo-c-driver/src/bcon.c mongo-c-driver/src/bson.c mongo-c-driver/src/encoding.c mongo-c-driver/src/env_posix.c mongo-c-driver/src/gridfs.c mongo-c-driver/src/md5.c mongo-c-driver/src/mongo.c mongo-c-driver/src/numbers.c"
+
+def shutdown():
+  if Options.commands['clean']:
+    if exists('gfsfile.node'): unlink('gfsfile.node')
+  else:
+    if exists('build/Release/gfsfile.node') and not exists('gfsfile.node'):
+      symlink('build/Release/gfsfile.node', 'gfsfile.node')
+

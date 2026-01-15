@@ -1,0 +1,20 @@
+--------------------------------------------
+Get GridFS file NodeJS module implementation
+--------------------------------------------
+
+Make sure you have Node.JS installed and needed dependencies (default: /usr/local/include/node)
+
+------------
+Build steps:
+------------
+node-waf configure build
+
+------------
+Clean steps:
+------------
+rm -rf build gfsfile.node
+
+
+
+SAS team,
+January 2013

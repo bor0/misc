@@ -1,0 +1,33 @@
+Warcraft III Memory Protection Remover by BoR0
+----------------------------------------------
+
+This loader has been tested and works FULLY with 1.19.
+
+Place the file W3Loader.exe in your Warcraft III directory.
+(usually "C:\Program Files\Warcraft III")
+
+@@: If you have "Frozen Throne" installed, just run W3Loader.exe.
+
+@@: If you have "Reign of Chaos" installed, just run W3Loader.exe
+
+@@: If you have "Frozen Throne" installed, but would like to use it for
+"Reign of Chaos" just run W3Roc.bat (this needs W3Loader.exe).
+
+
+
+This loader removes the SetSecurityInfo() memory protection that
+has been added recently to Warcraft III (1.18).
+
+I'd like to thank:
+
+ZoiD - for his deadlisting
+[Wizzer] - for his API help
+Silvernoma - for spreading the loader and keeping the greatest community
+SecureGamers.com alive :)
+
+BiW Reversing.
+
+check out www.reversing.be for loads of tutorials, tools, challenges..
+
+
+done on 21/09/2005 by BoR0
